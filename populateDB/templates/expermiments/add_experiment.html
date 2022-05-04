@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+{% block content %}
+
+{% include "navbar.html" %}
+{% include "2.html" %}
+
+{% if form.errors %}
+    
+{% endif %}
+<br>
+<form method="POST" class="post-form" action="">  
+        {% csrf_token %}  
+    <div class="container">  
+<br>  
+    <div class="form-group row">  
+    <label class="col-sm-1 col-form-label"></label>  
+    <div class="col-sm-4">  
+    <h3>Add New Experiment</h3>  
+    </div>  
+  </div>  
+    <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Bat Name:</label>  
+    <div class="col-sm-4">  
+      {{ form.bat_name }}  
+    </div>  
+  </div>  
+  <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Date of Measurement:</label>  
+    <div class="col-sm-4">  
+      {{ form.date_of_measurement }}  
+    </div>  
+  </div>  
+    <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Institute:</label>  
+    <div class="col-sm-4">  
+      {{ form.institute_id }}  
+    </div>  
+  </div>  
+    <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Experimenter:</label>  
+    <div class="col-sm-4">  
+      {{ form.experimenter_id }}  
+    </div>  
+  </div>
+    <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Cytometer:</label>  
+    <div class="col-sm-4">  
+      {{ form.cytometer_id }}  
+    </div>  
+  </div>  
+  <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Device:</label>  
+    <div class="col-sm-4">  
+      {{ form.device_id }}  
+    </div>  
+  </div>  
+    <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Marker:</label>  
+    <div class="col-sm-4">  
+      {{ form.marker_id }}  
+    </div>  
+  </div>  
+    <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Bead Experiment:</label>  
+    <div class="col-sm-4">  
+      {{ form.beadExperiment }}  
+    </div>  
+  </div>
+  <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Special Experiment:</label>  
+    <div class="col-sm-4">  
+      {{ form.specialExperiment }}  
+    </div>  
+  </div>  
+    <div class="form-group row">  
+    <label class="col-sm-2 col-form-label">Special Notes:</label>  
+    <div class="col-sm-4">  
+      {{ form.specialNotes }}  
+    </div>  
+  </div>    
+    <div class="form-group row">  
+    <label class="col-sm-1 col-form-label"></label>  
+    <div class="col-sm-4">  
+    <button type="submit" class="btn btn-primary">Save</button>  
+    </div>  
+  </div>  
+    </div>  
+</form>  
+{% endblock content %}

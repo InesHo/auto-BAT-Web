@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Logged out{% endblock %}
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<h1>Logged out</h1>
+<p>
+    You have been successfully logged out.
+    <hr>
+    You can <a href="{% url 'populateDB:login' %}">log-in again</a>.
+</p>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+{% block content %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+<form action="" method="post" id="upload_form">
+  <br>
+  <br>
+  <br>
+  {% csrf_token %}
+  {{form.as_p}}
+  <input type="submit" value="Upload" class="btn btn-primary">
+</form>
+<div class="container not-visible progress" id="progress">
+</div>
+<script>
+  const uploadForm = document.getElementById('upload_form');
+  const input_file = document.getElementById('id_image');
+  const progress_bar = document.getElementById('progress');
+        
+  $("#upload_form").submit(function(e){
+    e.preventDefault();
+    $form = $(this)
+    var formData = new FormData(this);
+    const media_data = input_file.files[0];
+    if(media_data != null){
+      console.log(media_data);
+      progress_bar.classList.remove("not-visible");
+    }
+
+    $.ajax({
+      type: 'POST',
+      url:'/add_experimentfile/',
+      data: formData,
+      dataType: 'json',
+      beforeSend: function(){
+
+      },
+      xhr:function(){
+        const xhr = new window.XMLHttpRequest();
+        xhr.upload.addEventListener('progress', e=>{
+          if(e.lengthComputable){
+            const percentProgress = (e.loaded/e.total)*100;
+            console.log(percentProgress);
+            progress_bar.innerHTML = `<div class="progress-bar progress-bar-striped bg-success" 
+            role="progressbar" style="width: ${percentProgress}%" aria-valuenow="${percentProgress}" aria-valuemin="0" 
+            aria-valuemax="100"></div>`
+          }
+        });
+        return xhr
+      },
+      success: function(response){
+        console.log(response);
+        uploadForm.reset()
+        progress_bar.classList.add('not-visible')
+      },
+      error: function(err){
+        console.log(err);
+      },
+      cache: false,
+      contentType: false,
+      processData: false,
+    });
+  });
+</script>
+{% endblock content %}

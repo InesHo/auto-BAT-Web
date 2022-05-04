@@ -1,0 +1,50 @@
+
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+{% block content %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+{% if form.errors %}
+    
+{% endif %}
+
+<br>
+<center><a href="{% url 'populateDB:add_experiment' %}" class="btn btn-primary">Add New Experiment</a></center>  
+<br>
+
+<table class="table table-striped table-bordered table-sm">  
+    <thead >  
+    <tr>  
+        <th>Bat Name</th>
+        <th>Date of Measurement</th>  
+        <th>Institute</th>  
+        <th>Experimenter</th>  
+        <th>Cytometer</th>
+        <th>Device</th>  
+        <th>Marker</th>  
+        <th>BeadExperiment</th>
+        <th>Special Experiment</th>  
+
+    </tr>  
+    </thead>  
+    <tbody>  
+{% for experiment in experiment_data %}  
+    <tr>  
+        <td>{{ experiment.bat_name }}</td>  
+        <td>{{ experiment.date_of_measurement }}</td>  
+        <td>{{ experiment.institute_id }}</td>  
+        <td>{{ experiment.experimenter_id }}</td>
+        <td>{{ experiment.cytometer_id }}</td>  
+        <td>{{ experiment.device_id }}</td>  
+        <td>{{ experiment.marker_id }}</td>  
+        <td>{{ experiment.beadExperiment }}</td>
+        <td>{{ experiment.specialExperiment }}</td>  
+
+    </tr>  
+{% endfor %}  
+    </tbody>  
+</table>  
+{% endblock content %}

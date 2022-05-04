@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}home{% endblock title %}
+
+{% block content %}
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+<br>
+<br>
+<br>
+<br>
+
+<h1>Auto-BAT Project Home</h1>
+</br>
+<p>Welcome to Auto-BAT Project, a website in development by AG Baumgrass at DRFZ.</p>
+<br>
+<h2>Database Content</h2>
+</br>
+<p>Recently, the Database holds the listed datasets:</p>
+<ul>
+<li><strong>Experiments:</strong> {{ num_bats }}</li>
+<li><strong>Donors:</strong> {{ num_donors }}</li>
+<li><strong>Files:</strong> {{ num_files }}</li>
+</ul>
+
+
+{% endblock content %}

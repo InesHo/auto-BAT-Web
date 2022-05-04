@@ -1,0 +1,31 @@
+<html>
+<head>
+	<style type="text/css">
+		.left {
+            float:left;
+            margin-left: auto; 
+            margin-right: 0;
+                }
+	</style>
+    {% load static %}
+</head>
+ 
+<body>
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class = "left">
+            <span >
+            {% if request.user.is_authenticated %}
+                Hi:
+                <i>{{user.username}}</i>
+                <a href="{% url 'populateDB:edit' %}" >Edit Your Profile</a>
+                <a href="{% url 'populateDB:password_change' %}" >Change your password</a>
+                <a href="{% url 'populateDB:logout' %}" class="btn btn-danger">Logout</a>
+            {% endif %}
+            </span>
+        </div>
+    </nav>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+{% block content %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+{% if form.errors %}
+    
+{% endif %}
+
+<br>
+<center><a href="{% url 'populateDB:add_experimentfile' %}" class="btn btn-primary">Add New File</a></center>  
+<br>
+
+<table class="table table-striped table-bordered table-sm">  
+    <thead >  
+    <tr>  
+        <th>File Name</th>
+        <th>File Type</th>
+        <th>Bat Name</th>  
+        <th>Donor Name</th>  
+        <th>Panel</th>  
+    </tr>  
+    </thead>  
+    <tbody>  
+{% for file in file_data %}  
+    <tr>  
+        <td>{{ file.file_name }}</td>
+        <td>{{ file.type_id }}</td>   
+        <td>{{ file.bat_id }}</td>  
+        <td>{{ file.donor_id }}</td>  
+        <td>{{ file.panel_id }}</td> 
+
+    </tr>  
+{% endfor %}  
+    </tbody>  
+</table>  
+{% endblock content %}
