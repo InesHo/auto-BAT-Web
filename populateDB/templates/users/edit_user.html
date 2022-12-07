@@ -1,0 +1,34 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div class="container-fluid vh-100">
+    <div class="" style="margin-top:50px">
+        <div class="rounded d-flex justify-content-center">
+            <div class="col-md-3 col-sm-12 shadow-lg p-5 bg-light">
+                <div class="text-center">
+                    <h3 class="text-primary">Edit your account</h3>
+                    <div class="modal-footer"></div>              </div>
+                    <form action="" method="post" class="form container" autocomplete="off">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="form-group row">  
+                            <label class="col-sm-1 col-form-label"></label>  
+                            <div class="modal-footer"></div>
+                            <button type="submit" class="btn btn-primary">Update</button>  
+                            </div>  
+                        </div> 
+                    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

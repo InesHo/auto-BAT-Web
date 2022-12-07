@@ -1,0 +1,23 @@
+{% include "base.html" %}
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div class="container-fluid vh-100">
+    <div class="" style="margin-top:50px">
+        <div class="rounded d-flex justify-content-center">
+            <div class="col-md-3 col-sm-12 shadow-lg p-5 bg-light">
+                <div class="text-center">
+                    <h3 class="text-primary">Logged In</h3>
+                    <div class="modal-footer"></div>              </div>
+                    <p>
+                        You have been successfully logged out.
+                        <hr>
+                        You can <a href="{% url 'populateDB:login' %}">log-in again</a>.
+                    </p>
+            </div>
+        </div>
+    </div>
+  </div>

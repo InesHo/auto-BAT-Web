@@ -1,31 +1,101 @@
-<html>
-<head>
-	<style type="text/css">
-		.left {
-            float:left;
-            margin-left: auto; 
-            margin-right: 0;
-                }
-	</style>
-    {% load static %}
-</head>
- 
-<body>
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <img src= "{% static 'media/drfz_logo.png' %}" width="200" height="100">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'populateDB:home' %}">Home</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            System Parameters
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'populateDB:show_institute' %}"><i></i>Institutes</a></li>
+            <li><a class="dropdown-item" href="{% url 'populateDB:show_department' %}"><i></i>Departments</a></li>
+            <li><a class="dropdown-item" href="{% url 'populateDB:show_device' %}"><i ></i>Devices</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'populateDB:add_user' %}"><i></i>Add User</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'populateDB:show_experimenter' %}">Experimenters</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'populateDB:show_panel' %}">Panels</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'populateDB:show_donor' %}">Donors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'populateDB:show_experiment' %}">Experiments</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'populateDB:show_experimentfile' %}">Files</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'populateDB:show_analysis' %}">Analysis</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Reports
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="#">Analysis Results</a></li>
+            <li><a class="dropdown-item" href="#">Files Mean Data</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Visualization Reports</a></li>
+            
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Manage your Account
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'populateDB:edit_user' %}" >Edit Your Profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'populateDB:password_change' %}" >Change your password</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
 
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class = "left">
-            <span >
-            {% if request.user.is_authenticated %}
-                Hi:
-                <i>{{user.username}}</i>
-                <a href="{% url 'populateDB:edit' %}" >Edit Your Profile</a>
-                <a href="{% url 'populateDB:password_change' %}" >Change your password</a>
-                <a href="{% url 'populateDB:logout' %}" class="btn btn-danger">Logout</a>
-            {% endif %}
-            </span>
-        </div>
-    </nav>
-
-</body>
-</html>
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link disabled" aria-disabled="true">Hi: {{user.username}}</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <a href="{% url 'populateDB:logout' %}" class="btn btn-danger">Sign out</a>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</nav>

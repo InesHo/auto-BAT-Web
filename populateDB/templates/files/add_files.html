@@ -1,68 +1,50 @@
-{% extends "base.html" %}
-{% load bootstrap4 %}
-{% block content %}
-
+{% include "base.html" %}
 {% include "navbar.html" %}
-{% include "sidebar.html" %}
 
-<form action="" method="post" id="upload_form">
-  <br>
-  <br>
-  <br>
-  {% csrf_token %}
-  {{form.as_p}}
-  <input type="submit" value="Upload" class="btn btn-primary">
-</form>
-<div class="container not-visible progress" id="progress">
+
+<div class="container-fluid vh-100">
+  <div class="" style="margin-top:50px">
+      <div class="rounded d-flex justify-content-center">
+          <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+              <div class="text-center">
+                  <h3 class="text-primary">Add Files</h3>
+                  <div class="modal-footer"></div>              </div>
+              <form method="POST" enctype="multipart/form-data" class="post-form">  
+                {% csrf_token %}
+                <div class="form-group row">  
+                  <label class="col-sm-4 col-form-label">BAT Name:</label>  
+                  <div class="col-sm-4">  
+                    {{ form.bat_id }}  
+                  </div>  
+                </div>  
+                <div class="form-group row">  
+                  <label class="col-sm-4 col-form-label">Donor:</label>  
+                  <div class="col-sm-4">  
+                    {{ form.donor_id }}  
+                  </div>  
+                </div>  
+                <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">Panel:</label>  
+                  <div class="col-sm-4">  
+                    {{ form.panel_id }}  
+                  </div>  
+                </div> 
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">Files:</label>  
+                  <div class="col-sm-4" id="id_image">  
+                    {{ form.file }}  
+                  </div>  
+                </div> 
+                <br></br>
+                <div class="modal-footer"></div>
+                <h5 class="text-danger">You Should Select all files at once!</h5>
+                <div class="form-group row">  
+                  <label class="col-sm-1 col-form-label"></label>  
+                  <div class="modal-footer"></div>
+                  <button type="submit" class="btn btn-primary">Upload</button>  
+              </form>              
+          </div>
+      </div>
+  </div>
 </div>
-<script>
-  const uploadForm = document.getElementById('upload_form');
-  const input_file = document.getElementById('id_image');
-  const progress_bar = document.getElementById('progress');
-        
-  $("#upload_form").submit(function(e){
-    e.preventDefault();
-    $form = $(this)
-    var formData = new FormData(this);
-    const media_data = input_file.files[0];
-    if(media_data != null){
-      console.log(media_data);
-      progress_bar.classList.remove("not-visible");
-    }
 
-    $.ajax({
-      type: 'POST',
-      url:'/add_experimentfile/',
-      data: formData,
-      dataType: 'json',
-      beforeSend: function(){
-
-      },
-      xhr:function(){
-        const xhr = new window.XMLHttpRequest();
-        xhr.upload.addEventListener('progress', e=>{
-          if(e.lengthComputable){
-            const percentProgress = (e.loaded/e.total)*100;
-            console.log(percentProgress);
-            progress_bar.innerHTML = `<div class="progress-bar progress-bar-striped bg-success" 
-            role="progressbar" style="width: ${percentProgress}%" aria-valuenow="${percentProgress}" aria-valuemin="0" 
-            aria-valuemax="100"></div>`
-          }
-        });
-        return xhr
-      },
-      success: function(response){
-        console.log(response);
-        uploadForm.reset()
-        progress_bar.classList.add('not-visible')
-      },
-      error: function(err){
-        console.log(err);
-      },
-      cache: false,
-      contentType: false,
-      processData: false,
-    });
-  });
-</script>
-{% endblock content %}

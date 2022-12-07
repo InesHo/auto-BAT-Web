@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-xlmr4m%xvwyc4&j*@7q5t7na=v#)3bh36ynr9fxy-e-hu4q&k9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["autobat.drfz.de", "10.100.4.95", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'populateDB',
-    'bootstrap4'
+    'background_task',
+
 ]
 
 MIDDLEWARE = [

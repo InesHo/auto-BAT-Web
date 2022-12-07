@@ -1,0 +1,51 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+<br></br>
+<div class="container">
+
+  <center><h1>Experimenters</h1></center>
+  <br></br>
+ <a href="{% url 'populateDB:add_experimenter' %}" class="btn btn-primary">Add New Experimenter</a> 
+ <br></br>
+   <table id="analysis-table" class="display" style="width:100%">
+    <thead >  
+        <tr>  
+            <th>Experimenter Label</th>
+            <th>First Name</th>  
+            <th>Last_name</th>  
+            <th>Email</th>  
+            <th>PhoneNumber</th>
+            <th>Institute</th>  
+            <th>Department</th>
+    
+        </tr>  
+        </thead>  
+        <tbody>  
+    {% for experimenter in experimenters_data %}  
+        <tr>  
+            <td>{{ experimenter.experimenter_label }}</td>  
+            <td>{{ experimenter.experimenter_firstName }}</td>  
+            <td>{{ experimenter.experimenter_lastName }}</td>  
+            <td>{{ experimenter.experimenter_email }}</td>
+            <td>{{ experimenter.experimenter_phoneNumber }}</td>  
+            <td>{{ experimenter.institute_id }}</td>
+            <td>{{ experimenter.department_id }}</td>  
+    
+        </tr>  
+    {% empty %}
+    <tr>
+      <td colspan="7" class="text-center bg-warning">No Data</td>
+    </tr>
+  {% endfor %}
+
+   </tbody>
+   </table>
+</div>
+
+
+<script>
+$(document).ready(function(){
+  $('table.display').DataTable();
+})
+</script>

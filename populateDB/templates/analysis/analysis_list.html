@@ -1,0 +1,95 @@
+
+  {% include "base.html" %}
+  {% include "navbar.html" %}
+
+  <br></br>
+ <div class="container">
+
+    <center><h1>Analysis List</h1></center>
+    <br></br>
+     <table id="analysis-table" class="display" style="width:100%">
+     <thead>
+     <tr>
+      <th>BAT Name</th>
+      <th>Donor</th>
+      <th>Panel</th>
+      <th>Z1</th>
+      <th>Y1</th>
+      <th>Z2</th>
+      <th>Date</th>
+      <th>Time Started</th>
+      <th>Time Finished</th>
+      <th>Status</th>
+      <th>Type</th>
+      <th>Download</th>
+      <th>Analyze</th>
+    </tr>
+     </thead>
+     <tbody>
+      {% for a in analysis %}
+      <tr>
+        <td >{{ a.bat_name }}</td>
+        <td >{{ a.donor_name }}</td>
+        <td >{{ a.panel_name }}</td>
+        <td >{{ a.chosen_z1 }}</td>
+        <td >{{ a.chosen_y1 }}</td>
+        <td >{{ a.chosen_z2 }}</td>
+        <td >{{ a.analysis_date }}</td>
+        <td >{{ a.analysis_start_time }}</td>
+        <td >{{ a.analysis_end_time }}</td>
+        <td >{{ a.analysis_status }}</td>
+        <td >{{ a.analysis_type }}</td>
+
+
+        <td>
+          
+          {% if a.analysis_status == "Ready" %}
+
+          <a href="download_pdf/{{a.analysisMarker_id}}" class="btn btn-danger" >
+            <span class="fa fa-file-pdf"></span>
+          </a>
+          
+
+          <a href="download_xlsx/{{a.analysisMarker_id}}" class="btn btn-success">
+            <span class="fa fa-file-excel"></span>
+          </a>
+
+          {% endif %}
+
+        </td>     
+
+        <td>
+        
+
+          <a class="btn btn-primary" href="{% url 'populateDB:show_experimenter' %}">Analyze</a>
+
+         
+        </td>
+        
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center bg-warning">No Data</td>
+      </tr>
+    {% endfor %}
+
+     </tbody>
+     </table>
+ </div>
+
+ <div class="modal fade" id="modal-analysis" tabindex="-1">
+  <div class="modal-dialog modal-dialog-scrollable ">
+    <div class="modal-content">
+      
+    </div>
+  </div>
+ </div>
+</div>
+
+
+<script>
+  $(document).ready(function(){
+	$('table.display').DataTable();
+})
+</script>
+

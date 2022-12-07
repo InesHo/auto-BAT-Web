@@ -1,0 +1,56 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+<br>
+<br>
+<br>
+{% if form.errors %}
+    
+{% endif %}
+
+<div class="container-fluid vh-100">
+    <div class="" style="margin-top:50px">
+        <div class="rounded d-flex justify-content-center">
+            <div class="col-md-5 col-sm-12 shadow-lg p-5 bg-light">
+                <div class="text-center">
+                    <h3 class="text-primary">Add Department</h3>
+                    <div class="modal-footer"></div>              </div>
+                    <form method="POST" class="post-form" action="" autocomplete="off">  
+                      {% csrf_token %}  
+                        <div class="container">  
+                    <br>  
+                        <div class="form-group row">  
+                        <label class="col-sm-4 col-form-label">Department Name:</label>  
+                        <div class="col-sm-4">  
+                          {{ form.department_name }}  
+                        </div>  
+                      </div>  
+                      <div class="form-group row">  
+                        <label class="col-sm-4 col-form-label">Department Email:</label>  
+                        <div class="col-sm-4">  
+                          {{ form.department_email }}  
+                        </div>  
+                      </div>  
+                        <div class="form-group row">  
+                        <label class="col-sm-4 col-form-label">Phone Number:</label>  
+                        <div class="col-sm-4">  
+                          {{ form.department_phoneNumber }}  
+                        </div>  
+                      </div>  
+                        <div class="form-group row">  
+                        <label class="col-sm-4 col-form-label">Institute:</label>  
+                        <div class="col-sm-4">  
+                          {{ form.institute_id }}  
+                        </div>  
+                        <div class="form-group row">  
+                        <label class="col-sm-1 col-form-label"></label>  
+                        <div class="modal-footer"></div>
+                        <button type="submit" class="btn btn-primary">Save</button>  
+
+                      </div>  
+                        </div>  
+                    </form>  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

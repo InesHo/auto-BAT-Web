@@ -1,0 +1,7 @@
+{% for c in channels %}
+<option value="{{c.pnn}}"> {{c.pns}} </option>
+{% empty %}
+<tr>
+  <td colspan="7" class="text-center bg-warning">No Data</td>
+</tr>
+{% endfor %}

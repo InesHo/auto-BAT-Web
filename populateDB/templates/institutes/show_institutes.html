@@ -1,0 +1,47 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+<br></br>
+<div class="container">
+
+  <center><h1>Institutes</h1></center>
+  <br></br>
+ <a href="{% url 'populateDB:add_institute' %}" class="btn btn-primary">Add New Institute</a> 
+ <br></br>
+   <table id="analysis-table" class="display" style="width:100%">
+    <thead >  
+        <tr>  
+            <th>Short Name</th>
+            <th>Full Name</th>  
+            <th>Address</th>  
+            <th>Email</th>  
+            <th>PhoneNumber</th>
+    
+        </tr>  
+        </thead>  
+        <tbody>  
+    {% for institutes in institutes_data %}  
+        <tr>  
+            <td>{{ institutes.institute_shortName }}</td>  
+            <td>{{ institutes.institute_name }}</td>  
+            <td>{{ institutes.institute_address }}</td>  
+            <td>{{ institutes.institute_email }}</td>
+            <td>{{ institutes.institute_phoneNumber }}</td>  
+    
+        </tr> 
+    {% empty %}
+    <tr>
+      <td colspan="7" class="text-center bg-warning">No Data</td>
+    </tr>
+  {% endfor %}
+
+   </tbody>
+   </table>
+</div>
+
+
+<script>
+$(document).ready(function(){
+  $('table.display').DataTable();
+})
+</script>

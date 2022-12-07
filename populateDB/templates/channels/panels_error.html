@@ -1,0 +1,22 @@
+
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+
+<div class="container-fluid vh-100">
+  <div class="" style="margin-top:50px">
+      <div class="rounded d-flex justify-content-center">
+          <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+              <div class="text-center">
+                  <h3 class="text-danger">Error</h3>
+                  <div class="modal-footer"></div>  
+              </div>
+              <div class="container">
+               <h1>Somthing wrong Happend</h1>         
+               </div>
+              <div class="modal-footer"></div>
+              <a href="{% url 'populateDB:add_experimentfile' %}" class="btn btn-primary">Try Again</a>
+          </div>
+      </div>
+  </div>
+</div>

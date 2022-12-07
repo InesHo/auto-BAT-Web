@@ -1,0 +1,40 @@
+
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+<br></br>
+<div class="container">
+
+  <center><h1>Devices</h1></center>
+  <br></br>
+ <a href="{% url 'populateDB:add_device' %}" class="btn btn-primary">Add New Device</a> 
+ <br></br>
+   <table id="analysis-table" class="display" style="width:100%">
+    <thead >  
+        <tr>  
+            <th>Device Label</th>
+            <th>Device Name</th>
+        </tr>  
+        </thead>  
+        <tbody>  
+    {% for device in devices_data %}  
+        <tr>  
+            <td>{{ device.device_label }}</td>  
+            <td>{{ device.device_name }}</td> 
+        </tr> 
+    {% empty %}
+    <tr>
+      <td colspan="7" class="text-center bg-warning">No Data</td>
+    </tr>
+  {% endfor %}
+
+   </tbody>
+   </table>
+</div>
+
+
+<script>
+$(document).ready(function(){
+  $('table.display').DataTable();
+})
+</script>

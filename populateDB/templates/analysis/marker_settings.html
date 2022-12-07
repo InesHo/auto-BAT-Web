@@ -1,0 +1,49 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+
+<div class="container-fluid vh-100">
+  <div class="" style="margin-top:50px">
+      <div class="rounded d-flex justify-content-center">
+          <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
+              <div class="text-center">
+                  <h3 class="text-primary">Select Marker Settings</h3>
+                  <div class="modal-footer"></div>
+                </div>
+              <form method="POST" enctype="multipart/form-data" class="post-form" action="run_analysis/{{analysis_id}}" >  
+                {% csrf_token %}
+                <div class="container">
+                    <h4>Please Select Marker Setinges: </h4>
+                    <div class="row">
+                      <div class="col-sm">
+                        <label for="floatingInput">Z1: </label>
+                        <select name = "z1" class="form-select" style="width: 200px;">
+                            {% include "analysis/channels.html" %}
+                        </select>
+                      </div>
+                      <div class="col-sm">
+                        <label for="floatingInput">Y1: </label>
+                        <select name = "y1" class="form-select" style="width: 200px;">
+                            {% include "analysis/channels.html" %}
+                        </select>
+                      </div>
+                      <div class="col-sm">
+                        <label for="floatingInput">Z2: </label>
+                        <select name = "z2" class="form-select" style="width: 220px;">
+                            {% include "analysis/channels.html" %}
+                        </select>
+                      </div>
+                    </div>
+                <br>
+                <div class="modal-footer"></div>
+                <h4 class="text-danger">Be carefull when selecting Marker Settings:</h4>
+                <h5 class="text-danger">Z1 : Should be CD63</h5>
+                <h5 class="text-danger">Y1 : Should be FcR</h5>
+                <h5 class="text-danger">Z2 : Should be CD32</h5>
+                <div class="modal-footer"></div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>              
+          </div>
+      </div>
+  </div>
+</div>
