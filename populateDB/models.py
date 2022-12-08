@@ -3,8 +3,6 @@ from django.conf import settings
 from django.core.validators import MaxLengthValidator
 import os
 import sys
-sys.path.insert(0, "/home/wail/drfz/auto-Bat_old/auto-BAT/autoBat" )
-import Data
 
 
 class AddUser(models.Model):
