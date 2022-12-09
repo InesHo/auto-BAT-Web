@@ -2,6 +2,7 @@ import os
 from PIL import Image
 import pytz
 from datetime import datetime
+import config
 
 
 def Berlin_time():
@@ -15,9 +16,9 @@ def create_path(path):
 
 def image_grid(img_list, pdf_path):
     new_image =  Image.new(mode="RGB", size=(3000,1958), color='white')
-    temp_path = create_path('/home/wail/drfz/New/autoBatWeb/media/temp')
+    temp_path = create_path(os.path.join(config.MEDIA_PATH,'temp'))
     #new_image.save(os.path.join(temp_path, 'temp.png'))
-    new_image.save('/home/wail/drfz/New/autoBatWeb/media/temp/temp.png')
+    new_image.save(os.path.join(config.MEDIA_PATH,'temp','temp.png'))
     width = 600
     hight = 640
 
@@ -40,6 +41,6 @@ def image_grid(img_list, pdf_path):
             new_image.paste(img_to_paste, (index_third_row_columns*width, index_third_row*hight+100))
             index_third_row_columns +=1
         
-        new_image.save('/home/wail/drfz/New/autoBatWeb/media/temp/temp.png')
+        new_image.save(os.path.join(config.MEDIA_PATH,'temp','temp.png'))
         
     new_image.save(pdf_path, "PDF" ,resolution=250.0)
