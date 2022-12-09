@@ -147,7 +147,7 @@ class ExperimentFiles(models.Model):
     file_name = models.TextField(blank = True)
     file = models.FileField(max_length=300, blank=True, null=True)
     analysis_id = models.CharField(max_length=20, blank = True, null = True)
-    allergen = models.CharField(max_length=20, blank = True, null = True)
+    allergen = models.CharField(max_length=50, blank = True, null = True)
     control=  models.CharField(choices=CONTROL_TYPES,max_length=120, blank = True, null=True)
     def __str__(self):
        return str(self.file)
