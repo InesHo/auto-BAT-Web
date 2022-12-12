@@ -10,10 +10,10 @@ import os
 from django.forms import formset_factory
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
-import flowkit as fk
 from datetime import date
 import config
 sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
+from django.conf import settings
 from Data import Data
 from .functions import create_path
 from .tasks import run_analysis_task, proccess_files
@@ -242,7 +242,7 @@ class experimentfile(View):
                 analysis_instance = models.Analysis(bat_id=bat_id, donor_id=donor_id, panel_id=panel_id)
                 analysis_instance.save()
                 analysis_id = analysis_instance.analysis_id
-                files_dir = os.path.join(config.MEDIA_PATH, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}")
+                files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}")
                 create_path(files_dir)
                 file_list = []
                 for f in files:
@@ -414,10 +414,10 @@ def run_analysis(request, analysis_id):
             device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
 
             outputPDFname = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png "
-            pathToData = os.path.join(config.MEDIA_PATH, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
-            pathToExports = os.path.join(config.MEDIA_PATH, f"gated_files/{bat_name}/{donor_name}/{panel_name}/")       
+            pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+            pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/")       
             create_path(pathToExports)
-            pathToOutput = os.path.join(config.MEDIA_PATH, f"output/{bat_name}/{donor_name}/{panel_name}/")
+            pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/")
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
