@@ -11,7 +11,7 @@ import math
 import config
 sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from BaumgrassGating import BaumgrassGating
-from AutoBatWorkflow import AutoBatWorkflow
+#from AutoBatWorkflow import AutoBatWorkflow
 import flowkit as fk
 
 logger = getLogger(__name__)
@@ -119,7 +119,6 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         reports[i] = baumgrassgater.runbaumgrassgating()
         files_list.append(pathToExports + file_name)               
         i += 1
-        
     autoworkflow = AutoBatWorkflow(files_list,
                                     pathToData,
                                     pathToExports,
@@ -192,3 +191,4 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
     pdf = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.pdf"
     pdf_path = os.path.join(pathToOutput, pdf)
     save_pdf(pdf_path, img_list, analysisMarker_id)
+
