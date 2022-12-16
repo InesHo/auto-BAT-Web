@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'populateDB',
     'background_task',
+    'mod_wsgi.server',
 
 ]
 

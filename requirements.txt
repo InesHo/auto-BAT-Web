@@ -1,3 +1,4 @@
+mod_wsgi==4.9.4
 scipy==1.7.1
 rpy2==3.4.5
 FlowKit==0.6.0
