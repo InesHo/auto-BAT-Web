@@ -11,7 +11,7 @@ import math
 import config
 sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from BaumgrassGating import BaumgrassGating
-#from AutoBatWorkflow import AutoBatWorkflow
+from AutoBatWorkflow import AutoBatWorkflow
 import flowkit as fk
 
 logger = getLogger(__name__)

@@ -245,6 +245,7 @@ class experimentfile(View):
                 files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}")
                 create_path(files_dir)
                 file_list = []
+                us_file_path = ""
                 for f in files:
                     fs = FileSystemStorage(files_dir)           
                     file_path = fs.save(f.name, f)  
@@ -261,7 +262,12 @@ class experimentfile(View):
                     control = "Allergen"
                     file_instance = models.ExperimentFiles(file_name = f, file=file_path, allergen=allergen, control=control, analysis_id=analysis_id)
                     file_instance.save()
- 
+                    
+                    us_file_path = file_path
+
+
+                data1 = Data(filetype="FCS", filename = us_file_path)
+                data = data1.getData()
                 channels = data.channels
                 for i in range(1, len(channels) + 1):
                     c = channels[str(i)]
