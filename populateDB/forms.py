@@ -73,7 +73,7 @@ class ExperimentFilesForm(forms.ModelForm):
         
         widgets = {
             'file_id' : forms.Select(attrs={'class':'form-control'}),
-            'bat_id' : forms.Select(attrs={'class':'Textarea'} ),
+            'bat_id' : forms.Select(attrs={'class':'form-control'} ),
             'donor_id' : forms.Select(attrs={'class':'form-control'}),
             'panel_id' : forms.Select(attrs={'class':'form-control'}),
             'file': forms.ClearableFileInput(attrs={'multiple': True}),

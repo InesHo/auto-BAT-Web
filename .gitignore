@@ -17,6 +17,8 @@ ENV/
 env.bak/
 venv.bak/
 
+# logs:
+tasks.log
 
 # Django stuff:
 *.log

@@ -13,6 +13,8 @@ from BaumgrassGating import BaumgrassGating
 from AutoBatWorkflow import AutoBatWorkflow
 from Data import Data
 import flowkit as fk
+from celery import shared_task
+from autoBatWeb import celery_app
 
 logger = getLogger(__name__)
 

@@ -68,7 +68,7 @@
 		<a class="btn btn-info" href="list_files/{{a.analysis_id}}">Show Files</a>
         </td>
         <td>
-                <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}/update_files/add_channels/marker_settings/{{a.analysis_id}}">Analyze</a>
+                <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}update_files/add_channels/marker_settings/{{a.analysis_id}}">Analyze</a>
         </td>
         <td>
                 {% if a.analysis_status == "Ready" %}
