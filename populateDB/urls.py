@@ -38,6 +38,10 @@ urlpatterns = [
     path('add_experimentfile/update_files/add_channels/marker_settings/run_analysis/<analysis_id>', views.run_analysis, name='run_analysis'),
 
     path('analysis/', views.show_analysis, name='show_analysis'),
+    path('analysis/list_files/<analysis_id>', views.list_files, name='list_files'),
+
+    path('analysis/delete_alert/<analysisMarker_id>', views.delete_analysis_alert, name='delete_alert'),
+    path('analysis/delete_alert/delete_analysis/<analysisMarker_id>', views.delete_analysis, name='delete_analysis'),
     path('analysis/show_channels/<analysis_id>', views.show_channels, name='show_channels'),
     path('analysis/download_pdf/<analysisMarker_id>', views.download_pdf, name='download_pdf'),
     path('analysis/download_xlsx/<analysisMarker_id>', views.download_xlsx, name='download_xlsx'),

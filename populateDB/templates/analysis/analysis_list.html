@@ -3,8 +3,8 @@
   {% include "navbar.html" %}
 
   <br></br>
- <div class="container">
-
+ <div>
+<div class="container-fluid vh-100">
     <center><h1>Analysis List</h1></center>
     <br></br>
      <table id="analysis-table" class="display" style="width:100%">
@@ -22,7 +22,10 @@
       <th>Status</th>
       <th>Type</th>
       <th>Download</th>
+      <th>Channel Settings</th>
+      <th>Files</th>
       <th>Analyze</th>
+      <th>Delete</th>
     </tr>
      </thead>
      <tbody>
@@ -59,13 +62,21 @@
         </td>     
 
         <td>
-        
-
-          <a class="btn btn-primary" href="{% url 'populateDB:show_experimenter' %}">Analyze</a>
-
-         
+		<a class="btn btn-info" href="show_channels/{{a.analysis_id}}">Show Settings</a>
         </td>
-        
+        <td>
+		<a class="btn btn-info" href="list_files/{{a.analysis_id}}">Show Files</a>
+        </td>
+        <td>
+                <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}/update_files/add_channels/marker_settings/{{a.analysis_id}}">Analyze</a>
+        </td>
+        <td>
+                {% if a.analysis_status == "Ready" %}
+		<a class="btn btn-danger" href="delete_alert/{{a.analysisMarker_id}}">Delete</a>
+        	{% endif %}
+	</td>
+
+
       </tr>
       {% empty %}
       <tr>

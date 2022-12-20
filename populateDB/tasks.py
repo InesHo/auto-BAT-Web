@@ -1,6 +1,5 @@
 from background_task import background
 from logging import getLogger
-from Data import Data
 from . import models
 from .functions import image_grid, Berlin_time
 import os
@@ -12,6 +11,7 @@ import config
 sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from BaumgrassGating import BaumgrassGating
 from AutoBatWorkflow import AutoBatWorkflow
+from Data import Data
 import flowkit as fk
 
 logger = getLogger(__name__)

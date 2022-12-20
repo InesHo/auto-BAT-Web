@@ -1,0 +1,33 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+<div class="container-fluid vh-100">
+    <div class="" style="margin-top:50px">
+        <div class="rounded d-flex justify-content-center">
+            <div class="col-md-4 col-sm-12 shadow-lg p-5 bg-light">
+                <div class="text-center">
+                    <div class="modal-footer"></div>  
+                </div>
+		<a href="{% url 'populateDB:show_analysis' %}" class="btn btn-primary">Go Back</a>
+		<br></br>
+		<table class="table table-striped table-bordered table-sm">  
+                    <thead >  
+                    <tr>  
+                        <th>PNN</th>
+                        <th>PNS</th>
+                    </tr>  
+                    </thead>  
+                    <tbody> 
+                {% for i in channels_data %}  
+                    <tr>
+                        <th>{{ i.pnn }}</th>  
+                        <td>{{ i.pns }}</td>  
+                    </tr>  
+                {% endfor %}  
+                    </tbody>  
+                </table>  
+            </div>
+        </div>
+    </div>
+  </div>
+</div>

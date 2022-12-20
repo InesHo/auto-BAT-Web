@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["autobat.drfz.de", "10.100.4.95", "localhost", "127.0.0.1"]
 
@@ -79,6 +79,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'autoBatWeb.wsgi.application'
 
+# Celery settings
+#CELERY_BROKER_URL = "redis://localhost:6379"
+#CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

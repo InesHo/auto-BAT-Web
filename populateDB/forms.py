@@ -64,8 +64,8 @@ class ExperimentForm(forms.ModelForm):
         }
 
 class ExperimentFilesForm(forms.ModelForm):
-    bat_id = forms.ModelChoiceField(queryset=models.Experiment.objects.all())
-    donor_id = forms.ModelChoiceField(queryset=models.Donor.objects.all())
+    bat_id = forms.ModelChoiceField(queryset=models.Experiment.objects.all().order_by('bat_id'))
+    donor_id = forms.ModelChoiceField(queryset=models.Donor.objects.all().order_by('donor_abbr'))
     panel_id = forms.ModelChoiceField(queryset=models.Panels.objects.all())
     class Meta:
         model = models.ExperimentFiles
@@ -73,7 +73,7 @@ class ExperimentFilesForm(forms.ModelForm):
         
         widgets = {
             'file_id' : forms.Select(attrs={'class':'form-control'}),
-            'bat_id' : forms.Select(attrs={'class':'form-control'}),
+            'bat_id' : forms.Select(attrs={'class':'Textarea'} ),
             'donor_id' : forms.Select(attrs={'class':'form-control'}),
             'panel_id' : forms.Select(attrs={'class':'form-control'}),
             'file': forms.ClearableFileInput(attrs={'multiple': True}),

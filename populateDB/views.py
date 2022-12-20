@@ -87,7 +87,7 @@ def add_experiment(request):
 
 @login_required
 def show_experiment(request):  
-    experiment_data = models.Experiment.objects.all() 
+    experiment_data = models.Experiment.objects.all().order_by('bat_id')
     return render(request,"expermiments/show_experiment.html",{'experiment_data':experiment_data})  
 
 @login_required
@@ -223,7 +223,7 @@ def add_donor(request):
 
 @login_required
 def show_donor(request):  
-    donors_data = models.Donor.objects.all().order_by('donor_id').reverse()
+    donors_data = models.Donor.objects.all().order_by('donor_abbr')
     return render(request,"donors/show_donors.html",{'donors_data':donors_data})
 
 class experimentfile(View):
@@ -265,23 +265,6 @@ class experimentfile(View):
                     
                     us_file_path = file_path
 
-
-                data1 = Data(filetype="FCS", filename = us_file_path)
-                data = data1.getData()
-                channels = data.channels
-                for i in range(1, len(channels) + 1):
-                    c = channels[str(i)]
-                    pnn = c['PnN']
-                    if len(c) == 1:
-                        c['PnS'] = pnn
-                                
-                    pns = c['PnS']
-                    channel_obj = models.Channels(
-                                            pnn = pnn,
-                                            pns = pns,
-                                            analysis_id = analysis_id,
-                                            )
-                    channel_obj.save()
                 proccess_files(analysis_id, repeat=0)
 
                 return render(request, 'files/files_ready.html', {'analysis_id':analysis_id})
@@ -329,6 +312,23 @@ def update_files(request, analysis_id):
                 models.ExperimentFiles.objects.filter(file_id=file_id).update(control=control)
                 if control == "Negative control":
                     negative_control = file_id
+                    file_path = get_object_or_404(models.ExperimentFiles.objects.filter(file_id=negative_control).values_list('file', flat=True))
+                    dataO = Data(filetype="FCS", filename = file_path)
+                    data = dataO.getData()
+                    channels = data.channels
+                    for i in range(1, len(channels) + 1):
+                        c = channels[str(i)]
+                        pnn = c['PnN']
+                        if len(c) == 1:
+                            c['PnS'] = pnn
+
+                        pns = c['PnS']
+                        channel_obj = models.Channels(
+                                                pnn = pnn,
+                                                pns = pns,
+                                                analysis_id = analysis_id,
+                                                )
+                        channel_obj.save()
             if negative_control:
                 return render(request, 'files/filesUpdate_ready.html', {'analysis_id': analysis_id})
             else:
@@ -448,24 +448,65 @@ def show_analysis(request):
         analysismarkers = models.AnalysisMarkers.objects.values_list('analysisMarker_id','chosen_z1', 'chosen_y1','chosen_z2', 'analysis_date',
                                                     'analysis_start_time', 'analysis_end_time','analysis_status', 'analysis_type', 'analysisMarker_id'
                                                     ).filter(analysis_id = analysis_id).order_by('analysisMarker_id').reverse()
-        for j in analysismarkers:
+        if not analysismarkers:
             analysis_dict = {}
-            analysis_dict['analysisMarker_id'] = j[9]
             analysis_dict['analysis_id'] = analysis_id
             analysis_dict['bat_name'] = bat_name
             analysis_dict['donor_name'] = donor_name
             analysis_dict['panel_name'] = panel_name
-            analysis_dict['analysisMarker_id'] = j[0]
-            analysis_dict['chosen_z1'] = j[1]
-            analysis_dict['chosen_y1'] = j[2]
-            analysis_dict['chosen_z2'] = j[3]
-            analysis_dict['analysis_date'] = j[4]
-            analysis_dict['analysis_start_time'] = j[5]
-            analysis_dict['analysis_end_time'] = j[6]
-            analysis_dict['analysis_status'] = j[7]
-            analysis_dict['analysis_type'] = j[8]
+
+            analysis_dict['analysisMarker_id'] = None
+            analysis_dict['chosen_z1'] = None
+            analysis_dict['chosen_y1'] = None
+            analysis_dict['chosen_z2'] = None
+            analysis_dict['analysis_date'] = None
+            analysis_dict['analysis_start_time'] = None
+            analysis_dict['analysis_end_time'] = None
+            analysis_dict['analysis_status'] = None
+            analysis_dict['analysis_type'] = None
+            analysisList.append(analysis_dict)
+        else:
+
+            for j in analysismarkers:
+                analysis_dict = {}
+                analysis_dict['analysis_id'] = analysis_id
+                analysis_dict['bat_name'] = bat_name
+                analysis_dict['donor_name'] = donor_name
+                analysis_dict['panel_name'] = panel_name
+                analysis_dict['analysisMarker_id'] = j[0]
+                analysis_dict['chosen_z1'] = j[1]
+                analysis_dict['chosen_y1'] = j[2]
+                analysis_dict['chosen_z2'] = j[3]
+                analysis_dict['analysis_date'] = j[4]
+                analysis_dict['analysis_start_time'] = j[5]
+                analysis_dict['analysis_end_time'] = j[6]
+                analysis_dict['analysis_status'] = j[7]
+                analysis_dict['analysis_type'] = j[8]
             analysisList.append(analysis_dict)
     return render(request, 'analysis/analysis_list.html',{'analysis':analysisList})
+
+
+@login_required
+def delete_analysis_alert(request, analysisMarker_id):
+    return render(request, 'analysis/analysis_delete_alert.html', {'analysisMarker_id':analysisMarker_id})
+
+@login_required
+def list_files(request, analysis_id):  
+    files_list = models.ExperimentFiles.objects.filter(analysis_id=analysis_id)
+    return render(request,"files/list_files.html",{'files_list':files_list})
+
+@login_required
+def delete_analysis(request, analysisMarker_id):
+    analysisMarker_id = analysisMarker_id
+    analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
+    files_ids = models.ExperimentFiles.objects.values_list('file_id', 'file').filter(analysis_id = analysis_id)
+    for file in files_ids:
+        models.FilesPlots.objects.filter(file_id=file[0]).delete()
+    models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+    models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+    models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+    return render(request, 'analysis/analysis_deleted.html')
+
 
 @login_required
 def download_pdf(request, analysisMarker_id):
