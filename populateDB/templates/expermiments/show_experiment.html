@@ -16,8 +16,9 @@
             <th>Institute</th>  
             <th>Experimenter</th>  
             <th>Device</th>  
-            <th>BeadExperiment</th>
-            <th>Special Experiment</th>  
+            <th>Bead Experiment</th>
+            <th>Special Experiment</th>
+	    <th>Special Notes</th>
     
         </tr>  
         </thead>  
@@ -30,7 +31,8 @@
             <td>{{ experiment.experimenter_id }}</td>
             <td>{{ experiment.device_id }}</td>  
             <td>{{ experiment.beadExperiment }}</td>
-            <td>{{ experiment.specialExperiment }}</td>  
+            <td>{{ experiment.specialExperiment }}</td>
+	     <td>{{ experiment.specialNotes }}</td>
     
         </tr> 
     {% empty %}
@@ -43,9 +45,12 @@
    </table>
 </div>
 
-
 <script>
-$(document).ready(function(){
-  $('table.display').DataTable();
-})
+	  $(document).ready(function(){
+			                    $('table.display').DataTable({
+							                                      /* Disable initial sort */
+							                                              "aaSorting": []
+							                                  });
+		  })
 </script>
+

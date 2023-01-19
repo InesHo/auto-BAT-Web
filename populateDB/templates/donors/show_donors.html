@@ -33,9 +33,11 @@
    </table>
 </div>
 
-
 <script>
-$(document).ready(function(){
-  $('table.display').DataTable();
-})
+	  $(document).ready(function(){
+			                    $('table.display').DataTable({
+							                                      /* Disable initial sort */
+							                                              "aaSorting": []
+							                                  });
+		  })
 </script>

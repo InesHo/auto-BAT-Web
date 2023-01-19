@@ -87,7 +87,7 @@ def add_experiment(request):
 
 @login_required
 def show_experiment(request):  
-    experiment_data = models.Experiment.objects.all().order_by('bat_id')
+    experiment_data = models.Experiment.objects.all().order_by('bat_id').reverse()
     return render(request,"expermiments/show_experiment.html",{'experiment_data':experiment_data})  
 
 @login_required
@@ -388,6 +388,7 @@ def run_analysis(request, analysis_id):
         panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
 
         chosen_z1 = request.POST.get('z1')
+        chosen_z1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z1).values_list('pns', flat=True))
         chosen_y1 = request.POST.get('y1')
         chosen_z2 = request.POST.get('z2')
         analysis_date = str(date.today())
@@ -428,7 +429,7 @@ def run_analysis(request, analysis_id):
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
 
-            run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_y1,
+            run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_z2, device, outputPDFname, pathToData, pathToExports, 
                                 pathToOutput, pathToGatingFunctions, rPath
                                 )
@@ -438,7 +439,7 @@ def run_analysis(request, analysis_id):
 
 @login_required
 def show_analysis(request):
-    analysis = models.Analysis.objects.values_list('analysis_id', 'bat_id','donor_id', 'panel_id').order_by('analysis_id').reverse()
+    analysis = models.Analysis.objects.values_list('analysis_id', 'bat_id','donor_id', 'panel_id').order_by('bat_id').reverse()
     analysisList = []
     for i in analysis:
         analysis_id = i[0]
@@ -448,6 +449,7 @@ def show_analysis(request):
         analysismarkers = models.AnalysisMarkers.objects.values_list('analysisMarker_id','chosen_z1', 'chosen_y1','chosen_z2', 'analysis_date',
                                                     'analysis_start_time', 'analysis_end_time','analysis_status', 'analysis_type', 'analysisMarker_id'
                                                     ).filter(analysis_id = analysis_id).order_by('analysisMarker_id').reverse()
+    
         if not analysismarkers:
             analysis_dict = {}
             analysis_dict['analysis_id'] = analysis_id
@@ -466,7 +468,7 @@ def show_analysis(request):
             analysis_dict['analysis_type'] = None
             analysisList.append(analysis_dict)
         else:
-
+        
             for j in analysismarkers:
                 analysis_dict = {}
                 analysis_dict['analysis_id'] = analysis_id
@@ -482,7 +484,7 @@ def show_analysis(request):
                 analysis_dict['analysis_end_time'] = j[6]
                 analysis_dict['analysis_status'] = j[7]
                 analysis_dict['analysis_type'] = j[8]
-            analysisList.append(analysis_dict)
+                analysisList.append(analysis_dict)
     return render(request, 'analysis/analysis_list.html',{'analysis':analysisList})
 
 
