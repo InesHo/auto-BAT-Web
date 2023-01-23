@@ -17,15 +17,17 @@
       <th>Y1</th>
       <th>Z2</th>
       <th>Date</th>
-      <th>Time Started</th>
-      <th>Time Finished</th>
+      <th>Started</th>
+      <th>Finished</th>
       <th>Status</th>
       <th>Type</th>
+      <th>VER</th>
       <th>Download</th>
-      <th>Channel Settings</th>
+      <th>Settings</th>
       <th>Files</th>
       <th>Analyze</th>
-      <th>Delete</th>
+      <th></th>
+
     </tr>
      </thead>
      <tbody>
@@ -42,16 +44,16 @@
         <td >{{ a.analysis_end_time }}</td>
         <td >{{ a.analysis_status }}</td>
         <td >{{ a.analysis_type }}</td>
-
+	<td >{{ a.analysis_type_version }}</td>
 
         <td>
-          
+
           {% if a.analysis_status == "Ready" %}
 
           <a href="download_pdf/{{a.analysisMarker_id}}" class="btn btn-danger" >
             <span class="fa fa-file-pdf"></span>
           </a>
-          
+
 
           <a href="download_xlsx/{{a.analysisMarker_id}}" class="btn btn-success">
             <span class="fa fa-file-excel"></span>
@@ -59,23 +61,29 @@
 
           {% endif %}
 
-        </td>     
+        </td>
 
         <td>
-		<a class="btn btn-info" href="show_channels/{{a.analysis_id}}">Show Settings</a>
+                <a class="btn btn-info" href="show_channels/{{a.analysis_id}}">
+                        <span class="fa fa-eye"></span>
+                </a>
         </td>
         <td>
-		<a class="btn btn-info" href="list_files/{{a.analysis_id}}">Show Files</a>
+                <a class="btn btn-info" href="list_files/{{a.analysis_id}}">
+                        <span class="fa fa-eye"></span>
+                </a>
         </td>
         <td>
                 <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}update_files/add_channels/marker_settings/{{a.analysis_id}}">Analyze</a>
         </td>
         <td>
                 {% if a.analysis_status == "Ready" %}
-		<a class="btn btn-danger" href="delete_alert/{{a.analysisMarker_id}}">Delete</a>
-        	{% endif %}
-	</td>
+                <a href="delete_alert/{{a.analysisMarker_id}}" class="btn btn-danger" >
+                        <span class="fa fa-trash"></span>
+                </a>
 
+                {% endif %}
+        </td>
 
       </tr>
       {% empty %}
@@ -88,21 +96,13 @@
      </table>
  </div>
 
- <div class="modal fade" id="modal-analysis" tabindex="-1">
-  <div class="modal-dialog modal-dialog-scrollable ">
-    <div class="modal-content">
-      
-    </div>
-  </div>
- </div>
-</div>
-
 
 <script>
   $(document).ready(function(){
 		  $('table.display').DataTable({
 			          /* Disable initial sort */
-				          "aaSorting": []
+				  "aaSorting": [],
+				  "autoWidth": false
 			      });
 })
 </script>

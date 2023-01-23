@@ -394,6 +394,7 @@ def run_analysis(request, analysis_id):
         analysis_date = str(date.today())
         analysis_status = "Waitting"
         analysis_type = "Auto Bat"
+        analysis_type_version = "1.0"
 
         # Checking if the Experment has alrady been Analyzed with those markers
         analysismarkers_data = models.AnalysisMarkers.objects.values_list('chosen_z1','chosen_y1','chosen_z2').filter(
@@ -410,6 +411,7 @@ def run_analysis(request, analysis_id):
                                                         analysis_date=analysis_date,
                                                         analysis_status=analysis_status,
                                                         analysis_type=analysis_type,
+                                                        analysis_type_version = analysis_type_version,
                                                         analysis_id=analysis_id
                                                         )
             analysismarkers_instance.save()
@@ -447,7 +449,7 @@ def show_analysis(request):
         donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=i[2]).values_list('donor_abbr', flat=True))
         panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=i[3]).values_list('panel_name', flat=True))       
         analysismarkers = models.AnalysisMarkers.objects.values_list('analysisMarker_id','chosen_z1', 'chosen_y1','chosen_z2', 'analysis_date',
-                                                    'analysis_start_time', 'analysis_end_time','analysis_status', 'analysis_type', 'analysisMarker_id'
+                                                    'analysis_start_time', 'analysis_end_time','analysis_status', 'analysis_type', 'analysis_type_version'
                                                     ).filter(analysis_id = analysis_id).order_by('analysisMarker_id').reverse()
     
         if not analysismarkers:
@@ -466,6 +468,7 @@ def show_analysis(request):
             analysis_dict['analysis_end_time'] = None
             analysis_dict['analysis_status'] = None
             analysis_dict['analysis_type'] = None
+            analysis_dict['analysis_type_version'] = None
             analysisList.append(analysis_dict)
         else:
         
@@ -484,6 +487,7 @@ def show_analysis(request):
                 analysis_dict['analysis_end_time'] = j[6]
                 analysis_dict['analysis_status'] = j[7]
                 analysis_dict['analysis_type'] = j[8]
+                analysis_dict['analysis_type_version'] = j[9]
                 analysisList.append(analysis_dict)
     return render(request, 'analysis/analysis_list.html',{'analysis':analysisList})
 

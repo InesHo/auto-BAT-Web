@@ -107,6 +107,7 @@ class AnalysisMarkers(models.Model):
     analysis_end_time = models.TimeField(blank = True, null=True)
     analysis_status = models.CharField(choices=STATUS_TYPES,max_length=120, blank = True, null=True)
     analysis_type = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
+    analysis_type_version = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
     analysis_id = models.CharField(max_length=20, blank = True, null = True)
 
 class AnalysisFiles(models.Model):
@@ -122,6 +123,7 @@ class AnalysisFiles(models.Model):
 
 class AnalysisResults(models.Model):
     id = models.AutoField(primary_key=True)
+    file_name = models.CharField(max_length=500, blank = True, null = True)
     redQ4 = models.CharField(max_length=20, blank = True, null = True)
     result = models.CharField(max_length=20, blank = True, null = True)
     blackQ2 = models.CharField(max_length=20, blank = True, null = True)

@@ -139,11 +139,29 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
     
     
     df = autoworkflow.runCD32thresholding()
-
+    
+    df_excel = df
     excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
-    writer = pd.ExcelWriter(excel_file)
-    df.to_excel(writer)
-    writer.save()   
+    df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
+    
+    # Create a Pandas Excel writer using XlsxWriter as the engine.
+    writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+
+    # Convert the dataframe to an XlsxWriter Excel object.
+    df_excel.to_excel(writer, sheet_name='Sheet1')
+
+    # Get the xlsxwriter workbook and worksheet objects.
+    workbook  = writer.book
+    worksheet = writer.sheets['Sheet1']
+
+    cell_format = workbook.add_format({'bg_color': 'yellow'})
+
+    for r in range(0,len(df_excel.index)):
+        if df_excel.iat[r,2] == "negativ":
+            worksheet.set_row(r+1, None, cell_format) 
+
+    writer.save()
+
     
     # Save Excel File's path to the Database
     EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel", analysisMarker_id = analysisMarker_id)
@@ -151,6 +169,7 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
    
     # Save DF to the Database
     for index, row in df.iterrows():
+        file_name = row['filename']
         redQ4 = row['redQ4']
         result = row['result']
         blackQ2 = row['blackQ2']
@@ -163,6 +182,7 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         cellQ4 = row['cellQ4']
         responder = row['responder']
         results_instance = models.AnalysisResults(
+                                        file_name = file_name,
                                         redQ4 = redQ4,
                                         result = result,
                                         blackQ2 = blackQ2,
