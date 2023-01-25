@@ -161,6 +161,7 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         if df_excel.iat[r,2] == "negativ":
             worksheet.set_row(r+1, None, cell_format) 
 
+    worksheet.autofit()
     writer.save()
 
     

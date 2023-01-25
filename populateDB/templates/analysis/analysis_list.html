@@ -27,6 +27,7 @@
       <th>Files</th>
       <th>Analyze</th>
       <th></th>
+      <th></th>
 
     </tr>
      </thead>
@@ -84,7 +85,12 @@
 
                 {% endif %}
         </td>
-
+	<td>
+		<!-- Button trigger modal -->
+		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  			<span class="fa fa-download"></span>
+		</button>
+	</td>	
       </tr>
       {% empty %}
       <tr>
@@ -96,6 +102,29 @@
      </table>
  </div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       	<form>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">File Name:</label>
+            <input type="text" class="form-control" id="recipient-name">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+	<a href="download_xlsx//{{a.analysisMarker_id}}" class="btn btn-success"> Download </a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   $(document).ready(function(){

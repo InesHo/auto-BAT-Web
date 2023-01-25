@@ -1,6 +1,7 @@
 import os
 from PIL import Image
 import pytz
+import math
 from datetime import datetime
 from django.conf import settings
 
@@ -19,7 +20,7 @@ def image_grid(img_list, pdf_path):
     hight = 640
 
     total_images = len(img_list)
-    total_pages = (total_images // 15) + 1
+    total_pages = math.ceil(total_images / 15)
 
     img_from = 0
     img_to = 15
