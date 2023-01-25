@@ -26,6 +26,16 @@
         <td>{{ file.file_name }}</td>
         <td>{{ file.allergen }}</td> 
         <td>{{ file.control }}</td>
+        <td>
+          <a class="btn btn-info" href="show_metadata/{{ file.file_id }}">
+                  <span class="fa fa-eye"></span>
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-info" href="show_rawdata/{{ file.file_id }}">
+                  <span class="fa fa-eye"></span>
+          </a>
+        </td>
         <td><a href="show_metadata/{{ file.file_id }}">Meta Data</span></a> </td>
         <td><a href="show_rawdata/{{ file.file_id }}">Mean Row Data</span></a> </td>
 
