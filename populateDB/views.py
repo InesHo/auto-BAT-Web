@@ -390,6 +390,7 @@ def run_analysis(request, analysis_id):
         chosen_z1 = request.POST.get('z1')
         chosen_z1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z1).values_list('pns', flat=True))
         chosen_y1 = request.POST.get('y1')
+        chosen_y1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_y1).values_list('pns', flat=True))
         chosen_z2 = request.POST.get('z2')
         analysis_date = str(date.today())
         analysis_status = "Waitting"
@@ -432,7 +433,7 @@ def run_analysis(request, analysis_id):
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
 
             run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
-                                chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+                                chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
                                 pathToOutput, pathToGatingFunctions, rPath
                                 )
             return render(request, 'analysis/analysis_ready.html')

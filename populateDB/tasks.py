@@ -75,7 +75,7 @@ def proccess_files(analysis_id):
 
 @background(queue='autoBat-queue', schedule=10)
 def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name,
-                        chosen_z1, chosen_z1_lable, chosen_y1, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+                        chosen_z1, chosen_z1_lable, chosen_y1, chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
                         pathToOutput, pathToGatingFunctions, rPath
                     ):
 
@@ -129,6 +129,7 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
                                     chosen_z1,
                                     chosen_z1_lable,
                                     chosen_y1,
+                                    chosen_y1_lable,
                                     chosen_z2, 
                                     str(usName),
                                     str(posFileName),

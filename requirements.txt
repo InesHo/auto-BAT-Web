@@ -10,4 +10,4 @@ Django==3.2.8
 django-background-tasks==1.2.5
 django-jazzmin==2.6.0
 mod_wsgi==4.9.4
-
+XlsxWriter==3.0.7
