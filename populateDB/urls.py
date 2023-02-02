@@ -45,4 +45,5 @@ urlpatterns = [
     path('analysis/show_channels/<analysis_id>', views.show_channels, name='show_channels'),
     path('analysis/download_pdf/<analysisMarker_id>', views.download_pdf, name='download_pdf'),
     path('analysis/download_xlsx/<analysisMarker_id>', views.download_xlsx, name='download_xlsx'),
-]
+    path('analysis_report/', views.analysis_report, name='analysis_report'),
+    ]

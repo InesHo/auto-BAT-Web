@@ -56,7 +56,7 @@ class Donor(models.Model):
     donor_id = models.AutoField(primary_key=True)
     donor_abbr = models.CharField(max_length=10, unique=True, blank = False)
     desensitization_note = models.CharField(max_length=255, blank = True)
-    desensitization_allergen = models.CharField(max_length=255, blank = True)
+    desensitization_allergen = models.CharField(max_length=255, blank = True) 
     def __str__(self):
         return (self.donor_abbr)
 
@@ -94,7 +94,7 @@ class AnalysisMarkers(models.Model):
         (u"Auto Grat", u'Auto Grat'),
     )
     STATUS_TYPES = (
-        (u"Waitting", u'Waitting'),
+        (u"Waiting", u'Waiting'),
         (u"In Progress", u'In Progress'),
         (u"Ready", u'Ready'),
     )
@@ -108,7 +108,9 @@ class AnalysisMarkers(models.Model):
     analysis_status = models.CharField(choices=STATUS_TYPES,max_length=120, blank = True, null=True)
     analysis_type = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
     analysis_type_version = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
-    analysis_id = models.CharField(max_length=20, blank = True, null = True)
+    analysis_id = models.ForeignKey(Analysis, to_field=('analysis_id'), blank = True, null=True,  on_delete = models.CASCADE)
+
+    #analysis_id = models.CharField(max_length=20, blank = True, null = True)
 
 class AnalysisFiles(models.Model):
     FILES_TYPES = (
@@ -119,7 +121,7 @@ class AnalysisFiles(models.Model):
     file_id = models.AutoField(primary_key=True)
     file_path = models.TextField(max_length=500, unique = True, blank = False)
     file_type = models.CharField(choices=FILES_TYPES,max_length=120, blank = True, null=True)
-    analysisMarker_id = models.CharField(max_length=20, blank = True, null = True)
+    analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
 
 class AnalysisResults(models.Model):
     id = models.AutoField(primary_key=True)
@@ -135,7 +137,7 @@ class AnalysisResults(models.Model):
     msiCCR3 = models.CharField(max_length=20, blank = True, null = True)
     cellQ4 = models.CharField(max_length=20, blank = True, null = True)
     responder = models.CharField(max_length=20, blank = True, null = True)
-    analysisMarker_id = models.CharField(max_length=20, blank = True, null = True)
+    analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
 
 
 class ExperimentFiles(models.Model):
@@ -148,7 +150,7 @@ class ExperimentFiles(models.Model):
     file_id = models.AutoField(primary_key=True)
     file_name = models.TextField(blank = True)
     file = models.FileField(max_length=300, blank=True, null=True)
-    analysis_id = models.CharField(max_length=20, blank = True, null = True)
+    analysis_id = models.ForeignKey(Analysis, to_field=('analysis_id'), blank = True, null=True,  on_delete = models.CASCADE)
     allergen = models.CharField(max_length=50, blank = True, null = True)
     control=  models.CharField(choices=CONTROL_TYPES,max_length=120, blank = True, null=True)
     def __str__(self):
@@ -158,22 +160,22 @@ class ExperimentFiles(models.Model):
 class FilesPlots(models.Model):
     plot_id = models.AutoField(primary_key=True)
     plot_path = models.TextField(max_length=500, unique = True, blank = False)
-    file_id = models.CharField(max_length=20, blank = True, null = True)
+    file_id = models.ForeignKey(ExperimentFiles, to_field=('file_id'), blank = True, null=True,  on_delete = models.CASCADE)
 
 class Channels(models.Model):
     channel_id = models.AutoField(primary_key=True)      
     pnn = models.CharField(max_length=50, blank = True)
     pns = models.CharField(max_length=50, blank = True)
-    analysis_id = models.CharField(max_length=20, blank = True, null = True)
+    analysis_id = models.ForeignKey(Analysis, to_field=('analysis_id'), blank = True, null=True,  on_delete = models.CASCADE)
 
 class MeanRawData(models.Model):    
     row_id = models.AutoField(primary_key=True) 
     labels = models.CharField(max_length=200, blank = True, null=True)
     values = models.CharField(max_length=200, blank = True, null=True)
-    file_id = models.CharField(max_length=20, blank = True, null = True)
+    file_id = models.ForeignKey(ExperimentFiles, to_field=('file_id'), blank = True, null=True,  on_delete = models.CASCADE)
 
 class MetaData(models.Model):    
     id = models.AutoField(primary_key=True)
     labels = models.CharField(max_length=200, blank = True)
     values = models.CharField(max_length=200, blank = True, null=True)
-    file_id = models.CharField(max_length=20, blank = True, null = True)
+    file_id = models.ForeignKey(ExperimentFiles, to_field=('file_id'), blank = True, null=True,  on_delete = models.CASCADE)

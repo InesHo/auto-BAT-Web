@@ -260,7 +260,8 @@ class experimentfile(View):
                             allergen = allergen[-1]
                     
                     control = "Allergen"
-                    file_instance = models.ExperimentFiles(file_name = f, file=file_path, allergen=allergen, control=control, analysis_id=analysis_id)
+                    file_instance = models.ExperimentFiles(file_name = f, file=file_path, allergen=allergen, control=control)
+                    file_instance.analysis_id_id = int(analysis_id)
                     file_instance.save()
                     
                     us_file_path = file_path
@@ -326,8 +327,8 @@ def update_files(request, analysis_id):
                         channel_obj = models.Channels(
                                                 pnn = pnn,
                                                 pns = pns,
-                                                analysis_id = analysis_id,
                                                 )
+                        channel_obj.analysis_id_id = int(analysis_id)
                         channel_obj.save()
             if negative_control:
                 return render(request, 'files/filesUpdate_ready.html', {'analysis_id': analysis_id})
@@ -403,7 +404,6 @@ def run_analysis(request, analysis_id):
                                                 chosen_y1=chosen_y1,
                                                 chosen_z2=chosen_z2,
                                                 analysis_id = analysis_id) 
-
         if not analysismarkers_data:
 
             analysismarkers_instance = models.AnalysisMarkers(chosen_z1=chosen_z1,
@@ -413,8 +413,10 @@ def run_analysis(request, analysis_id):
                                                         analysis_status=analysis_status,
                                                         analysis_type=analysis_type,
                                                         analysis_type_version = analysis_type_version,
-                                                        analysis_id=analysis_id
+                                                        #analysis_id = analysis_id
+                                                        #analysis_id= Analysis.objects.get(analysis_id = analysis_id)
                                                         )
+            analysismarkers_instance.analysis_id_id = int(analysis_id)
             analysismarkers_instance.save()
             
             analysisMarker_id = analysismarkers_instance.analysisMarker_id
@@ -422,7 +424,7 @@ def run_analysis(request, analysis_id):
 
             device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
             device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
-
+            
             outputPDFname = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png "
             pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
             pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/")       
@@ -431,7 +433,6 @@ def run_analysis(request, analysis_id):
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-
             run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
                                 pathToOutput, pathToGatingFunctions, rPath
@@ -534,3 +535,10 @@ def download_xlsx(request, analysisMarker_id):
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
             return response
     raise Http404
+
+
+@login_required
+def analysis_report(request):
+    analysis_results = models.AnalysisResults.objects.all().order_by('analysisMarker_id', 'id')
+    return render(request,"analysis/analysis_report.html",{'analysis_results':analysis_results})
+

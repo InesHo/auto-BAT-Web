@@ -24,7 +24,8 @@ def save_pdf(pdf_path, img_list, analysisMarker_id):
     image_grid(img_list, pdf_path)
 
     # Save pdf plot to database
-    PDFresults_instance = models.AnalysisFiles(file_path=pdf_path, file_type="PDF", analysisMarker_id = analysisMarker_id)
+    PDFresults_instance = models.AnalysisFiles(file_path=pdf_path, file_type="PDF")
+    PDFresults_instance.analysisMarker_id_id = int(analysisMarker_id)
     PDFresults_instance.save()
     
     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Ready")
@@ -53,9 +54,9 @@ def proccess_files(analysis_id):
             meta_obj = models.MetaData(
                                     labels = Label,
                                     values = value,
-                                    file_id = file_id,
                                     )
         
+            meta_obj.file_id_id = int(file_id)
             meta_obj.save()
 
         pnnLabels = filename.pnn_labels
@@ -69,8 +70,8 @@ def proccess_files(analysis_id):
             mean_obj = models.MeanRawData(
                                     labels = labels,
                                     values = values,
-                                    file_id = file_id,
                                     )
+            mean_obj.file_id_id = int(file_id)
             mean_obj.save()
 
 @background(queue='autoBat-queue', schedule=10)
@@ -166,7 +167,8 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
 
     
     # Save Excel File's path to the Database
-    EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel", analysisMarker_id = analysisMarker_id)
+    EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
+    EXCELresults_instance.analysisMarker_id_id = int(analysisMarker_id)
     EXCELresults_instance.save()
    
     # Save DF to the Database
@@ -196,8 +198,8 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
                                         msiCCR3 = msiCCR3,
                                         cellQ4 = cellQ4,
                                         responder = responder,
-                                        analysisMarker_id = analysisMarker_id
         )
+        results_instance.analysisMarker_id_id = int(analysisMarker_id)
         results_instance.save()
     # Save plots to database
     img_list = []
@@ -206,7 +208,8 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         plot_name = file[2].lower()
         plot_name = f'{ plot_name[:-4]}.png'
         plot_path=os.path.join(pathToOutput, plot_name)
-        PNGresults_instance = models.FilesPlots(plot_path=plot_path, file_id=file_id)
+        PNGresults_instance = models.FilesPlots(plot_path=plot_path)
+        PNGresults_instance.file_id_id = int(file_id)
         PNGresults_instance.save()
         img_list.append(plot_path)
     

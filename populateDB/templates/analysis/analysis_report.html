@@ -1,0 +1,69 @@
+
+  {% include "base.html" %}
+  {% include "navbar.html" %}
+
+  <br></br>
+ <div>
+<div class="container-fluid vh-100">
+    <center><h1>Analysis Results</h1></center>
+    <br></br>
+     <table id="analysisResults-table" class="display" style="width:100%">
+     <thead>
+     <tr>
+	<th>File Name</th>
+	<th>redQ4</th>
+	<th>result</th>
+	<th>blackQ2</th>
+	<th>blackQ3</th>
+	<th>blackQ4</th>
+	<th>zmeanQ4</th>
+	<th>CD63min</th>
+	<th>CD63max</th>
+	<th>msiCCR3</th>
+	<th>cellQ4</th>
+	<th>responder</th>
+     </thead>
+     <tbody>
+      {% for r in analysis_results %}
+      <tr>
+	<td >{{ r.file_name }}</td>
+	<td >{{ r.redQ4 }}</td>
+	<td >{{ r.result }}</td>
+	<td >{{ r.blackQ2 }}</td>
+	<td >{{ r.blackQ3 }}</td>
+	<td >{{ r.blackQ4 }}</td>
+	<td >{{ r.zmeanQ4 }}</td>
+	<td >{{ r.CD63min }}</td>
+	<td >{{ r.CD63max }}</td>
+	<td >{{ r.msiCCR3 }}</td>
+	<td >{{ r.cellQ4 }}</td>
+	<td >{{ r.responder }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center bg-warning">No Data</td>
+      </tr>
+    {% endfor %}
+
+     </tbody>
+     </table>
+ </div>
+
+
+<script>
+  $(document).ready(function(){
+		  $('#analysisResults-table').dataTable( {
+				/* Disable initial sort */
+                                "aaSorting": [],
+                                "autoWidth": false,
+  				"createdRow": function( row, data, dataIndex ) {
+    					if ( data[2] == "negativ" ) {
+						$(row).css({"background-color":"yellow"})
+					
+    					}
+  					}
+			} );
+
+})
+</script>
+
