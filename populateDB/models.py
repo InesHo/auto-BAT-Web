@@ -16,7 +16,8 @@ class Institutes(models.Model):
     institute_name = models.CharField(max_length=150, blank = True)    
     institute_address = models.CharField(max_length=150,  blank = True)  
     institute_email = models.EmailField(blank = True)
-    institute_phoneNumber = models.CharField(max_length=20, blank = True) 
+    institute_phoneNumber = models.CharField(max_length=20, blank = True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
     def __str__(self):
         return (self.institute_shortName) 
 
@@ -27,6 +28,7 @@ class Departments(models.Model):
     department_email = models.EmailField(blank = True)
     department_phoneNumber = models.CharField(max_length=20, blank = True)
     institute_id = models.ForeignKey(Institutes, to_field='institute_id', on_delete = models.CASCADE, null = False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
     def __str__(self):
         return (self.department_name) 
 
@@ -40,6 +42,7 @@ class Experimenters(models.Model):
     experimenter_phoneNumber = models.CharField(max_length=20, blank = True)
     institute_id = models.ForeignKey(Institutes, to_field='institute_id', on_delete = models.CASCADE, null = False)
     department_id = models.ForeignKey(Departments, to_field='department_id', on_delete = models.CASCADE, null = False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
     def __str__(self):
         return (self.experimenter_label) 
 
@@ -56,7 +59,8 @@ class Donor(models.Model):
     donor_id = models.AutoField(primary_key=True)
     donor_abbr = models.CharField(max_length=10, unique=True, blank = False)
     desensitization_note = models.CharField(max_length=255, blank = True)
-    desensitization_allergen = models.CharField(max_length=255, blank = True) 
+    desensitization_allergen = models.CharField(max_length=255, blank = True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
     def __str__(self):
         return (self.donor_abbr)
 
@@ -71,6 +75,7 @@ class Experiment(models.Model):
     beadExperiment = models.BooleanField()
     specialExperiment = models.BooleanField()
     specialNotes = models.TextField(max_length=250, blank=True, validators=[MaxLengthValidator(250)])
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
     def __str__(self):
         return (self.bat_name)
 
@@ -78,6 +83,7 @@ class Experiment(models.Model):
 class Panels(models.Model):
     panel_id = models.AutoField(primary_key=True)
     panel_name = models.CharField(max_length=15, blank = False, unique = True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
     def __str__(self):
        return str(self.panel_name)
 
@@ -86,7 +92,8 @@ class Analysis(models.Model):
     analysis_id = models.AutoField(primary_key=True)
     bat_id = models.ForeignKey(Experiment, to_field=('bat_id'), blank = True, null=True,  on_delete = models.CASCADE)
     donor_id = models.ForeignKey(Donor, to_field=('donor_id'), blank = True, null=True,  on_delete = models.CASCADE)
-    panel_id = models.ForeignKey(Panels, to_field=('panel_id'), blank = True, null=True,  on_delete = models.CASCADE)   
+    panel_id = models.ForeignKey(Panels, to_field=('panel_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 
 class AnalysisMarkers(models.Model):
     ANALYSIS_TYPES = (
@@ -109,6 +116,7 @@ class AnalysisMarkers(models.Model):
     analysis_type = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
     analysis_type_version = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
     analysis_id = models.ForeignKey(Analysis, to_field=('analysis_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 
     #analysis_id = models.CharField(max_length=20, blank = True, null = True)
 
@@ -137,6 +145,7 @@ class ExperimentFiles(models.Model):
     analysis_id = models.ForeignKey(Analysis, to_field=('analysis_id'), blank = True, null=True,  on_delete = models.CASCADE)
     allergen = models.CharField(max_length=50, blank = True, null = True)
     control=  models.CharField(choices=CONTROL_TYPES,max_length=120, blank = True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
     def __str__(self):
        return str(self.file_name)
 
@@ -155,7 +164,7 @@ class AnalysisResults(models.Model):
     cellQ4 = models.CharField(max_length=20, blank = True, null = True)
     responder = models.CharField(max_length=20, blank = True, null = True)
     analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
-
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 
 
 class FilesPlots(models.Model):

@@ -16,7 +16,8 @@
    <thead>
     <th>File Name</th>
     <th>Allergen</th>
-    <th>Control</th> 
+    <th>Control</th>
+    <th>User</th>
     <th>Meta Data</th>
     <th>Mean Row Data</th> 
    </thead>
@@ -26,7 +27,8 @@
         <td>{{ file.file_name }}</td>
         <td>{{ file.allergen }}</td> 
         <td>{{ file.control }}</td>
-        <td>
+        <td>{{ file.user }}</td>
+	<td>
           <a class="btn btn-info" href="show_metadata/{{ file.file_id }}">
                   <span class="fa fa-eye"></span>
           </a>

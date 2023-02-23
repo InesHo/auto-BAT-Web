@@ -45,7 +45,7 @@
 
         <td>
 
-          {% if a.analysis_status == "Ready" or a.analysis_status == "In Progress" %}
+          {% if a.analysis_status == "Ready" %}
 
           <a href="download_pdf/{{a.analysisMarker_id}}" class="btn btn-danger" >
             <span class="fa fa-file-pdf"></span>
@@ -74,7 +74,7 @@
                 <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}update_files/add_channels/marker_settings/{{a.analysis_id}}">Analyze</a>
         </td>
         <td>
-                {% if a.analysis_status == "Ready" %}
+                {% if a.analysis_status == "Ready" or a.analysis_status == "In Progress" %}
                 <a href="delete_alert/{{a.analysisMarker_id}}" class="btn btn-danger" >
                         <span class="fa fa-trash"></span>
                 </a>

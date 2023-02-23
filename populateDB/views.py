@@ -262,6 +262,7 @@ class experimentfile(View):
                     control = "Allergen"
                     file_instance = models.ExperimentFiles(file_name = f, file=file_path, allergen=allergen, control=control)
                     file_instance.analysis_id_id = int(analysis_id)
+                    file_instance.user_id = request.user.id
                     file_instance.save()
                     
                     us_file_path = file_path
