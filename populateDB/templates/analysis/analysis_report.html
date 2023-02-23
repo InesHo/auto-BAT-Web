@@ -4,12 +4,15 @@
 
   <br></br>
  <div>
-<div class="container-fluid vh-100">
+<div>
     <center><h1>Analysis Results</h1></center>
     <br></br>
-     <table id="analysisResults-table" class="display" style="width:100%">
+     <table id="analysisResults-table" class="table table-striped table-bordered nowrap" cellspacing="0" width="100%">
      <thead>
      <tr>
+	<th>BAT_ID</th>
+	<th>Donor</th>
+	<th>Panel</th>
 	<th>File Name</th>
 	<th>redQ4</th>
 	<th>result</th>
@@ -26,6 +29,9 @@
      <tbody>
       {% for r in analysis_results %}
       <tr>
+	<td >{{ r.bat_name }}</td>
+	<td >{{ r.donor_name }}</td>
+	<td> <a href="show_channels/{{r.analysis_id}}">{{r.panel_name}}</a></td>
 	<td >{{ r.file_name }}</td>
 	<td >{{ r.redQ4 }}</td>
 	<td >{{ r.result }}</td>
@@ -38,7 +44,7 @@
 	<td >{{ r.msiCCR3 }}</td>
 	<td >{{ r.cellQ4 }}</td>
 	<td >{{ r.responder }}</td>
-      </tr>
+
       {% empty %}
       <tr>
         <td colspan="7" class="text-center bg-warning">No Data</td>
@@ -51,19 +57,75 @@
 
 
 <script>
-  $(document).ready(function(){
-		  $('#analysisResults-table').dataTable( {
-				/* Disable initial sort */
-                                "aaSorting": [],
-                                "autoWidth": false,
-  				"createdRow": function( row, data, dataIndex ) {
-    					if ( data[2] == "negativ" ) {
-						$(row).css({"background-color":"yellow"})
-					
-    					}
-  					}
-			} );
+$(document).ready(function () {
+    // Setup - add a text input to each footer cell
+    $('#analysisResults-table thead tr')
+        .clone(true)
+        .addClass('filters')
+        .appendTo('#analysisResults-table thead');
+   var table = $('#analysisResults-table').DataTable({
+        orderCellsTop: true,
+        fixedHeader: true,
+        pageLength: 20,
+        aaSorting: [],
+        initComplete: function () {
+            var api = this.api();
+ 
+            // For each column
+            api
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                    // Set the header cell to contain the input element
+                    var cell = $('.filters th').eq(
+                        $(api.column(colIdx).header()).index()
+                    );
+                    var title = $(cell).text();
+                    $(cell).html('<input type="text" placeholder="' + title + '" />');
+ 
+                    // On every keypress in this input
+                    $(
+                        'input',
+                        $('.filters th').eq($(api.column(colIdx).header()).index())
+                    )
+                        .off('keyup change')
+                        .on('change', function (e) {
+                            // Get the search value
+                            $(this).attr('title', $(this).val());
+                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
+ 
+                            var cursorPosition = this.selectionStart;
+                            // Search the column for that value
+                            api
+                                .column(colIdx)
+                                .search(
+                                    this.value != ''
+                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                        : '',
+                                    this.value != '',
+                                    this.value == ''
+                                )
+                                .draw();
+                        })
+                        .on('keyup', function (e) {
+                            e.stopPropagation();
 
-})
+                            $(this).trigger('change');
+                            $(this)
+                                .focus()[0]
+                                .setSelectionRange(cursorPosition, cursorPosition);
+                        });
+                });
+        },
+    });
+
+});
+
 </script>
 
+<style>
+thead input {
+        width: 100%;
+    }
+
+</style>

@@ -90,7 +90,7 @@ class Analysis(models.Model):
 
 class AnalysisMarkers(models.Model):
     ANALYSIS_TYPES = (
-        (u"Auto Bat", u'Auto Grat'),
+        (u"Auto Bat", u'Auto Bat'),
         (u"Auto Grat", u'Auto Grat'),
     )
     STATUS_TYPES = (
@@ -123,22 +123,6 @@ class AnalysisFiles(models.Model):
     file_type = models.CharField(choices=FILES_TYPES,max_length=120, blank = True, null=True)
     analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
 
-class AnalysisResults(models.Model):
-    id = models.AutoField(primary_key=True)
-    file_name = models.CharField(max_length=500, blank = True, null = True)
-    redQ4 = models.CharField(max_length=20, blank = True, null = True)
-    result = models.CharField(max_length=20, blank = True, null = True)
-    blackQ2 = models.CharField(max_length=20, blank = True, null = True)
-    blackQ3 = models.CharField(max_length=20, blank = True, null = True)
-    blackQ4 = models.CharField(max_length=20, blank = True, null = True)
-    zmeanQ4 = models.CharField(max_length=20, blank = True, null = True)
-    CD63min = models.CharField(max_length=20, blank = True, null = True)
-    CD63max = models.CharField(max_length=20, blank = True, null = True)
-    msiCCR3 = models.CharField(max_length=20, blank = True, null = True)
-    cellQ4 = models.CharField(max_length=20, blank = True, null = True)
-    responder = models.CharField(max_length=20, blank = True, null = True)
-    analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
-
 
 class ExperimentFiles(models.Model):
     CONTROL_TYPES = (
@@ -154,7 +138,24 @@ class ExperimentFiles(models.Model):
     allergen = models.CharField(max_length=50, blank = True, null = True)
     control=  models.CharField(choices=CONTROL_TYPES,max_length=120, blank = True, null=True)
     def __str__(self):
-       return str(self.file)
+       return str(self.file_name)
+
+class AnalysisResults(models.Model):
+    id = models.AutoField(primary_key=True)
+    file_id = models.ForeignKey(ExperimentFiles, to_field=('file_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    redQ4 = models.CharField(max_length=20, blank = True, null = True)
+    result = models.CharField(max_length=20, blank = True, null = True)
+    blackQ2 = models.CharField(max_length=20, blank = True, null = True)
+    blackQ3 = models.CharField(max_length=20, blank = True, null = True)
+    blackQ4 = models.CharField(max_length=20, blank = True, null = True)
+    zmeanQ4 = models.CharField(max_length=20, blank = True, null = True)
+    CD63min = models.CharField(max_length=20, blank = True, null = True)
+    CD63max = models.CharField(max_length=20, blank = True, null = True)
+    msiCCR3 = models.CharField(max_length=20, blank = True, null = True)
+    cellQ4 = models.CharField(max_length=20, blank = True, null = True)
+    responder = models.CharField(max_length=20, blank = True, null = True)
+    analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
+
 
 
 class FilesPlots(models.Model):

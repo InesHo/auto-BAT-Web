@@ -17,8 +17,6 @@
       <th>Y1</th>
       <th>Z2</th>
       <th>Date</th>
-      <th>Started</th>
-      <th>Finished</th>
       <th>Status</th>
       <th>Type</th>
       <th>VER</th>
@@ -41,15 +39,13 @@
         <td >{{ a.chosen_y1 }}</td>
         <td >{{ a.chosen_z2 }}</td>
         <td >{{ a.analysis_date }}</td>
-        <td >{{ a.analysis_start_time }}</td>
-        <td >{{ a.analysis_end_time }}</td>
         <td >{{ a.analysis_status }}</td>
         <td >{{ a.analysis_type }}</td>
 	<td >{{ a.analysis_type_version }}</td>
 
         <td>
 
-          {% if a.analysis_status == "Ready" %}
+          {% if a.analysis_status == "Ready" or a.analysis_status == "In Progress" %}
 
           <a href="download_pdf/{{a.analysisMarker_id}}" class="btn btn-danger" >
             <span class="fa fa-file-pdf"></span>

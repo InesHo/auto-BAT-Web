@@ -13,6 +13,7 @@ from BaumgrassGating import BaumgrassGating
 from AutoBatWorkflow import AutoBatWorkflow
 from Data import Data
 import flowkit as fk
+from django.shortcuts import get_object_or_404
 
 logger = getLogger(__name__)
 
@@ -92,6 +93,7 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
     usName = ''
     posFileName = ''
     posTwoFileName= ''
+    
 
     i = 0
     for sample in sample_obj:
@@ -103,23 +105,27 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         control = sample[4]
         if control == 'Primary Positive control':
             posFileName = file_name
-
         elif control == 'Secondary Positive control':
             posTwoFileName = file_name
 
         elif control == 'Negative control':
             usName = file_name
         
-        baumgrassgater = BaumgrassGating(allergen,               
+        if panel_name in ['full-panel', 'grat-panel']:
+            pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
+            files_list.append(pathToExports + file_name)
+        else:
+            baumgrassgater = BaumgrassGating(allergen,               
                                 chosen_z1,
                                 file_path,            
                                 pathToGatingFunctions, 
                                 device, 
                                 pathToExports)
 
-        reports[i] = baumgrassgater.runbaumgrassgating()
-        files_list.append(pathToExports + file_name)               
-        i += 1
+            reports[i] = baumgrassgater.runbaumgrassgating()
+            files_list.append(pathToExports + file_name)               
+            i += 1
+    
     autoworkflow = AutoBatWorkflow(files_list,
                                     pathToData,
                                     pathToExports,
@@ -159,21 +165,17 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
     cell_format = workbook.add_format({'bg_color': 'yellow'})
 
     for r in range(0,len(df_excel.index)):
-        if df_excel.iat[r,2] == "negativ":
+        if df_excel.iat[r,2] == "positiv":
             worksheet.set_row(r+1, None, cell_format) 
 
     worksheet.autofit()
     writer.save()
 
     
-    # Save Excel File's path to the Database
-    EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
-    EXCELresults_instance.analysisMarker_id_id = int(analysisMarker_id)
-    EXCELresults_instance.save()
-   
     # Save DF to the Database
     for index, row in df.iterrows():
         file_name = row['filename']
+        file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
         redQ4 = row['redQ4']
         result = row['result']
         blackQ2 = row['blackQ2']
@@ -186,7 +188,6 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         cellQ4 = row['cellQ4']
         responder = row['responder']
         results_instance = models.AnalysisResults(
-                                        file_name = file_name,
                                         redQ4 = redQ4,
                                         result = result,
                                         blackQ2 = blackQ2,
@@ -199,6 +200,7 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
                                         cellQ4 = cellQ4,
                                         responder = responder,
         )
+        results_instance.file_id_id = int(file_id)
         results_instance.analysisMarker_id_id = int(analysisMarker_id)
         results_instance.save()
     # Save plots to database
@@ -213,6 +215,12 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         PNGresults_instance.save()
         img_list.append(plot_path)
     
+    # Save Excel File's path to the Database
+    EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
+    EXCELresults_instance.analysisMarker_id_id = int(analysisMarker_id)
+    EXCELresults_instance.save()
+
+
     # Create PDF File:
     pdf = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.pdf"
     pdf_path = os.path.join(pathToOutput, pdf)
