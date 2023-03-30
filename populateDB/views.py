@@ -240,6 +240,7 @@ class experimentfile(View):
                 donor_id = form.cleaned_data['donor_id']
                 panel_id = form.cleaned_data['panel_id']
                 analysis_instance = models.Analysis(bat_id=bat_id, donor_id=donor_id, panel_id=panel_id)
+                analysis_instance.user_id = request.user.id
                 analysis_instance.save()
                 analysis_id = analysis_instance.analysis_id
                 files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}")
@@ -398,6 +399,7 @@ def run_analysis(request, analysis_id):
         analysis_status = "Waiting"
         analysis_type = "Auto Bat"
         analysis_type_version = "1.0"
+        user_id = request.user.id
 
         # Checking if the Experment has alrady been Analyzed with those markers
         analysismarkers_data = models.AnalysisMarkers.objects.values_list('chosen_z1','chosen_y1','chosen_z2').filter(
@@ -418,6 +420,7 @@ def run_analysis(request, analysis_id):
                                                         #analysis_id= Analysis.objects.get(analysis_id = analysis_id)
                                                         )
             analysismarkers_instance.analysis_id_id = int(analysis_id)
+            analysismarkers_instance.user_id = user_id
             analysismarkers_instance.save()
             
             analysisMarker_id = analysismarkers_instance.analysisMarker_id
@@ -436,11 +439,62 @@ def run_analysis(request, analysis_id):
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
             run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
-                                pathToOutput, pathToGatingFunctions, rPath
+                                pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
             return render(request, 'analysis/analysis_ready.html')
         else:
             return render(request, 'analysis/analysis_error.html', {'analysis_id':analysis_id})
+
+
+@login_required
+def re_analysis_all(request):
+    user_id = request.user.id
+    analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status').filter(analysis_status = 'In Progress')
+
+    for analysismarker in analysisMarker_obj:
+        analysisMarker_id = analysismarker[0]
+        analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
+        files_ids = models.ExperimentFiles.objects.values_list('file_id', 'file').filter(analysis_id = analysis_id)
+        for file in files_ids:
+            models.FilesPlots.objects.filter(file_id=file[0]).delete()
+        models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+        models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+
+        bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+        donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+        panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+        bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+        donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+        panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+
+        chosen_z1 = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('chosen_z1', flat=True))
+        chosen_y1 = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('chosen_y1', flat=True))
+        chosen_z2 = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('chosen_z2', flat=True))
+
+        chosen_z1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z1).values_list('pns', flat=True))
+        chosen_y1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_y1).values_list('pns', flat=True))
+
+        device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
+        device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
+
+        outputPDFname = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png "
+        pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/")
+        pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/")
+        create_path(pathToExports)
+        pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/")
+        create_path(pathToOutput)
+        pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
+        rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
+    
+        run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
+                                chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
+                                pathToOutput, pathToGatingFunctions, rPath, user_id
+                                )
+
+    return render(request, 'analysis/analysis_ready.html')
+
+
+
 
 @login_required
 def show_analysis(request):

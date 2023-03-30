@@ -78,7 +78,7 @@ def proccess_files(analysis_id):
 @background(queue='autoBat-queue', schedule=10)
 def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name,
                         chosen_z1, chosen_z1_lable, chosen_y1, chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
-                        pathToOutput, pathToGatingFunctions, rPath
+                        pathToOutput, pathToGatingFunctions, rPath, user_id
                     ):
 
     start_time = Berlin_time()
@@ -176,7 +176,7 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
     for index, row in df.iterrows():
         file_name = row['filename']
         file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
-        redQ4 = row['redQ4']
+        redQ4 = float(row['redQ4'])
         result = row['result']
         blackQ2 = row['blackQ2']
         blackQ3 = row['blackQ3']
@@ -186,7 +186,17 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         CD63max = row['CD63max']
         msiCCR3 = row['msiCCR3']
         cellQ4 = row['cellQ4']
-        responder = row['responder']
+        responder = "NA"
+        if "aige" in file_name.lower():
+            if redQ4 >= 3.0:
+                responder = "aIgE Responder"
+            elif redQ4 < 3.0:
+                responder = "aIgE None_Responder"
+        elif "fmlp" in file_name.lower():
+            if redQ4 >= 5.0:
+                responder = "fMLP Responder"
+            elif redQ4 >= 5.0:
+                responder = "fMLP None_Responder"
         results_instance = models.AnalysisResults(
                                         redQ4 = redQ4,
                                         result = result,
@@ -202,7 +212,9 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
         )
         results_instance.file_id_id = int(file_id)
         results_instance.analysisMarker_id_id = int(analysisMarker_id)
+        results_instance.user_id = user_id
         results_instance.save()
+        
     # Save plots to database
     img_list = []
     for file in sample_obj:

@@ -104,6 +104,7 @@ class AnalysisMarkers(models.Model):
         (u"Waiting", u'Waiting'),
         (u"In Progress", u'In Progress'),
         (u"Ready", u'Ready'),
+        (u"Error", u'Error'),
     )
     analysisMarker_id = models.AutoField(primary_key=True)
     chosen_z1 = models.CharField(max_length=20, blank = True, null = True)
@@ -150,19 +151,27 @@ class ExperimentFiles(models.Model):
        return str(self.file_name)
 
 class AnalysisResults(models.Model):
+    RESPONDER_TYPES = (
+        (u"NA", u'NA'),
+        (u"aIgE Responder", u'aIgE Responder'),
+        (u"aIgE None_Responder", u'aIgE None_Responder'),
+        (u"fMLP Responder", u'fMLP Responder'),
+        (u"fMLP None_Responder", u'fMLP None_Responder'),
+    )
+
     id = models.AutoField(primary_key=True)
     file_id = models.ForeignKey(ExperimentFiles, to_field=('file_id'), blank = True, null=True,  on_delete = models.CASCADE)
-    redQ4 = models.CharField(max_length=20, blank = True, null = True)
+    redQ4 = models.FloatField(blank = True, null = True)
     result = models.CharField(max_length=20, blank = True, null = True)
-    blackQ2 = models.CharField(max_length=20, blank = True, null = True)
-    blackQ3 = models.CharField(max_length=20, blank = True, null = True)
-    blackQ4 = models.CharField(max_length=20, blank = True, null = True)
-    zmeanQ4 = models.CharField(max_length=20, blank = True, null = True)
-    CD63min = models.CharField(max_length=20, blank = True, null = True)
-    CD63max = models.CharField(max_length=20, blank = True, null = True)
-    msiCCR3 = models.CharField(max_length=20, blank = True, null = True)
-    cellQ4 = models.CharField(max_length=20, blank = True, null = True)
-    responder = models.CharField(max_length=20, blank = True, null = True)
+    blackQ2 = models.FloatField(blank = True, null = True)
+    blackQ3 = models.FloatField(blank = True, null = True)
+    blackQ4 = models.FloatField(blank = True, null = True)
+    zmeanQ4 = models.FloatField(blank = True, null = True)
+    CD63min = models.FloatField(blank = True, null = True)
+    CD63max = models.FloatField(blank = True, null = True)
+    msiCCR3 = models.FloatField(blank = True, null = True)
+    cellQ4 = models.FloatField(blank = True, null = True)
+    responder = models.CharField(choices=RESPONDER_TYPES,max_length=120, blank = True, null=True)
     analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 
