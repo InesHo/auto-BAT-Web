@@ -29,22 +29,21 @@
      <tbody>
       {% for r in analysis_results %}
       <tr>
-	<td >{{ r.bat_name }}</td>
-	<td >{{ r.donor_name }}</td>
-	<td> <a href="show_channels/{{r.analysis_id}}">{{r.panel_name}}</a></td>
-	<td >{{ r.file_name }}</td>
-	<td >{{ r.redQ4 }}</td>
-	<td >{{ r.result }}</td>
-	<td >{{ r.blackQ2 }}</td>
-	<td >{{ r.blackQ3 }}</td>
-	<td >{{ r.blackQ4 }}</td>
-	<td >{{ r.zmeanQ4 }}</td>
-	<td >{{ r.CD63min }}</td>
-	<td >{{ r.CD63max }}</td>
-	<td >{{ r.msiCCR3 }}</td>
-	<td >{{ r.cellQ4 }}</td>
-	<td >{{ r.responder }}</td>
-
+        <td >{{ r.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
+        <td >{{ r.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
+	<td> <a href="show_channels/{{r.analysis_id}}">{{r.analysisMarker_id__analysis_id__panel_id__panel_name}}</a></td>
+        <td >{{ r.file_id__file_name }}</td>
+        <td >{{ r.redQ4|floatformat:2 }}</td>
+        <td >{{ r.result }}</td>
+        <td >{{ r.blackQ2 |floatformat:2 }}</td>
+	<td >{{ r.blackQ3 |floatformat:2}}</td>
+        <td >{{ r.blackQ4|floatformat:2 }}</td>
+        <td >{{ r.zmeanQ4|floatformat:2 }}</td>
+        <td >{{ r.CD63min|floatformat:2 }}</td>
+        <td >{{ r.CD63max|floatformat:2 }}</td>
+        <td >{{ r.msiCCR3|floatformat:2 }}</td>
+        <td >{{ r.cellQ4|floatformat:2 }}</td>
+        <td >{{ r.responder }}</td>
       {% empty %}
       <tr>
         <td colspan="7" class="text-center bg-warning">No Data</td>

@@ -454,15 +454,21 @@ def run_analysis(request, analysis_id):
         else:
             return render(request, 'analysis/analysis_error.html', {'analysis_id':analysis_id})
 
+from django.db.models import F
+
 @login_required
 def results_to_CSV(request):
-    analysisResults = models.AnalysisResults.objects.values('file_id__file_name')
-    #analysisResults = models.AnalysisResults.objects.all()
+    analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id__bat_id__bat_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                            'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'file_id__file_name',
+                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
     return render_to_csv_response(analysisResults)
 
 @login_required
 def thresholds_to_CSV(request):
-    thresholds = models.AnalysisThresholds.objects.all()
+    thresholds = models.AnalysisThresholds.objects.values('analysisMarker_id__analysis_id__bat_id__bat_name','analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                            'analysisMarker_id__analysis_id__panel_id__panel_name','SSCA_Threshold', 'FcR_Threshold', 'CD63_Threshold')
     return render_to_csv_response(thresholds)
 
 
@@ -630,38 +636,13 @@ def download_xlsx(request, analysisMarker_id):
 
 @login_required
 def analysis_report(request):
-    analysis = models.Analysis.objects.values_list('analysis_id', 'bat_id','donor_id', 'panel_id').order_by('bat_id').reverse()
-    #analysis_results = models.AnalysisResults.objects.all().order_by('analysisMarker_id', 'id')
-    #return render(request,"analysis/analysis_report.html",{'analysis_results':analysis_results})
-    
-    analysisResults = []
-    for i in analysis:
-        analysis_id = i[0]
-        bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=i[1]).values_list('bat_name', flat=True))
-        donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=i[2]).values_list('donor_abbr', flat=True))
-        panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=i[3]).values_list('panel_name', flat=True))
-        analysisMarker_id = models.AnalysisMarkers.objects.values_list('analysisMarker_id').filter(analysis_id = analysis_id)
 
-        for j in analysisMarker_id:
-            analysisresults = models.AnalysisResults.objects.values_list('file_id','redQ4','result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4',
-                                                                        'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder', 'analysisMarker_id').filter(analysisMarker_id = j[0])
-            for v in analysisresults:
-                analysis_dict = {}
-                analysis_dict['analysis_id'] = analysis_id
-                analysis_dict['bat_name'] = bat_name
-                analysis_dict['donor_name'] = donor_name
-                analysis_dict['panel_name'] = panel_name
-                analysis_dict['file_name'] = get_object_or_404(models.ExperimentFiles.objects.filter(file_id=v[0]).values_list('file_name', flat=True))
-                analysis_dict['redQ4'] = v[1]
-                analysis_dict['result'] = v[2]
-                analysis_dict['blackQ2'] = round(float(v[3]), 2)
-                analysis_dict['blackQ3'] = round(float(v[4]), 2)
-                analysis_dict['blackQ4'] = round(float(v[5]), 2)
-                analysis_dict['zmeanQ4'] = round(float(v[6]), 2)
-                analysis_dict['CD63min'] = round(float(v[7]), 2)
-                analysis_dict['CD63max'] = round(float(v[8]), 2)
-                analysis_dict['msiCCR3'] = round(float(v[9]), 2)
-                analysis_dict['cellQ4'] = v[10]
-                analysis_dict['responder'] = v[11]
-                analysisResults.append(analysis_dict)
+
+    analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
+                                                            'analysisMarker_id__analysis_id__bat_id__bat_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                            'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'file_id__file_name',
+                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
+
     return render(request,"analysis/analysis_report.html",{'analysis_results':analysisResults})
