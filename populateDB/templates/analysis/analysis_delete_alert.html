@@ -14,8 +14,8 @@
                 <h6 class="text-danger">Do You Want to continue?</h6>
                 <br></br>
                </div>
-              <div class="modal-footer"></div>
-	      <a href="{% url 'populateDB:show_analysis' %}" class="btn btn-primary">Go Back</a>
+	       <div class="modal-footer"></div>
+	                      <input type="button" class="btn btn-primary" value="Go back!" onclick="history.back()">
 	      <a class="btn btn-danger" href="delete_analysis/{{analysisMarker_id}}">Delete</a>
 
           </div>

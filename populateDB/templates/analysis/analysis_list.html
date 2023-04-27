@@ -21,10 +21,16 @@
       <th>Type</th>
       <th>VER</th>
       <th>Download</th>
+      <th>ThresHolds</th>
       <th>Settings</th>
       <th>Files</th>
+
       <th>
-	</th>
+             {% if user_is_superuser == True %}
+	      <a class="btn btn-warning" href="re_analysis_alert">Reanalyze All</a>
+          {% endif %}
+	
+      </th>
       <th></th>
       <th></th>
 
@@ -57,11 +63,24 @@
             <span class="fa fa-file-excel"></span>
           </a>
 
+
+
           {% endif %}
 
         </td>
 
         <td>
+		          {% if a.analysis_status == "Ready" %}
+
+                <a class="btn btn-info" href="list_thresholds/{{a.analysisMarker_id}}">
+                        <span class="fa fa-eye"></span>
+                </a>
+		          {% endif %}
+
+	</td>
+
+
+	<td>
                 <a class="btn btn-info" href="show_channels/{{a.analysis_id}}">
                         <span class="fa fa-eye"></span>
                 </a>
@@ -71,11 +90,12 @@
                         <span class="fa fa-eye"></span>
                 </a>
         </td>
+
         <td>
                 <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}update_files/add_channels/marker_settings/{{a.analysis_id}}">Analyze</a>
         </td>
         <td>
-                {% if a.analysis_status == "Ready" or a.analysis_status == "In Progress" %}
+                {% if a.analysis_status == "Ready" or a.analysis_status == "In Progress" or a.analysis_status == "Error" %}
                 <a href="delete_alert/{{a.analysisMarker_id}}" class="btn btn-danger" >
                         <span class="fa fa-trash"></span>
                 </a>

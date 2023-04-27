@@ -17,6 +17,7 @@ from django.conf import settings
 from Data import Data
 from .functions import create_path
 from .tasks import run_analysis_task, proccess_files
+from djqscsv import render_to_csv_response
 
 @login_required
 def home(request):
@@ -373,9 +374,17 @@ def show_channels(request, analysis_id):
     return render(request,"channels/show_channels.html",{'channels_data':channels_data})
 
 def marker_settings(request, analysis_id): 
-    analysis_id = analysis_id
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+
+
     channels = models.Channels.objects.filter(pnn__endswith=("A") ,analysis_id = analysis_id).order_by('channel_id')
-    return render(request, 'analysis/marker_settings.html', {'channels': channels, 'analysis_id': analysis_id}) 
+    return render(request, 'analysis/marker_settings.html', {'channels': channels, 'analysis_id': analysis_id, 'bat_name':bat_name, 'donor_name':donor_name, 'panel_name':panel_name}) 
   
 @login_required
 def run_analysis(request, analysis_id):
@@ -445,10 +454,22 @@ def run_analysis(request, analysis_id):
         else:
             return render(request, 'analysis/analysis_error.html', {'analysis_id':analysis_id})
 
+@login_required
+def results_to_CSV(request):
+    analysisResults = models.AnalysisResults.objects.values('file_id__file_name')
+    #analysisResults = models.AnalysisResults.objects.all()
+    return render_to_csv_response(analysisResults)
+
+@login_required
+def thresholds_to_CSV(request):
+    thresholds = models.AnalysisThresholds.objects.all()
+    return render_to_csv_response(thresholds)
+
 
 @login_required
 def re_analysis_all(request):
     user_id = request.user.id
+
     analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status').filter(analysis_status = 'In Progress')
 
     for analysismarker in analysisMarker_obj:
@@ -459,6 +480,7 @@ def re_analysis_all(request):
             models.FilesPlots.objects.filter(file_id=file[0]).delete()
         models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
         models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+        models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).delete()
 
         bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
         donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
@@ -485,19 +507,18 @@ def re_analysis_all(request):
         create_path(pathToOutput)
         pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
         rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
+        
+        models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Waiting")
     
         run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
                                 pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
-
     return render(request, 'analysis/analysis_ready.html')
-
-
-
 
 @login_required
 def show_analysis(request):
+    user_is_superuser = request.user.is_superuser
     analysis = models.Analysis.objects.values_list('analysis_id', 'bat_id','donor_id', 'panel_id').order_by('bat_id').reverse()
     analysisList = []
     for i in analysis:
@@ -546,17 +567,30 @@ def show_analysis(request):
                 analysis_dict['analysis_type'] = j[8]
                 analysis_dict['analysis_type_version'] = j[9]
                 analysisList.append(analysis_dict)
-    return render(request, 'analysis/analysis_list.html',{'analysis':analysisList})
+    return render(request, 'analysis/analysis_list.html',{'analysis':analysisList, 'user_is_superuser':user_is_superuser})
 
 
 @login_required
 def delete_analysis_alert(request, analysisMarker_id):
     return render(request, 'analysis/analysis_delete_alert.html', {'analysisMarker_id':analysisMarker_id})
 
+
+@login_required
+def re_analysis_alert(request):
+    return render(request, 'analysis/re_analysis_alert.html')
+
 @login_required
 def list_files(request, analysis_id):  
     files_list = models.ExperimentFiles.objects.filter(analysis_id=analysis_id)
     return render(request,"files/list_files.html",{'files_list':files_list})
+
+@login_required
+def list_thresholds(request, analysisMarker_id):
+    SSCA_Threshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('SSCA_Threshold', flat=True))
+    FcR_Threshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('FcR_Threshold', flat=True))
+    CD63_Threshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('CD63_Threshold', flat=True))
+    return render(request,"analysis/list_thresholds.html",{'SSCA_Threshold':SSCA_Threshold,'FcR_Threshold':FcR_Threshold,'CD63_Threshold':CD63_Threshold})
+
 
 @login_required
 def delete_analysis(request, analysisMarker_id):
@@ -568,6 +602,8 @@ def delete_analysis(request, analysisMarker_id):
     models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
     models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+    models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+
     return render(request, 'analysis/analysis_deleted.html')
 
 
@@ -628,5 +664,4 @@ def analysis_report(request):
                 analysis_dict['cellQ4'] = v[10]
                 analysis_dict['responder'] = v[11]
                 analysisResults.append(analysis_dict)
-
     return render(request,"analysis/analysis_report.html",{'analysis_results':analysisResults})

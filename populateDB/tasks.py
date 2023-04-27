@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 
 
        
-@background(queue='autoBat-queue', schedule=10)
+@background(queue='autoBat-queue-save', schedule=10)
 def save_pdf(pdf_path, img_list, analysisMarker_id):
         
     image_grid(img_list, pdf_path)
@@ -33,7 +33,7 @@ def save_pdf(pdf_path, img_list, analysisMarker_id):
     end_time = Berlin_time()
     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_end_time=end_time)
 
-@background(queue='autoBat-queue', schedule=10)
+@background(queue='autoBat-queue-process-files', schedule=10)
 def proccess_files(analysis_id):
     sample_obj = models.ExperimentFiles.objects.values_list('file_id', 'file').filter(analysis_id = analysis_id)
 
@@ -75,7 +75,7 @@ def proccess_files(analysis_id):
             mean_obj.file_id_id = int(file_id)
             mean_obj.save()
 
-@background(queue='autoBat-queue', schedule=10)
+@background(queue='autoBat-queue-analysis', schedule=10)
 def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name,
                         chosen_z1, chosen_z1_lable, chosen_y1, chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
                         pathToOutput, pathToGatingFunctions, rPath, user_id
@@ -146,8 +146,8 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
     
     
     
-    df = autoworkflow.runCD32thresholding()
-    
+    results = autoworkflow.runCD32thresholding()
+    df = results[0]
     df_excel = df
     excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
     df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
@@ -171,7 +171,15 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
     worksheet.autofit()
     writer.save()
 
-    
+    # Save Thresholds to the Database
+    thresholds_instance = models.AnalysisThresholds(
+                                        SSCA_Threshold = float(results[1]),
+                                        FcR_Threshold = float(results[2]),
+                                        CD63_Threshold = float(results[3]),
+        )
+    thresholds_instance.analysisMarker_id_id = int(analysisMarker_id)
+    thresholds_instance.save()
+
     # Save DF to the Database
     for index, row in df.iterrows():
         file_name = row['filename']

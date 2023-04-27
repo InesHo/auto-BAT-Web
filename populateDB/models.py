@@ -121,6 +121,15 @@ class AnalysisMarkers(models.Model):
 
     #analysis_id = models.CharField(max_length=20, blank = True, null = True)
 
+
+class AnalysisThresholds(models.Model):
+    thresHolds_id = models.AutoField(primary_key=True)
+    SSCA_Threshold = models.FloatField(blank = True, null = True)
+    FcR_Threshold = models.FloatField(blank = True, null = True)
+    CD63_Threshold = models.FloatField(blank = True, null = True)
+    analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
+
+
 class AnalysisFiles(models.Model):
     FILES_TYPES = (
         (u"PNG", u'PNG'),

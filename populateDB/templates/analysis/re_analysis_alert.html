@@ -1,0 +1,42 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+
+<div class="container-fluid vh-100">
+    <div class="" style="margin-top:50px">
+      <div class="rounded d-flex justify-content-center">
+          <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
+              <div class="text-center">
+                  <div class="modal-footer"></div>  
+              </div>
+              <div class="container">
+                <br></br>
+
+		<h3 class="text-danger">You are about to delete all results and analyze everything again!</h3>
+		<br></br>
+		<h3 class="text-danger">Make sure to backup the old data before you continue:</h3>
+		<h4>Export results to CSV file <a href="results_to_CSV">FROM HERE..!</a> </h4>
+		<h4>Export Thresholds to CSV file <a href="thresholds_to_CSV">FROM HERE..!</a> </h4>
+
+		<br></br>
+               </div>
+              <div class="modal-footer"></div>
+	      <div class="container">
+		<div class="row justify-content-md-center">
+    			<div class="col-sm">
+				                <input type="button" class="btn btn-primary" value="Go back!" onclick="history.back()">
+
+    			</div>
+    			    <div class="col-6">
+    				</div>
+			<div class="col-sm">
+      		               <a class="btn btn-danger" href="re_analysis_all">Reanalyze</a>
+
+			</div>
+		</div>
+		</div>
+          </div>
+      </div>
+  </div>
+</div>
+

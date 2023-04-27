@@ -43,9 +43,13 @@ urlpatterns = [
     path('analysis/delete_alert/<analysisMarker_id>', views.delete_analysis_alert, name='delete_alert'),
     path('analysis/delete_alert/delete_analysis/<analysisMarker_id>', views.delete_analysis, name='delete_analysis'),
     path('analysis/show_channels/<analysis_id>', views.show_channels, name='show_channels'),
+    path('analysis/list_thresholds/<analysisMarker_id>', views.list_thresholds, name='list_thresholds'),
     path('analysis/download_pdf/<analysisMarker_id>', views.download_pdf, name='download_pdf'),
     path('analysis/download_xlsx/<analysisMarker_id>', views.download_xlsx, name='download_xlsx'),
     path('analysis_report/', views.analysis_report, name='analysis_report'),
     path('analysis_report/show_channels/<analysis_id>', views.show_channels, name='show_channels'),
+    path('analysis/re_analysis_alert', views.re_analysis_alert, name='re_analysis_alert'),
     path('analysis/re_analysis_all', views.re_analysis_all, name='re_analysis_all'),
+    path('analysis/results_to_CSV', views.results_to_CSV, name='results_to_CSV'),
+    path('analysis/thresholds_to_CSV', views.thresholds_to_CSV, name='thresholds_to_CSV'),
     ]
