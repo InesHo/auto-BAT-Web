@@ -46,7 +46,12 @@
         <td >{{ a.chosen_y1 }}</td>
         <td >{{ a.chosen_z2 }}</td>
         <td >{{ a.analysis_date }}</td>
-        <td >{{ a.analysis_status }}</td>
+	<td> 
+		{% if a.analysis_status == "Error" and user_is_superuser == True %}
+			<a href="analysis_error/{{a.analysisMarker_id}}">{{a.analysis_status}}</a></td>
+		{% else %}
+			{{a.analysis_status}}
+		{% endif %}
         <td >{{ a.analysis_type }}</td>
 	<td >{{ a.analysis_type_version }}</td>
 
@@ -102,11 +107,13 @@
 
                 {% endif %}
         </td>
+
 	<td>
-		<!-- Button trigger modal -->
+		<!--
 		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
   			<span class="fa fa-download"></span>
 		</button>
+		-->
 	</td>	
       </tr>
       {% empty %}

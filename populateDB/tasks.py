@@ -126,7 +126,8 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
             files_list.append(pathToExports + file_name)               
             i += 1
     
-    autoworkflow = AutoBatWorkflow(files_list,
+    try:
+        autoworkflow = AutoBatWorkflow(files_list,
                                     pathToData,
                                     pathToExports,
                                     pathToOutput,
@@ -146,66 +147,66 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
     
     
     
-    results = autoworkflow.runCD32thresholding()
-    df = results[0]
-    df_excel = df
-    excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
-    df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
+        results = autoworkflow.runCD32thresholding()
+        df = results[0]
+        df_excel = df
+        excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
+        df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
     
-    # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+        # Create a Pandas Excel writer using XlsxWriter as the engine.
+        writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
 
-    # Convert the dataframe to an XlsxWriter Excel object.
-    df_excel.to_excel(writer, sheet_name='Sheet1')
+        # Convert the dataframe to an XlsxWriter Excel object.
+        df_excel.to_excel(writer, sheet_name='Sheet1')
 
-    # Get the xlsxwriter workbook and worksheet objects.
-    workbook  = writer.book
-    worksheet = writer.sheets['Sheet1']
+        # Get the xlsxwriter workbook and worksheet objects.
+        workbook  = writer.book
+        worksheet = writer.sheets['Sheet1']
 
-    cell_format = workbook.add_format({'bg_color': 'yellow'})
+        cell_format = workbook.add_format({'bg_color': 'yellow'})
 
-    for r in range(0,len(df_excel.index)):
-        if df_excel.iat[r,2] == "positiv":
-            worksheet.set_row(r+1, None, cell_format) 
+        for r in range(0,len(df_excel.index)):
+            if df_excel.iat[r,2] == "positiv":
+                worksheet.set_row(r+1, None, cell_format) 
 
-    worksheet.autofit()
-    writer.save()
+        worksheet.autofit()
+        writer.save()
 
-    # Save Thresholds to the Database
-    thresholds_instance = models.AnalysisThresholds(
+        # Save Thresholds to the Database
+        thresholds_instance = models.AnalysisThresholds(
                                         SSCA_Threshold = float(results[1]),
                                         FcR_Threshold = float(results[2]),
                                         CD63_Threshold = float(results[3]),
-        )
-    thresholds_instance.analysisMarker_id_id = int(analysisMarker_id)
-    thresholds_instance.save()
+            )
+        thresholds_instance.analysisMarker_id_id = int(analysisMarker_id)
+        thresholds_instance.save()
 
-    # Save DF to the Database
-    for index, row in df.iterrows():
-        file_name = row['filename']
-        file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
-        redQ4 = float(row['redQ4'])
-        result = row['result']
-        blackQ2 = row['blackQ2']
-        blackQ3 = row['blackQ3']
-        blackQ4 = row['blackQ4']
-        zmeanQ4 = row['zmeanQ4']
-        CD63min = row['CD63min']
-        CD63max = row['CD63max']
-        msiCCR3 = row['msiCCR3']
-        cellQ4 = row['cellQ4']
-        responder = "NA"
-        if "aige" in file_name.lower():
-            if redQ4 >= 3.0:
-                responder = "aIgE Responder"
-            elif redQ4 < 3.0:
-                responder = "aIgE None_Responder"
-        elif "fmlp" in file_name.lower():
-            if redQ4 >= 5.0:
-                responder = "fMLP Responder"
-            elif redQ4 >= 5.0:
-                responder = "fMLP None_Responder"
-        results_instance = models.AnalysisResults(
+        # Save DF to the Database
+        for index, row in df.iterrows():
+            file_name = row['filename']
+            file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
+            redQ4 = float(row['redQ4'])
+            result = row['result']
+            blackQ2 = row['blackQ2']
+            blackQ3 = row['blackQ3']
+            blackQ4 = row['blackQ4']
+            zmeanQ4 = row['zmeanQ4']
+            CD63min = row['CD63min']
+            CD63max = row['CD63max']
+            msiCCR3 = row['msiCCR3']
+            cellQ4 = row['cellQ4']
+            responder = "NA"
+            if "aige" in file_name.lower():
+                if redQ4 >= 3.0:
+                    responder = "aIgE Responder"
+                elif redQ4 < 3.0:
+                    responder = "aIgE None_Responder"
+            elif "fmlp" in file_name.lower():
+                if redQ4 >= 5.0:
+                    responder = "fMLP Responder"
+                elif redQ4 >= 5.0:
+                    responder = "fMLP None_Responder"
+            results_instance = models.AnalysisResults(
                                         redQ4 = redQ4,
                                         result = result,
                                         blackQ2 = blackQ2,
@@ -217,32 +218,36 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
                                         msiCCR3 = msiCCR3,
                                         cellQ4 = cellQ4,
                                         responder = responder,
-        )
-        results_instance.file_id_id = int(file_id)
-        results_instance.analysisMarker_id_id = int(analysisMarker_id)
-        results_instance.user_id = user_id
-        results_instance.save()
+            )
+            results_instance.file_id_id = int(file_id)
+            results_instance.analysisMarker_id_id = int(analysisMarker_id)
+            results_instance.user_id = user_id
+            results_instance.save()
         
-    # Save plots to database
-    img_list = []
-    for file in sample_obj:
-        file_id = file[0]
-        plot_name = file[2].lower()
-        plot_name = f'{ plot_name[:-4]}.png'
-        plot_path=os.path.join(pathToOutput, plot_name)
-        PNGresults_instance = models.FilesPlots(plot_path=plot_path)
-        PNGresults_instance.file_id_id = int(file_id)
-        PNGresults_instance.save()
-        img_list.append(plot_path)
+        # Save plots to database
+        img_list = []
+        for file in sample_obj:
+            file_id = file[0]
+            plot_name = file[2].lower()
+            plot_name = f'{ plot_name[:-4]}.png'
+            plot_path=os.path.join(pathToOutput, plot_name)
+            PNGresults_instance = models.FilesPlots(plot_path=plot_path)
+            PNGresults_instance.file_id_id = int(file_id)
+            PNGresults_instance.save()
+            img_list.append(plot_path)
     
-    # Save Excel File's path to the Database
-    EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
-    EXCELresults_instance.analysisMarker_id_id = int(analysisMarker_id)
-    EXCELresults_instance.save()
+        # Save Excel File's path to the Database
+        EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
+        EXCELresults_instance.analysisMarker_id_id = int(analysisMarker_id)
+        EXCELresults_instance.save()
 
 
-    # Create PDF File:
-    pdf = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.pdf"
-    pdf_path = os.path.join(pathToOutput, pdf)
-    save_pdf(pdf_path, img_list, analysisMarker_id)
+        # Create PDF File:
+        pdf = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.pdf"
+        pdf_path = os.path.join(pathToOutput, pdf)
+        save_pdf(pdf_path, img_list, analysisMarker_id)
+    except Exception as e:
+        models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)
+
+
 

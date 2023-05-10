@@ -116,6 +116,7 @@ class AnalysisMarkers(models.Model):
     analysis_status = models.CharField(choices=STATUS_TYPES,max_length=120, blank = True, null=True)
     analysis_type = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
     analysis_type_version = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
+    analysis_error = models.TextField(max_length=250, blank=True, validators=[MaxLengthValidator(250)])
     analysis_id = models.ForeignKey(Analysis, to_field=('analysis_id'), blank = True, null=True,  on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 

@@ -476,7 +476,7 @@ def thresholds_to_CSV(request):
 def re_analysis_all(request):
     user_id = request.user.id
 
-    analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status').filter(analysis_status = 'In Progress')
+    analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status').filter(analysis_status = 'Ready')
 
     for analysismarker in analysisMarker_obj:
         analysisMarker_id = analysismarker[0]
@@ -641,8 +641,44 @@ def analysis_report(request):
     analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                            'analysisMarker_id__analysis_id__panel_id',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
-                                                            'file_id__file_name',
+                                                            'file_id__file_name', 'file_id__allergen','file_id__control',
                                                             'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
 
     return render(request,"analysis/analysis_report.html",{'analysis_results':analysisResults})
+
+@login_required
+def thresholds_report(request):
+
+
+    analysisThresholds = models.AnalysisThresholds.objects.values('analysisMarker_id__analysis_id',
+                                                            'analysisMarker_id__analysis_id__bat_id__bat_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                            'analysisMarker_id__analysis_id__panel_id',
+                                                            'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'SSCA_Threshold', 'FcR_Threshold', 'CD63_Threshold', 'analysisMarker_id__chosen_z1'
+                                                            ,'analysisMarker_id__chosen_y1', 'analysisMarker_id__chosen_z2')
+
+    return render(request,"analysis/analysis_thresholds.html",{'analysisThresholds': analysisThresholds})
+
+@login_required
+def analysis_error(request, analysisMarker_id):
+    error = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_error', flat=True))
+    return render(request,"analysis/show_error.html",{'error':error})
+
+
+@login_required
+def analysis_report_2(request):
+
+
+    analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
+                                                            'analysisMarker_id__analysis_id__bat_id__bat_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                            'analysisMarker_id__analysis_id__panel_id',
+                                                            'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'file_id__file_name', 'file_id__allergen','file_id__control',
+                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
+
+    return render(request,"analysis/analysis_report.html",{'analysis_results':analysisResults})
+

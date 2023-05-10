@@ -5,7 +5,7 @@
   <br></br>
  <div>
 <div>
-    <center><h1>Analysis Results</h1></center>
+    <center><h1>Analysis Thresholds</h1></center>
     <br></br>
      <table id="analysisResults-table" class="table table-striped table-bordered nowrap" cellspacing="0" width="80%">
      <thead>
@@ -13,41 +13,25 @@
 	<th>BAT_ID</th>
 	<th>Donor</th>
 	<th>Panel</th>
-	<th>File Name</th>
-	<th>File Allergen</th>
-	<th>File Control</th>
-	<th>redQ4</th>
-	<th>result</th>
-	<th>blackQ2</th>
-	<th>blackQ3</th>
-	<th>blackQ4</th>
-	<th>zmeanQ4</th>
-	<th>CD63min</th>
-	<th>CD63max</th>
-	<th>msiCCR3</th>
-	<th>cellQ4</th>
-	<th>responder</th>
+	<th>Z1</th>
+	<th>Y1</th>
+        <th>Z2</th>
+	<th>SSCA Threshold</th>
+	<th>FcR Threshold</th>
+        <th>CD63 Threshold</th>
      </thead>
      <tbody>
-      {% for r in analysis_results %}
+      {% for t in analysisThresholds %}
       <tr>
-        <td >{{ r.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
-        <td >{{ r.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
-	<td> <a href="show_channels/{{r.analysisMarker_id__analysis_id}}">{{r.analysisMarker_id__analysis_id__panel_id__panel_name}}</a></td>
-        <td >{{ r.file_id__file_name }}</td>
-        <td >{{ r.file_id__allergen }}</td>
-	<td >{{ r.file_id__control }}</td>
-	<td >{{ r.redQ4|floatformat:2 }}</td>
-        <td >{{ r.result }}</td>
-        <td >{{ r.blackQ2 |floatformat:2 }}</td>
-	<td >{{ r.blackQ3 |floatformat:2}}</td>
-        <td >{{ r.blackQ4|floatformat:2 }}</td>
-        <td >{{ r.zmeanQ4|floatformat:2 }}</td>
-        <td >{{ r.CD63min|floatformat:2 }}</td>
-        <td >{{ r.CD63max|floatformat:2 }}</td>
-        <td >{{ r.msiCCR3|floatformat:2 }}</td>
-        <td >{{ r.cellQ4|floatformat:2 }}</td>
-        <td >{{ r.responder }}</td>
+        <td >{{ t.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
+        <td >{{ t.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
+        <td >{{ t.analysisMarker_id__analysis_id__panel_id__panel_name}}</td>
+        <td >{{ t.analysisMarker_id__chosen_z1 }}</td>
+        <td >{{ t.analysisMarker_id__chosen_y1 }}</td>
+        <td >{{ t.analysisMarker_id__chosen_z2 }}</td>
+        <td >{{ t.SSCA_Threshold }}</td>
+        <td >{{ t.FcR_Threshold }}</td>
+        <td >{{ t.CD63_Threshold }}</td>
       {% empty %}
       <tr>
         <td colspan="7" class="text-center bg-warning">No Data</td>
@@ -75,7 +59,6 @@ var table = $('#analysisResults-table').DataTable({
         fixedHeader: true,
         pageLength: 20,
         aaSorting: [],
-	autoWidth: false,
         initComplete: function () {
             var api = this.api();
             // For each column
