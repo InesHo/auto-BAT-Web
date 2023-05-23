@@ -1,133 +1,360 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
 
-  {% include "base.html" %}
-  {% include "navbar.html" %}
+<div class="container">
+	<div class="text-center">
+		<h3>Research Questions</h3>
+	</div>
+	<hr />
+	<form method="GET" action="." autocomplete="off">
+		<div class="row">
+    			<div class="form-group col-md-2 col-lg-2">
+        			<label class="form-check-label" >BAT Name:</label>
+            			<div class="input-group">
+            				<input class="form-control py-2 border-right-0 border" type="search" name="bat_name" placeholder="BAT ID" />
+        			</div>
+    			</div>
 
-  <br></br>
- <div>
-<div>
-    <center><h1>Analysis Results</h1></center>
-    <br></br>
-     <table id="analysisResults-table" class="table table-striped table-bordered nowrap" cellspacing="0" width="80%">
-     <thead>
-     <tr>
-	<th>BAT_ID</th>
-	<th>Donor</th>
-	<th>Panel</th>
-	<th>File Name</th>
-	<th>redQ4</th>
-	<th>result</th>
-	<th>blackQ2</th>
-	<th>blackQ3</th>
-	<th>blackQ4</th>
-	<th>zmeanQ4</th>
-	<th>CD63min</th>
-	<th>CD63max</th>
-	<th>msiCCR3</th>
-	<th>cellQ4</th>
-	<th>responder</th>
-     </thead>
-     <tbody>
-      {% for r in analysis_results %}
-      <tr>
-        <td >{{ r.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
-        <td >{{ r.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
-	<td> <a href="show_channels/{{r.analysis_id}}">{{r.analysisMarker_id__analysis_id__panel_id__panel_name}}</a></td>
-        <td >{{ r.file_id__file_name }}</td>
-        <td >{{ r.redQ4|floatformat:2 }}</td>
-        <td >{{ r.result }}</td>
-        <td >{{ r.blackQ2 |floatformat:2 }}</td>
-	<td >{{ r.blackQ3 |floatformat:2}}</td>
-        <td >{{ r.blackQ4|floatformat:2 }}</td>
-        <td >{{ r.zmeanQ4|floatformat:2 }}</td>
-        <td >{{ r.CD63min|floatformat:2 }}</td>
-        <td >{{ r.CD63max|floatformat:2 }}</td>
-        <td >{{ r.msiCCR3|floatformat:2 }}</td>
-        <td >{{ r.cellQ4|floatformat:2 }}</td>
-        <td >{{ r.responder }}</td>
-      {% empty %}
-      <tr>
-        <td colspan="7" class="text-center bg-warning">No Data</td>
-      </tr>
-    {% endfor %}
+    			<div class="form-group col-md-2 col-lg-2">
+        			<label class="form-check-label" >Donor Name:</label>
+        			<div class="input-group">
+            				<input class="form-control py-2 border-right-0 border" type="search" name="donor_name" placeholder="Donor Name" />
+        			</div>
+    			</div>
+    			<div class="form-group col-md-2 col-lg-2">
+       				 <label class="form-check-label" >Panel Name:</label>
+        			<select id="panels_list" class="form-control" name="panel_name">
+        				<option selected>Choose Panel...</option>
+        					{% for panel in panels %}
+        				<option value="{{ panel }}">{{ panel }}</option>
+        					{% endfor %}
+        			</select>
+       			 </div>
+    			<div class="form-group col-md-2 col-lg-2">
+        			<label class="form-check-label" >Date From:</label>
+        			<input type="date" class="form-control" id="publishDateMin" name="date_min">
+    			</div>
+    			<div class="form-group col-md-2 col-lg-2">
+        			<label class="form-check-label" >Date to:</label>
+        			<input type="date" class="form-control" id="publishDateMin" name="date_max">
+    			</div>
+    		</div>
+		<div class="row">
+        		<div class="form-group col-md-2 col-lg-4">
+            			<input class="form-check-input" type="checkbox" value="" id="file_label" checked>
+            			<label class="form-check-label" for="file_label">File Name</label>
+                		<div class="input-group">
+					<input class="form-control py-2 border-right-0 border" type="search" name="file_name" placeholder="File Name" />
+            			</div>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-3">
+            			<input class="form-check-input" type="checkbox" value="" id="allergen" checked>
+            			<label class="form-check-label" for="allergen">Allergen</label>
+            			<div class="input-group">
+                			<input class="form-control py-2 border-right-0 border" type="search" name="allergen" placeholder="Allergen contains..." />
+            			</div>
+			</div>
+			<div class="form-group col-md-2 col-lg-3">
+            			<input class="form-check-input" type="checkbox" value="" id="control" checked>
+            			<label class="form-check-label" for="control">Control</label>
+            			<select id="control_list" class="form-control" name="category">
+            				<option selected>Choose Control...</option>
+            					{% for control in controls %}
+            				<option value="{{ control }}">{{ control }}</option>
+            					{% endfor %}
+            			</select>
+            		</div>
+		</div>
+		<div class="row">
+			<div class="form-group col-md-2 col-lg-2">
+                        <input class="form-check-input" type="checkbox" value="" id="wheat_flour" checked>
+                        <label class="form-check-label" for="wheat_flour">Wheat Flour</label>
 
-     </tbody>
-     </table>
- </div>
+                            	<select id="wheat_flour_choice" class="form-control" name="category">
+                               		<option value="All">All</option>
+					<option value="NA">NA</option>
+					<option value="negative">negative</option>
+					<option value="positive">positive</option>
+                         	</select>
+                         </div>
+                        <div class="form-group col-md-2 col-lg-2">
+                        <input class="form-check-input" type="checkbox" value="" id="gluten" checked>
+                        <label class="form-check-label" for="gluten">Gluten</label>
+
+                                <select id="gluten_choice" class="form-control" name="category">
+                                        <option value="All">All</option>
+                                        <option value="NA">NA</option>
+                                        <option value="negative">negative</option>
+                                        <option value="positive">positive</option>
+                                </select>
+			</div>
+			<div class="form-group col-md-2 col-lg-2">
+                        <input class="form-check-input" type="checkbox" value="" id="gliadin" checked>
+                        <label class="form-check-label" for="gliadin">Gliadin</label>
+
+                                <select id="gliadin_choice" class="form-control" name="category">
+                                        <option value="All">All</option>
+                                        <option value="NA">NA</option>
+                                        <option value="negative">negative</option>
+                                        <option value="positive">positive</option>
+                                </select>
+                         </div>
+                        <div class="form-group col-md-2 col-lg-2">
+                        <input class="form-check-input" type="checkbox" value="" id="tri_a_19" checked>
+                        <label class="form-check-label" for="tri_a_19">Tri a 19</label>
+
+                                <select id="tri_a_19_choice" class="form-control" name="category">
+                                        <option value="All">All</option>
+                                        <option value="NA">NA</option>
+                                        <option value="negative">negative</option>
+                                        <option value="positive">positive</option>
+                                </select>
+                         </div>
+                        <div class="form-group col-md-2 col-lg-2">
+                        <input class="form-check-input" type="checkbox" value="" id="tri_a_14" checked>
+                        <label class="form-check-label" for="tri_a_14">Tri a 14</label>
+
+                                <select id="tri_a_14_choice" class="form-control" name="category">
+                                        <option value="All">All</option>
+                                        <option value="NA">NA</option>
+                                        <option value="negative">negative</option>
+                                        <option value="positive">positive</option>
+                                </select>
+                         </div>
+                </div>
+		<div class="row">
+                        <div class="form-group col-md-2 col-lg-2">
+                        <input class="form-check-input" type="checkbox" value="" id="OFC_class" checked>
+                        <label class="form-check-label" for="OFC_class">OFC Classifications</label>
+
+                                <select id="OFC_class_choice" class="form-control" name="category">
+                                        <option value="All">All</option>
+                                        <option value="NA">NA</option>
+                                        <option value="negative">negative</option>
+                                        <option value="positive">positive</option>
+                                </select>
+                         </div>
+                        <div class="form-group col-md-4 col-lg-4">
+                        <input class="form-check-input" type="checkbox" value="" id="clinical_class" checked>
+                        <label class="form-check-label" for="clinical_class">Clinical Classifications</label>
+
+                                <select id="clinical_lass_choice" class="form-control" name="category">
+                                        <option selected>Choose ...</option>
+                                          {% for c in clinical_classes %}
+                               		<option value="{{ c }}">{{ c }}</option>
+                                          {% endfor %}
+                                </select>
+                        </div>
+                </div>
+                <div class="row">
+			<div class="form-group col-md-2 col-lg-5">
+            		<input class="form-check-input" type="checkbox" value="" id="result" checked>
+            		<label class="form-check-label" for="result">Result</label>
+
+		            <select id="results_list" class="form-control" name="category">
+         			   <option selected>Choose ...</option>
+  				          {% for result in results %}
+     			       <option value="{{ result }}">{{ result }}</option>
+          				  {% endfor %}
+           		 </select>
+           		 </div>
+        		<div class="form-group col-md-2 col-lg-5">
+           			<input class="form-check-input" type="checkbox" value="" id="responder" checked>
+            			<label class="form-check-label" for="responder">Responder</label>
+            			<select id="responders_list" class="form-control" name="category">
+            				<option selected>Choose ...</option>
+            					{% for responder in responders %}
+            				<option value="{{ responder }}">{{ responder }}</option>
+            					{% endfor %}
+            			</select>
+            		</div>
+		</div>
+		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="redQ4" checked>
+            			<label class="form-check-label" for="redQ4">Red Q4</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="redQ4_min" placeholder="Min.." name="redQ4_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="redQ4_max" placeholder="Max.." name="redQ4_max">
+        		</div>
+    		</div>
+    		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="blackQ2" checked>
+            			<label class="form-check-label" for="blackQ2">Black Q2</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="blackQ2_min" placeholder="Min.." name="blackQ2_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="blackQ2_max" placeholder="Max.." name="blackQ2_max">
+        		</div>
+    		</div>
+    		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="blackQ3" checked>
+            			<label class="form-check-label" for="blackQ3">Black Q3</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="blackQ3_min" placeholder="Min.." name="blackQ3_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="blackQ3_max" placeholder="Max.." name="blackQ3_max">
+        		</div>
+    		</div>
+    		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="blackQ4" checked>
+            			<label class="form-check-label" for="blackQ4">Black Q4</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="blackQ4_min" placeholder="Min.." name="blackQ4_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="blackQ4_max" placeholder="Max.." name="blackQ4_max">
+       			</div>
+    		</div>
+   		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="zmeanQ4" checked>
+            			<label class="form-check-label" for="zmeanQ4">Z Mean Q4N</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="zmeanQ4_min" placeholder="Min.." name="zmeanQ4_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+           			<input type="number" min=0 class="form-control" id="zmeanQ4_max" placeholder="Max.." name="zmeanQ4_max">
+        		</div>
+    		</div>
+    		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="CD63min" checked>
+            			<label class="form-check-label" for="CD63min">CD63 MIN</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="CD63min_min" placeholder="Min.." name="CD63min_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="CD63min_max" placeholder="Max.." name="CD63min_max">
+        		</div>
+    		</div>
+    		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="CD63max" checked>
+            			<label class="form-check-label" for="CD63max">CD63 MAX</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="CD63max_min" placeholder="Min.." name="CD63max_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="CD63max_max" placeholder="Max.." name="CD63max_max">
+       			</div>
+    		</div>
+    		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="msiCCR3" checked>
+            			<label class="form-check-label" for="msiCCR3">MSI CCR3</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="msiCCR3_min" placeholder="Min.." name="msiCCR3_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="msiCCR3_max" placeholder="Max.." name="msiCCR3_max">
+        		</div>
+    		</div>
+    		<div class="row">
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input class="form-check-input" type="checkbox" value="" id="cellQ4" checked>
+            			<label class="form-check-label" for="cellQ4">Cell Q4</label>
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="cellQ4_min" placeholder="Min.." name="cellQ4_min">
+        		</div>
+        		<div class="form-group col-md-2 col-lg-2">
+            			<input type="number" min=0 class="form-control" id="cellQ4_max" placeholder="Max.." name="cellQ4_max">
+        		</div>
+    		</div>
+    		<div class="row">
+        		<div class="form-group col-md-6 col-lg-6"> </div>
+			<div class="form-group col-md-3 col-lg-3">
+            			<div class="form-check form-switch">
+                			<input class="form-check-input" type="checkbox" id="mean_donor">
+                			<label class="form-check-label" for="mean_donor">Show only mean data for each donor</label>
+            			</div>
+        		</div>
+        		<div class="form-group col-md-1 col-lg-1"> </div>
+        		<div class="form-group col-md-2 col-lg-2">
+				<button type="submit" class="btn btn-primary"> Search</button>
+        		</div>
+    		</div>
+	</form>
+	<hr />
+
+</div>
+<table id="analysis-table" class="display" style="width:100%">          
+<thead>
+          <tr>
+              <th>BAT_ID</th>
+              <th>Donor</th>
+              <th>Panel</th>
+              <th>File Name</th>
+              <th>File Allergen</th>
+              <th>File Control</th>
+              <th>redQ4</th>
+              <th>result</th>
+              <th>blackQ2</th>
+              <th>blackQ3</th>
+              <th>blackQ4</th>
+              <th>zmeanQ4</th>
+              <th>CD63min</th>
+              <th>CD63max</th>
+              <th>msiCCR3</th>
+              <th>cellQ4</th>
+              <th>responder</th>
+	      <th>Clinical Classifications</th>
+          </thead>
+                <tbody>
+                {% for r in analysis_results %}
+                <tr>
+                  <td >{{ r.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
+                  <td >{{ r.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
+            <td> <a href="show_channels/{{r.analysisMarker_id__analysis_id}}">{{r.analysisMarker_id__analysis_id__panel_id__panel_name}}</a></td>
+                  <td >{{ r.file_id__file_name }}</td>
+                  <td >{{ r.file_id__allergen }}</td>
+            <td >{{ r.file_id__control }}</td>
+            <td >{{ r.redQ4|floatformat:2 }}</td>
+                  <td >{{ r.result }}</td>
+                  <td >{{ r.blackQ2 |floatformat:2 }}</td>
+            <td >{{ r.blackQ3 |floatformat:2}}</td>
+                  <td >{{ r.blackQ4|floatformat:2 }}</td>
+                  <td >{{ r.zmeanQ4|floatformat:2 }}</td>
+                  <td >{{ r.CD63min|floatformat:2 }}</td>
+                  <td >{{ r.CD63max|floatformat:2 }}</td>
+                  <td >{{ r.msiCCR3|floatformat:2 }}</td>
+                  <td >{{ r.cellQ4|floatformat:2 }}</td>
+                  <td >{{ r.responder }}</td>
+		  <td >{{ r.analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name}}</td>
+                {% empty %}
+                <tr>
+                  <td colspan="7" class="text-center bg-warning">No Data</td>
+                </tr>
+              {% endfor %}
+          
+                </tbody>
+          </table>
+      </div>
 
 
 <script>
-
-
-$(document).ready(function () {
-    // Setup - add a text input to each footer cell
-    $('#analysisResults-table thead tr')
-        .clone(true)
-        .addClass('filters')
-        .appendTo('#analysisResults-table thead');
-
-
-var table = $('#analysisResults-table').DataTable({
-        orderCellsTop: true,
-        fixedHeader: true,
-        pageLength: 20,
-        aaSorting: [],
-        initComplete: function () {
-            var api = this.api();
-            // For each column
-            api
-                .columns()
-                .eq(0)
-                .each(function (colIdx) {
-                    // Set the header cell to contain the input element
-                    var cell = $('.filters th').eq(
-                        $(api.column(colIdx).header()).index()
-                    );
-                    var title = $(cell).text();
-                    $(cell).html('<input type="text" placeholder="' + title + '" />');
- 
-                    // On every keypress in this input
-                    $(
-                        'input',
-                        $('.filters th').eq($(api.column(colIdx).header()).index())
-                    )
-                        .off('keyup change')
-                        .on('change', function (e) {
-                            // Get the search value
-                            $(this).attr('title', $(this).val());
-                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
- 
-                            var cursorPosition = this.selectionStart;
-                            // Search the column for that value
-                            api
-                                .column(colIdx)
-                                .search(
-                                    this.value != ''
-                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
-                                        : '',
-                                    this.value != '',
-                                    this.value == ''
-                                )
-                                .draw();
-                        })
-                        .on('keyup', function (e) {
-                            e.stopPropagation();
-
-                            $(this).trigger('change');
-                            $(this)
-                                .focus()[0]
-                                .setSelectionRange(cursorPosition, cursorPosition);
-                        });
-                });
-        },
-    });
-
-});
-
+  $(document).ready(function(){
+		  $('table.display').DataTable({
+			          /* Disable initial sort */
+				  "aaSorting": [],
+				  "autoWidth": false,
+				  "searching": false
+			      });
+})
 </script>
-
-<style>
-thead input {
-        width: 80%;
-    }
-
-</style>

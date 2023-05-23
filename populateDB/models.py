@@ -208,3 +208,44 @@ class MetaData(models.Model):
     labels = models.CharField(max_length=200, blank = True)
     values = models.CharField(max_length=200, blank = True, null=True)
     file_id = models.ForeignKey(ExperimentFiles, to_field=('file_id'), blank = True, null=True,  on_delete = models.CASCADE)
+
+
+class DonorClass_sIgE(models.Model):
+    sIgE_TYPES = (
+        (u"NA", u'NA'),
+        (u"positive", u'positive'),
+        (u"negative", u'negative'),
+        )
+
+    sige_id = models.AutoField(primary_key=True)
+    wheat_flour = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
+    gluten = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
+    gliadin = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
+    Tri_a_19 = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
+    Tri_a_14 = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
+    donor_id = models.ForeignKey(Donor, to_field=('donor_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
+
+class DonorClass_OFC(models.Model):
+    OFC_TYPES = (
+        (u"NA", u'NA'),
+        (u"positive", u'positive'),
+        (u"negative", u'negative'),
+        )
+    ofc_id = models.AutoField(primary_key=True)
+    donor_ofc = models.CharField(choices=OFC_TYPES,max_length=120, blank = True, null=True)
+    donor_id = models.ForeignKey(Donor, to_field=('donor_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
+
+
+class ClinicalClass_Names(models.Model):
+    clinicalClass_id = models.AutoField(primary_key=True)
+    clinicalClass_name = models.CharField(max_length=150, unique = True, blank = False)
+    def __str__(self):
+        return (self.clinicalClass_name)
+
+class DonorClass_clinical(models.Model):
+    donor_class_id = models.AutoField(primary_key=True)
+    donor_clinicalClass_id = models.ForeignKey(ClinicalClass_Names, to_field=('clinicalClass_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    donor_id = models.ForeignKey(Donor, to_field=('donor_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)

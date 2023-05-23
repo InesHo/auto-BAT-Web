@@ -7,7 +7,7 @@
 <div>
     <center><h1>Analysis Thresholds</h1></center>
     <br></br>
-     <table id="analysisResults-table" class="table table-striped table-bordered nowrap" cellspacing="0" width="80%">
+      <table id="analysis-thresholds" class="display" style="width:100%">
      <thead>
      <tr>
 	<th>BAT_ID</th>
@@ -48,16 +48,16 @@
 
 $(document).ready(function () {
     // Setup - add a text input to each footer cell
-    $('#analysisResults-table thead tr')
+    $('#analysis-thresholds thead tr')
         .clone(true)
         .addClass('filters')
-        .appendTo('#analysisResults-table thead');
+        .appendTo('#analysis-thresholds thead');
 
 
-var table = $('#analysisResults-table').DataTable({
+var table = $('#analysis-thresholds').DataTable({
         orderCellsTop: true,
         fixedHeader: true,
-        pageLength: 20,
+        pageLength: 15,
         aaSorting: [],
         initComplete: function () {
             var api = this.api();
