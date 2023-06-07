@@ -416,7 +416,14 @@ def add_channels(request, analysis_id):
 @login_required
 def show_channels(request, analysis_id):  
     channels_data = models.Channels.objects.filter(analysis_id=analysis_id)
-    return render(request,"channels/show_channels.html",{'channels_data':channels_data})
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+
+    return render(request,"channels/show_channels.html",{'channels_data':channels_data, 'bat_name': bat_name, 'donor_name': donor_name, 'panel_name': panel_name})
 
 def marker_settings(request, analysis_id): 
     bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
@@ -635,14 +642,32 @@ def re_analysis_alert(request):
 @login_required
 def list_files(request, analysis_id):  
     files_list = models.ExperimentFiles.objects.filter(analysis_id=analysis_id)
-    return render(request,"files/list_files.html",{'files_list':files_list})
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+
+    return render(request,"files/list_files.html",{'files_list':files_list, 'bat_name': bat_name, 'donor_name': donor_name, 'panel_name': panel_name})
 
 @login_required
 def list_thresholds(request, analysisMarker_id):
     SSCA_Threshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('SSCA_Threshold', flat=True))
     FcR_Threshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('FcR_Threshold', flat=True))
     CD63_Threshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('CD63_Threshold', flat=True))
-    return render(request,"analysis/list_thresholds.html",{'SSCA_Threshold':SSCA_Threshold,'FcR_Threshold':FcR_Threshold,'CD63_Threshold':CD63_Threshold})
+    analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+    analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
+
+    return render(request,"analysis/list_thresholds.html",{'SSCA_Threshold':SSCA_Threshold,'FcR_Threshold':FcR_Threshold,'CD63_Threshold':CD63_Threshold,
+                                                           'bat_name': bat_name,'donor_name': donor_name, 'panel_name': panel_name,
+                                                           'analysis_type': analysis_type})
 
 
 @login_required
@@ -712,12 +737,31 @@ def thresholds_report(request):
 @login_required
 def analysis_error(request, analysisMarker_id):
     error = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_error', flat=True))
-    return render(request,"analysis/show_error.html",{'error':error})
+    analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+    analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
+
+    return render(request,"analysis/show_error.html",{'error':error,  'bat_name': bat_name,'donor_name': donor_name, 'panel_name': panel_name,
+                                                      'analysis_type': analysis_type})
 
 @login_required
 def analysis_info(request, analysisMarker_id):
     info_messages = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_info_messages', flat=True))
-    return render(request,"analysis/show_info_messages.html",{'info_messages':info_messages})
+    analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+    analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
+    return render(request,"analysis/show_info_messages.html",{'info_messages':info_messages, 'bat_name': bat_name,
+                                                              'donor_name': donor_name, 'panel_name': panel_name, 'analysis_type': analysis_type})
 
 
 

@@ -9,31 +9,46 @@
                     <div class="modal-footer"></div>
                 </div>
                 <input type="button" class="btn btn-primary" value="Go back!" onclick="history.back()">
-                <br></br>
-		<div class="row">
-    			<div class="col-sm">
-				<h5 >SSCA_Threshold :</h5>
-    			</div>
-    			<div class="col-sm">
-      				{{ SSCA_Threshold }}
-   			 </div>
-		</div>
-		<div class="row">
-    			<div class="col-sm">
-      				<h5 >FcR_Threshold :</h5>
-    			</div>
-    			<div class="col-sm">
-      				{{ FcR_Threshold }}
-    			</div>
-		</div>
-		<div class="row">
-    			<div class="col-sm">
-      				<h5 >CD63_Threshold :</h5>
-    			</div>
-    			<div class="col-sm">
-      				{{ CD63_Threshold }}
-    			</div>
-		</div>
+				<br></br>
+				<div class="row">
+					<div class="col-sm">
+							<h5 >{{ bat_name }}</h5>
+					</div>
+					<div class="col-sm">
+							<h5 >{{ donor_name }}</h5>
+					</div>
+					<div class="col-sm">
+							<h5 > {{ panel_name }}</h5>
+					</div>
+					<div class="col-sm">
+						<h5 > {{ analysis_type }}</h5>
+					</div>
+				</div>
+				  <br></br>
+				<div class="row">
+						<div class="col-sm">
+						<h5 >SSCA_Threshold :</h5>
+						</div>
+						<div class="col-sm">
+							{{ SSCA_Threshold }}
+					</div>
+				</div>
+				<div class="row">
+						<div class="col-sm">
+							<h5 >FcR_Threshold :</h5>
+						</div>
+						<div class="col-sm">
+							{{ FcR_Threshold }}
+						</div>
+				</div>
+				<div class="row">
+						<div class="col-sm">
+							<h5 >CD63_Threshold :</h5>
+						</div>
+						<div class="col-sm">
+							{{ CD63_Threshold }}
+						</div>
+				</div>
             </div>
         </div>
     </div>
