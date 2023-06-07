@@ -34,13 +34,13 @@ urlpatterns = [
     path('show_experimentfile/show_rawdata/<int:file_id>', views.show_rawMeanData, name='show_rawdata'),
     path('add_experimentfile/update_files/<analysis_id>', views.update_files, name='update_files'),
     path('add_experimentfile/update_files/add_channels/<analysis_id>', views.add_channels, name='add_channels'),
-    path('add_experimentfile/update_files/add_channels/marker_settings/<analysis_id>', views.marker_settings, name='marker_settings'),
-    path('add_experimentfile/update_files/add_channels/marker_settings/run_analysis/<analysis_id>', views.run_analysis, name='run_analysis'),
+    path('add_experimentfile/update_files/add_channels/analysis_type/<analysis_id>', views.analysis_type, name='analysis_type'),
+    path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_autobat/<analysis_id>', views.marker_settings_autobat, name='marker_settings_autobat'),
+    path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_autograt/<analysis_id>', views.marker_settings_autograt, name='marker_settings_autograt'),
 
-    path('add_experimentfile/update_files/add_channels/marker_settings/run_analysis/run_analysis_autobat/<analysis_id>', 
-        views.run_analysis_autobat, name='run_analysis_autobat'),
-    path('add_experimentfile/update_files/add_channels/marker_settings/run_analysis/run_analysis_autograt/<analysis_id>', 
-        views.run_analysis, name='run_analysis_autograt'),
+    path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_autobat/run_analysis_autobat/<analysis_id>', views.run_analysis_autobat, name='run_analysis_autobat'),
+    path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_autograt/run_analysis_autograt/<analysis_id>', views.run_analysis_autograt, name='run_analysis_autograt'),
+
 
     path('analysis/', views.show_analysis, name='show_analysis'),
     path('analysis/list_files/<analysis_id>', views.list_files, name='list_files'),

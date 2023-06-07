@@ -104,7 +104,7 @@
         </td>
 
         <td>
-                <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}update_files/add_channels/marker_settings/{{a.analysis_id}}">Analyze</a>
+                <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}update_files/add_channels/analysis_type/{{a.analysis_id}}">Analyze</a>
         </td>
         <td>
                 {% if a.analysis_status == "Ready" or a.analysis_status == "In Progress" or a.analysis_status == "Error" %}

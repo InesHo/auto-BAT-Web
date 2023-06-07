@@ -253,9 +253,9 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
 
 
 
-@background(queue='autoBat-queue-analysis', schedule=10)
+@background(queue='autograt-queue-analysis', schedule=10)
 def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name,
                         chosen_z1, chosen_z1_lable, chosen_y1, chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
                         pathToOutput, pathToGatingFunctions, rPath, user_id
                     ):
-    pass
+    models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Ready")
