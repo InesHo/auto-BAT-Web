@@ -378,15 +378,22 @@ $(document).ready(function () {
     });
     // on filtering the file tri_a_14_max input
     $('#tri_a_14_max').on('input', function () {
-        // get the api data of updated file date_max
         if(this.value == "all")
             send_data['tri_a_14_max'] = "";
         else
             send_data['tri_a_14_max'] = this.value;
         getAPIData();
     });
+    // show only mean data for each donor
+    $('#mean_donor').on('change', function () {
+        if (this.checked)
+            send_data['mean_donor'] = this.value;
+        else
+            send_data['mean_donor'] = "";
+        getAPIData();
+    });
 
-    // sort the data according to price/points
+    // sort the data
     $('#sort_by').on('change', function () {
         send_data['sort_by'] = this.value;
         getAPIData();
@@ -445,8 +452,8 @@ function resetFilters() {
     $("#tri_a_19_max").val("");
     $("#tri_a_14_min").val("");
     $("#tri_a_14_max").val("");
+    $("#mean_donor").prop('checked',false);
     $("#sort_by").val("none");
-
 
     send_data['bat_name'] = '';
     send_data['donor_name'] = '';
@@ -488,6 +495,7 @@ function resetFilters() {
     send_data['tri_a_19_max'] = '';
     send_data['tri_a_14_min'] = '';
     send_data['tri_a_14_max'] = '';
+    send_data['mean_donor'] = '';
     send_data["sort_by"] = '',
     send_data['format'] = 'json';
 }

@@ -935,7 +935,8 @@ class ListResults(ListAPIView):
         tri_a_19_max = self.request.query_params.get('tri_a_19_max', None)
         tri_a_14_min = self.request.query_params.get('tri_a_14_min', None)
         tri_a_14_max = self.request.query_params.get('tri_a_14_max', None)
-
+        mean_donor = self.request.query_params.get('mean_donor', None)
+        
         if bat_name:
             queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__bat_name = bat_name)
         if is_valid_queryparam(donor_name):
@@ -1023,6 +1024,10 @@ class ListResults(ListAPIView):
             queryList = queryList.order_by("analysisMarker_id__analysis_id__bat_id__bat_name")
         elif sort_by == "donor_name":
             queryList = queryList.order_by("analysisMarker_id__analysis_id__donor_id__donor_abbr")
+
+        if mean_donor == "mean":
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donor_abbr="WA")
+
         return queryList
 
 
