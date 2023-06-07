@@ -20,8 +20,9 @@
       <th>Status</th>
       <th>Type</th>
       <th>VER</th>
+      <th>Info Messages</th>
       <th>Download</th>
-      <th>ThresHolds</th>
+      <th>Thresholds</th>
       <th>Settings</th>
       <th>Files</th>
 
@@ -54,8 +55,14 @@
 		{% endif %}
         <td >{{ a.analysis_type }}</td>
 	<td >{{ a.analysis_type_version }}</td>
-
-        <td>
+	<td >
+		{% if a.analysis_status == "Ready" %}
+                <a class="btn btn-info" href="analysis_info/{{a.analysisMarker_id}}">
+                        <span class="fa fa-eye"></span>
+                </a>
+		{% endif %}
+	</td> 
+	<td>
 
           {% if a.analysis_status == "Ready" %}
 
@@ -101,10 +108,11 @@
         </td>
         <td>
                 {% if a.analysis_status == "Ready" or a.analysis_status == "In Progress" or a.analysis_status == "Error" %}
-                <a href="delete_alert/{{a.analysisMarker_id}}" class="btn btn-danger" >
-                        <span class="fa fa-trash"></span>
-                </a>
-
+                	{% if user_is_superuser == True %}
+			<a href="delete_alert/{{a.analysisMarker_id}}" class="btn btn-danger" >
+                        	<span class="fa fa-trash"></span>
+                	</a>
+			{% endif %}
                 {% endif %}
         </td>
 

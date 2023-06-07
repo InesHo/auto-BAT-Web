@@ -19,7 +19,7 @@ logger = getLogger(__name__)
 
 
        
-@background(queue='autoBat-queue-save', schedule=10)
+#@background(queue='autoBat-queue-save', schedule=10)
 def save_pdf(pdf_path, img_list, analysisMarker_id):
         
     image_grid(img_list, pdf_path)
@@ -223,7 +223,9 @@ def run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, pane
             results_instance.analysisMarker_id_id = int(analysisMarker_id)
             results_instance.user_id = user_id
             results_instance.save()
-        
+        # save the  info messages
+        info_messages = results[4]
+        models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages = info_messages)
         # Save plots to database
         img_list = []
         for file in sample_obj:

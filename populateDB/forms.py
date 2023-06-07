@@ -42,7 +42,19 @@ class DevicesForm(forms.ModelForm):
         model = models.Devices  
         fields = "__all__"  
 
-class DonorForm(forms.ModelForm):  
+class DonorForm_old(forms.ModelForm):  
+    class Meta:  
+        model = models.Donor  
+        fields = "__all__"  
+
+class DonorForm(forms.ModelForm):
+    wheat_flour = forms.FloatField(required=False)
+    gluten = forms.FloatField(required=False)
+    gliadin = forms.FloatField(required=False)
+    Tri_a_19 = forms.FloatField(required=False)
+    Tri_a_14 = forms.FloatField(required=False)
+    donor_ofc = forms.CharField(required=False)
+    donor_clinicalClass_id = forms.ModelChoiceField(queryset=models.ClinicalClass_Names.objects.all(), required=False)
     class Meta:  
         model = models.Donor  
         fields = "__all__"  

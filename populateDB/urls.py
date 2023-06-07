@@ -54,6 +54,13 @@ urlpatterns = [
     path('analysis/thresholds_to_CSV', views.thresholds_to_CSV, name='thresholds_to_CSV'),
     path('thresholds_report/', views.thresholds_report, name='thresholds_report'),
     path('analysis/analysis_error/<analysisMarker_id>', views.analysis_error, name='analysis_error'),
-    path('analysis_report_2/', views.analysis_report_2, name='analysis_report_2'),
-
+    path('analysis/analysis_info/<analysisMarker_id>', views.analysis_info, name='analysis_info'),
+    
+    path('research_questions/', views.research_questions, name='research_questions'),
+    path('results/', views.ListResults.as_view(), name = 'list_results'),
+    path('ajax/bat_names', views.getBat_names, name = "getBat_names"),
+    path('ajax/file_controls', views.getFile_controls, name = "getFile_controls"),
+    path('ajax/panel_names', views.getPanel_names, name = "getPanel_names"),
+    path('ajax/clinical_classes', views.getClinical_classes, name = "getClinical_classes"),
+    path('ajax/responders', views.getResponders, name = "getResponders"),
     ]

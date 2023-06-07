@@ -117,6 +117,7 @@ class AnalysisMarkers(models.Model):
     analysis_type = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
     analysis_type_version = models.CharField(choices=ANALYSIS_TYPES,max_length=120, blank = True, null=True)
     analysis_error = models.TextField(max_length=250, blank=True, validators=[MaxLengthValidator(250)])
+    analysis_info_messages = models.TextField(max_length=250, blank=True, validators=[MaxLengthValidator(250)])
     analysis_id = models.ForeignKey(Analysis, to_field=('analysis_id'), blank = True, null=True,  on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 
@@ -170,7 +171,7 @@ class AnalysisResults(models.Model):
     )
 
     id = models.AutoField(primary_key=True)
-    file_id = models.ForeignKey(ExperimentFiles, to_field=('file_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    file_id = models.ForeignKey(ExperimentFiles, related_name='analysis_results', blank = True, null=True,  on_delete = models.CASCADE)
     redQ4 = models.FloatField(blank = True, null = True)
     result = models.CharField(max_length=20, blank = True, null = True)
     blackQ2 = models.FloatField(blank = True, null = True)
@@ -218,11 +219,11 @@ class DonorClass_sIgE(models.Model):
         )
 
     sige_id = models.AutoField(primary_key=True)
-    wheat_flour = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
-    gluten = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
-    gliadin = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
-    Tri_a_19 = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
-    Tri_a_14 = models.CharField(choices=sIgE_TYPES,max_length=120, blank = True, null=True)
+    wheat_flour = models.FloatField(blank = True, null = True)
+    gluten = models.FloatField(blank = True, null = True)
+    gliadin = models.FloatField(blank = True, null = True)
+    Tri_a_19 = models.FloatField(blank = True, null = True)
+    Tri_a_14 = models.FloatField(blank = True, null = True)
     donor_id = models.ForeignKey(Donor, to_field=('donor_id'), blank = True, null=True,  on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 

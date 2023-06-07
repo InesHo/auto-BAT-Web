@@ -207,12 +207,49 @@ def show_device(request):
 
 @login_required
 def add_donor(request):
-    donors_data = models.Donor.objects.all().order_by('donor_id').reverse()
+    donors_data = models.Donor.objects.values('donor_id', 'donor_abbr',
+                                                'donorclass_sige__wheat_flour',
+                                                'donorclass_sige__gluten',
+                                                'donorclass_sige__gliadin',
+                                                'donorclass_sige__Tri_a_19',
+                                                'donorclass_sige__Tri_a_14',
+                                                'donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
+                                                'donorclass_ofc__donor_ofc')
     if request.method == 'POST':
         form = forms.DonorForm(request.POST or None)
         if form.is_valid():
-            new_donor = form.save(commit=False)
-            new_donor.save()
+            donor_abbr = form.cleaned_data['donor_abbr']
+            wheat_flour = form.cleaned_data['wheat_flour']
+            gluten = form.cleaned_data['gluten']
+            gliadin = form.cleaned_data['gliadin']
+            Tri_a_19 = form.cleaned_data['Tri_a_19']
+            Tri_a_14 = form.cleaned_data['Tri_a_14']
+            donor_ofc = form.cleaned_data['donor_ofc']
+            donor_clinicalClass_id = form.cleaned_data['donor_clinicalClass_id']
+            #new_donor = form.save(commit=False)
+            #new_donor.save()
+            donor_instance = models.Donor(donor_abbr=donor_abbr)
+            donor_instance.user_id = request.user.id
+            donor_instance.save()
+            donor_id = donor_instance.donor_id
+            donorClassSIGE_instance = models.DonorClass_sIgE(wheat_flour = wheat_flour,
+                                                            gluten = gluten,
+                                                            gliadin = gliadin,
+                                                            Tri_a_19 = Tri_a_19,
+                                                            Tri_a_14 = Tri_a_14 )
+            donorClassSIGE_instance.user_id = request.user.id
+            donorClassSIGE_instance.donor_id_id = donor_id
+            donorClassSIGE_instance.save()
+
+            DonorClass_OFC_instance = models.DonorClass_OFC(donor_ofc = donor_ofc)
+            DonorClass_OFC_instance.user_id = request.user.id
+            DonorClass_OFC_instance.donor_id_id = donor_id
+            DonorClass_OFC_instance.save()
+
+            DonorClass_clinical_instance = models.DonorClass_clinical(donor_clinicalClass_id = donor_clinicalClass_id)
+            DonorClass_clinical_instance.user_id = request.user.id
+            DonorClass_clinical_instance.donor_id_id = donor_id
+            DonorClass_clinical_instance.save()
             return render(request,"donors/show_donors.html",{'donors_data':donors_data})
     else:
         form = forms.DonorForm()
@@ -224,7 +261,6 @@ def add_donor(request):
 
 @login_required
 def show_donor(request):  
-    #donors_data = models.Donor.objects.all().order_by('donor_abbr')
     donors_data = models.Donor.objects.values('donor_id', 'donor_abbr',
                                                 'donorclass_sige__wheat_flour',
                                                 'donorclass_sige__gluten',
@@ -470,14 +506,16 @@ def results_to_CSV(request):
     analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
-                                                            'file_id__file_name',
+                                                            'file_id__file_name', "analysisMarker_id__analysis_error", "analysisMarker_id__analysis_info_messages",
                                                             'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
     return render_to_csv_response(analysisResults)
 
 @login_required
 def thresholds_to_CSV(request):
     thresholds = models.AnalysisThresholds.objects.values('analysisMarker_id__analysis_id__bat_id__bat_name','analysisMarker_id__analysis_id__donor_id__donor_abbr',
-                                                            'analysisMarker_id__analysis_id__panel_id__panel_name','SSCA_Threshold', 'FcR_Threshold', 'CD63_Threshold')
+                                                            'analysisMarker_id__analysis_id__panel_id__panel_name','SSCA_Threshold', 'FcR_Threshold', 'CD63_Threshold',
+                                                            "analysisMarker_id__analysis_error", "analysisMarker_id__analysis_info_messages"
+                                                            )
     return render_to_csv_response(thresholds)
 
 
@@ -676,109 +714,223 @@ def analysis_error(request, analysisMarker_id):
     error = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_error', flat=True))
     return render(request,"analysis/show_error.html",{'error':error})
 
+@login_required
+def analysis_info(request, analysisMarker_id):
+    info_messages = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_info_messages', flat=True))
+    return render(request,"analysis/show_info_messages.html",{'info_messages':info_messages})
+
+
+
+######################################################################
+
+def research_questions(request):
+    return render(request, "analysis/research_questions.html", {})
+
+from .serializers import ResultsSerializers
+from .pagination import StandardResultsSetPagination
+from rest_framework.generics import ListAPIView
+from django.http import JsonResponse
 def is_valid_queryparam(param):
     return param != '' and param is not None
 
-@login_required
-def analysis_report_filters(request):
-    analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
+def research_questions(request):
+    return render(request, "analysis/research_questions.html", {})
+
+class ListResults(ListAPIView):
+    # set the pagination and serializer class
+    pagination_class = StandardResultsSetPagination
+    serializer_class = ResultsSerializers
+    def get_queryset(self):
+        # filter the queryset based on the filters applied
+        queryList = models.AnalysisResults.objects.values(  'id',
+                                                            'analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
                                                             'analysisMarker_id__analysis_id__bat_id__date_of_measurement',
-                                                            'file_id__file_name', 'file_id__allergen','file_id__control',
+                                                            'file_id','file_id__file_name', 'file_id__allergen','file_id__control',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14',
                                                             'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
-    bat_name = request.GET.get('bat_name')
-    donor_name = request.GET.get('donor_name')
-    panel_name = request.GET.get('panel_name')
-    date_min = request.GET.get('date_min')
-    date_max = request.GET.get('date_max')
-    file_name = request.GET.get('file_name')
-    allergen_name = request.GET.get('allergen')
-    control = request.GET.get('control')
-    result = request.GET.get('result')
-    responder = request.GET.get('responder')
-    redQ4_min = request.GET.get('redQ4_min')
-    redQ4_max = request.GET.get('redQ4_max')
-    blackQ2 = request.GET.get('blackQ2')
-    blackQ3 = request.GET.get('blackQ3')
-    blackQ4 = request.GET.get('blackQ4')
-    zmeanQ4 = request.GET.get('zmeanQ4')
-    CD63min = request.GET.get('CD63min')
-    CD63max = request.GET.get('CD63max')
-    msiCCR3 = request.GET.get('msiCCR3')
-    cellQ4 = request.GET.get('cellQ4')
-    
-    if is_valid_queryparam(bat_name):
-        analysisResults = analysisResults.filter(analysisMarker_id__analysis_id__bat_id__bat_name__icontains=bat_name)
-    if is_valid_queryparam(donor_name):
-        analysisResults = analysisResults.filter(analysisMarker_id__analysis_id__donor_id__donor_abbr__icontains=donor_name)
-    if is_valid_queryparam(panel_name):
-        analysisResults = analysisResults.filter(analysisMarker_id__analysis_id__panel_id__panel_name=panel_name)
-    if is_valid_queryparam(file_name):
-        analysisResults = analysisResults.filter(file_id__file_name__icontains=file_name)
-    if is_valid_queryparam(allergen_name):
-        analysisResults = analysisResults.filter(analysisMarker_id__analysis_id__donor_id__donor_abbr__icontains=allergen_name)
-    if is_valid_queryparam(control):
-        analysisResults = analysisResults.filter(file_id__control=control)
-    if is_valid_queryparam(date_min):
-        analysisResults = analysisResults.filter(analysisMarker_id__analysis_id__bat_id__date_of_measurement__gte=date_min)
-    if is_valid_queryparam(date_max):
-        analysisResults = analysisResults.filter(analysisMarker_id__analysis_id__bat_id__date_of_measurement__lt=date_max)
-    if is_valid_queryparam(result):
-        analysisResults = analysisResults.filter(result=result)
-    if is_valid_queryparam(responder):
-        analysisResults = analysisResults.filter(responder=responder)
-    if is_valid_queryparam(redQ4_min):
-        analysisResults = analysisResults.filter(redQ4__gte=redQ4_min)
-    if is_valid_queryparam(redQ4_min):
-        analysisResults = analysisResults.filter(redQ4__lt=redQ4_max)
-    if is_valid_queryparam(blackQ2):
-        analysisResults = analysisResults.filter(blackQ2__gte=blackQ2_min)
-    if is_valid_queryparam(blackQ2):
-        analysisResults = analysisResults.filter(blackQ2__lt=blackQ2_max)
-    if is_valid_queryparam(blackQ3):
-        analysisResults = analysisResults.filter(blackQ3__gte=blackQ3_min)
-    if is_valid_queryparam(blackQ3):
-        analysisResults = analysisResults.filter(blackQ3__lt=blackQ3_max)
-    if is_valid_queryparam(blackQ4):
-        analysisResults = analysisResults.filter(blackQ4__gte=blackQ4_min)
-    if is_valid_queryparam(blackQ4):
-        analysisResults = analysisResults.filter(blackQ4__lt=blackQ4_max)
-    if is_valid_queryparam(zmeanQ4):
-        analysisResults = analysisResults.filter(zmeanQ4__gte=zmeanQ4_min)
-    if is_valid_queryparam(zmeanQ4):
-        analysisResults = analysisResults.filter(zmeanQ4__lt=zmeanQ4_max)
-    if is_valid_queryparam(CD63min):
-        analysisResults = analysisResults.filter(CD63min__gte=CD63min_min)
-    if is_valid_queryparam(CD63min):
-        analysisResults = analysisResults.filter(CD63min__lt=CD63min_max)
-    if is_valid_queryparam(CD63max):
-        analysisResults = analysisResults.filter(CD63max__gte=CD63max_min)
-    if is_valid_queryparam(CD63max):
-        analysisResults = analysisResults.filter(CD63max__lt=CD63max_max)
-    if is_valid_queryparam(msiCCR3):
-        analysisResults = analysisResults.filter(msiCCR3__gte=redQ4_min)
-    if is_valid_queryparam(msiCCR3):
-        analysisResults = analysisResults.filter(msiCCR3__lt=msiCCR3_max)
-    if is_valid_queryparam(cellQ4):
-        analysisResults = analysisResults.filter(cellQ4__gte=cellQ4_min)
-    if is_valid_queryparam(cellQ4):
-        analysisResults = analysisResults.filter(cellQ4__lt=cellQ4_max)
-    return analysisResults
+        bat_name = self.request.query_params.get('bat_name', None)
+        donor_name = self.request.query_params.get('donor_name', None)
+        panel_name = self.request.query_params.get('panel_name', None)
+        marker_name = self.request.query_params.get('marker_name', None)
+        date_min = self.request.query_params.get('date_min', None)
+        date_max = self.request.query_params.get('date_max', None)
+        allergen_name = self.request.query_params.get('allergens', None)
+        file_controls = self.request.query_params.get('file_controls', None)
+        OFC_classes = self.request.query_params.get('OFC_classes', None)
+        clinical_classes = self.request.query_params.get('clinical_classes', None)
+        results = self.request.query_params.get('analysis_results', None)
+        responders = self.request.query_params.get('responders', None)
+        sort_by = self.request.query_params.get('sort_by', None)
+        redQ4_min = self.request.query_params.get('redQ4_min', None)
+        redQ4_max = self.request.query_params.get('redQ4_max', None)
+        blackQ2_min = self.request.query_params.get('blackQ2_min', None)
+        blackQ2_max = self.request.query_params.get('blackQ2_max', None)
+        blackQ3_min = self.request.query_params.get('blackQ3_min', None)
+        blackQ3_max = self.request.query_params.get('blackQ3_max', None)
+        blackQ4_min = self.request.query_params.get('blackQ4_min', None)
+        blackQ4_max = self.request.query_params.get('blackQ4_max', None)
+        zmeanQ4_min = self.request.query_params.get('zmeanQ4_min', None)
+        zmeanQ4_max = self.request.query_params.get('zmeanQ4_max', None)
+        CD63min_min = self.request.query_params.get('CD63min_min', None)
+        CD63min_max = self.request.query_params.get('CD63min_max', None)
+        CD63max_min = self.request.query_params.get('CD63max_min', None)
+        CD63max_max = self.request.query_params.get('CD63max_max', None)
+        msiCCR3_min = self.request.query_params.get('msiCCR3_min', None)
+        msiCCR3_max = self.request.query_params.get('msiCCR3_max', None)
+        cellQ4_min = self.request.query_params.get('cellQ4_min', None)
+        cellQ4_max = self.request.query_params.get('cellQ4_max', None)
+        wheatFlour_min = self.request.query_params.get('wheatFlour_min', None)
+        wheatFlour_max = self.request.query_params.get('wheatFlour_max', None)
+        gluten_min = self.request.query_params.get('gluten_min', None)
+        gluten_max = self.request.query_params.get('gluten_max', None)
+        gliadin_min = self.request.query_params.get('gliadin_min', None)
+        gliadin_max = self.request.query_params.get('gliadin_max', None)
+        tri_a_19_min = self.request.query_params.get('tri_a_19_min', None)
+        tri_a_19_max = self.request.query_params.get('tri_a_19_max', None)
+        tri_a_14_min = self.request.query_params.get('tri_a_14_min', None)
+        tri_a_14_max = self.request.query_params.get('tri_a_14_max', None)
+
+        if bat_name:
+            queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__bat_name = bat_name)
+        if is_valid_queryparam(donor_name):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donor_abbr__icontains=donor_name)
+        if panel_name:
+            queryList = queryList.filter(analysisMarker_id__analysis_id__panel_id__panel_name = panel_name)
+        if is_valid_queryparam(marker_name):
+            markers = list(models.Channels.objects.filter(pns__icontains=marker_name).values_list('analysis_id', flat=True))
+            queryList = queryList.filter(analysisMarker_id__analysis_id__in=markers)
+        if is_valid_queryparam(allergen_name):
+            queryList = queryList.filter(file_id__allergen__icontains=allergen_name)
+        if is_valid_queryparam(file_controls):
+            queryList = queryList.filter(file_id__control=file_controls)
+        if is_valid_queryparam(date_min):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__date_of_measurement__gte=date_min)
+        if is_valid_queryparam(date_max):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__date_of_measurement__lt=date_max)
+        if is_valid_queryparam(results):
+            queryList = queryList.filter(result=results)
+        if is_valid_queryparam(responders):
+            queryList = queryList.filter(responder=responders)
+        if is_valid_queryparam(clinical_classes):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name=clinical_classes)
+        if is_valid_queryparam(OFC_classes):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc=OFC_classes)
+        if is_valid_queryparam(redQ4_min):
+            queryList = queryList.filter(redQ4__gte=redQ4_min)
+        if is_valid_queryparam(redQ4_max):
+            queryList = queryList.filter(redQ4__lt=redQ4_max)
+        if is_valid_queryparam(blackQ2_min):
+            queryList = queryList.filter(blackQ2__gte=blackQ2_min)
+        if is_valid_queryparam(blackQ2_max):
+            queryList = queryList.filter(blackQ2__lt=blackQ2_max)
+        if is_valid_queryparam(blackQ3_min):
+            queryList = queryList.filter(blackQ3__gte=blackQ3_min)
+        if is_valid_queryparam(blackQ3_max):
+            queryList = queryList.filter(blackQ3__lt=blackQ3_max)
+        if is_valid_queryparam(blackQ4_min):
+            queryList = queryList.filter(blackQ4__gte=blackQ4_min)
+        if is_valid_queryparam(blackQ4_max):
+            queryList = queryList.filter(blackQ4__lt=blackQ4_max)
+        if is_valid_queryparam(zmeanQ4_min):
+            queryList = queryList.filter(zmeanQ4__gte=zmeanQ4_min)
+        if is_valid_queryparam(zmeanQ4_max):
+            queryList = queryList.filter(zmeanQ4__lt=zmeanQ4_max)
+        if is_valid_queryparam(CD63min_min):
+            queryList = queryList.filter(CD63min__gte=CD63min_min)
+        if is_valid_queryparam(CD63min_max):
+            queryList = queryList.filter(CD63min__lt=CD63min_max)
+        if is_valid_queryparam(CD63max_min):
+            queryList = queryList.filter(CD63max__gte=CD63max_min)
+        if is_valid_queryparam(CD63max_max):
+            queryList = queryList.filter(CD63max__lt=CD63max_max)
+        if is_valid_queryparam(msiCCR3_min):
+            queryList = queryList.filter(msiCCR3__gte=msiCCR3_min)
+        if is_valid_queryparam(msiCCR3_max):
+            queryList = queryList.filter(msiCCR3__lt=msiCCR3_max)
+        if is_valid_queryparam(cellQ4_min):
+            queryList = queryList.filter(cellQ4__gte=cellQ4_min)
+        if is_valid_queryparam(cellQ4_max):
+            queryList = queryList.filter(cellQ4__lt=cellQ4_max)
+        if is_valid_queryparam(wheatFlour_min):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour__gte=wheatFlour_min)
+        if is_valid_queryparam(wheatFlour_max):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour__lt=wheatFlour_max)
+        if is_valid_queryparam(gluten_min):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten__gte=gluten_min)
+        if is_valid_queryparam(gluten_max):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten__lt=gluten_max)
+        if is_valid_queryparam(gliadin_min):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin__gte=gliadin_min)
+        if is_valid_queryparam(gliadin_max):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin__lt=gliadin_max)
+        if is_valid_queryparam(tri_a_19_min):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19__gte=tri_a_19_min)
+        if is_valid_queryparam(tri_a_19_max):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19__lt=tri_a_19_max)
+        if is_valid_queryparam(tri_a_14_min):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14__gte=tri_a_14_min)
+        if is_valid_queryparam(tri_a_14_max):
+            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14__lt=tri_a_14_max)
+
+        # sort it if applied on based on bat_name/donor_name
+        if sort_by == "bat_name":
+            queryList = queryList.order_by("analysisMarker_id__analysis_id__bat_id__bat_name")
+        elif sort_by == "donor_name":
+            queryList = queryList.order_by("analysisMarker_id__analysis_id__donor_id__donor_abbr")
+        return queryList
 
 
-def analysis_report_2(request):
-    analysisResults = analysis_report_filters(request)
-    context = {
-        'analysis_results': analysisResults,
-        'panels': models.Panels.objects.all(),
-        'controls': models.ExperimentFiles.objects.order_by().values_list('control', flat=True).distinct(),
-        'results': models.AnalysisResults.objects.order_by().values_list('result', flat=True).distinct(),
-        'clinical_classes': models.ClinicalClass_Names.objects.all(),
-        'responders': models.AnalysisResults.objects.order_by().values_list('responder', flat=True).distinct()
-    }
-    return render(request,"analysis/analysis_report_2.html",context)
+def getBat_names(request):
+    # get Results from the database 
+    if request.method == "GET" and request.is_ajax():
+        bat_name = models.Experiment.objects.all().values_list('bat_name').order_by('bat_name')
+        bat_name = [c[0] for c in list(bat_name)]
+        return JsonResponse({
+            "bat_name": bat_name, 
+        }, status = 200)
+
+def getPanel_names(request):
+    # get Results from the database
+    if request.method == "GET" and request.is_ajax():
+        panel_name = models.Panels.objects.all().values_list('panel_name').order_by('panel_id')
+        panel_name = [c[0] for c in list(panel_name)]
+        return JsonResponse({"panel_name": panel_name,}, status = 200)
+
+def getMarker_names(request):
+    # get Results from the database
+    if request.method == "GET" and request.is_ajax():
+        panel_name = models.Panels.objects.all().values_list('panel_name').order_by('panel_id')
+        panel_name = [c[0] for c in list(panel_name)]
+        return JsonResponse({"panel_name": panel_name,}, status = 200)
+
+def getFile_controls(request):
+    # get Results from the database
+    if request.method == "GET" and request.is_ajax():
+        file_control = models.ExperimentFiles.objects.all().values_list('control').distinct()
+        file_control = [c[0] for c in list(file_control)]
+        return JsonResponse({"file_control": file_control,}, status = 200)
+
+def getClinical_classes(request):
+    # get Results from the database
+    if request.method == "GET" and request.is_ajax():
+        clinicalClass_name = models.ClinicalClass_Names.objects.all().values_list('clinicalClass_name').order_by('clinicalClass_name')
+        clinicalClass_name = [c[0] for c in list(clinicalClass_name)]
+        return JsonResponse({"clinicalClass_name": clinicalClass_name,}, status = 200)
+
+def getResponders(request):
+    # get Results from the database
+    if request.method == "GET" and request.is_ajax():
+        responder = models.AnalysisResults.objects.all().values_list('responder').distinct()
+        responder = [c[0] for c in list(responder)]
+        return JsonResponse({"responder": responder,}, status = 200)
 
