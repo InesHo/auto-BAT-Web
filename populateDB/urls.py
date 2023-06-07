@@ -37,6 +37,11 @@ urlpatterns = [
     path('add_experimentfile/update_files/add_channels/marker_settings/<analysis_id>', views.marker_settings, name='marker_settings'),
     path('add_experimentfile/update_files/add_channels/marker_settings/run_analysis/<analysis_id>', views.run_analysis, name='run_analysis'),
 
+    path('add_experimentfile/update_files/add_channels/marker_settings/run_analysis/run_analysis_autobat/<analysis_id>', 
+        views.run_analysis_autobat, name='run_analysis_autobat'),
+    path('add_experimentfile/update_files/add_channels/marker_settings/run_analysis/run_analysis_autograt/<analysis_id>', 
+        views.run_analysis, name='run_analysis_autograt'),
+
     path('analysis/', views.show_analysis, name='show_analysis'),
     path('analysis/list_files/<analysis_id>', views.list_files, name='list_files'),
 

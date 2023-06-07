@@ -7,10 +7,10 @@
       <div class="rounded d-flex justify-content-center">
           <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
               <div class="text-center">
-                  <h3 class="text-primary">Select Marker Settings</h3>
+                  <h3 class="text-primary">Select Marker Settings for Auto-Grat</h3>
                   <div class="modal-footer"></div>
                 </div>
-              <form method="POST" enctype="multipart/form-data" class="post-form" action="run_analysis/{{analysis_id}}" >  
+              <form method="POST" enctype="multipart/form-data" class="post-form" action="run_analysis_autograt/{{analysis_id}}" >  
                 {% csrf_token %}
                 <div class="container">
                     <div class="row">
@@ -29,19 +29,19 @@
                     <div class="row">
                       <div class="col-sm">
                         <label for="floatingInput">Z1: </label>
-                        <select name = "z1" class="form-select" style="width: 200px;">
+                        <select name = "X" class="form-select" style="width: 200px;">
                             {% include "analysis/channels.html" %}
                         </select>
                       </div>
                       <div class="col-sm">
                         <label for="floatingInput">Y1: </label>
-                        <select name = "y1" class="form-select" style="width: 200px;">
+                        <select name = "Y" class="form-select" style="width: 200px;">
                             {% include "analysis/channels.html" %}
                         </select>
                       </div>
                       <div class="col-sm">
                         <label for="floatingInput">Z2: </label>
-                        <select name = "z2" class="form-select" style="width: 220px;">
+                        <select name = "Z2" class="form-select" style="width: 220px;">
                             {% include "analysis/channels.html" %}
                         </select>
                       </div>
@@ -49,9 +49,9 @@
                 <br>
                 <div class="modal-footer"></div>
                 <h4 class="text-danger">Be carefull when selecting Marker Settings:</h4>
-                <h5 class="text-danger">Z1 : Should be CD63</h5>
-                <h5 class="text-danger">Y1 : Should be FcR</h5>
-                <h5 class="text-danger">Z2 : Should be CD32</h5>
+                <h5 class="text-danger">X : Should be Siglec-8</h5>
+                <h5 class="text-danger">Y : Should be CD66b</h5>
+                <h5 class="text-danger">Z2 : Should be CD11b</h5>
                 <div class="modal-footer"></div>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </form>              

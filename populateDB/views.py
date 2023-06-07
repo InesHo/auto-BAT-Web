@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from . import forms
 from . import models
 from django.views.generic import View
-from django.template.loader import render_to_string
 from django.http import HttpResponse, Http404
 import sys
 import os
@@ -16,8 +15,12 @@ sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from django.conf import settings
 from Data import Data
 from .functions import create_path
-from .tasks import run_analysis_task, proccess_files
+from .tasks import run_analysis_autobat_task, run_analysis_autograt_task, proccess_files
 from djqscsv import render_to_csv_response
+from .serializers import ResultsSerializers
+from .pagination import StandardResultsSetPagination
+from rest_framework.generics import ListAPIView
+from django.http import JsonResponse
 
 @login_required
 def home(request):
@@ -437,9 +440,17 @@ def marker_settings(request, analysis_id):
 
     channels = models.Channels.objects.filter(pnn__endswith=("A") ,analysis_id = analysis_id).order_by('channel_id')
     return render(request, 'analysis/marker_settings.html', {'channels': channels, 'analysis_id': analysis_id, 'bat_name':bat_name, 'donor_name':donor_name, 'panel_name':panel_name}) 
-  
 @login_required
 def run_analysis(request, analysis_id):
+    if request.method == "POST":
+        if request.POST.get('analysis_type') == "auto_bat":
+            return render(request, 'analysis/marker_settings_autobat.html', {'analysis_id': analysis_id})
+        if request.POST.get('analysis_type') == "auto_grat":
+            return render(request, 'analysis/marker_settings_autograt.html', {'analysis_id': analysis_id})
+    return render(request, 'analysis/choose_analysis_type.html')
+
+@login_required
+def run_analysis_autobat(request, analysis_id):
 
     if request.method == "POST":
 
@@ -467,6 +478,7 @@ def run_analysis(request, analysis_id):
                                                 chosen_z1 = chosen_z1,
                                                 chosen_y1=chosen_y1,
                                                 chosen_z2=chosen_z2,
+                                                analysis_type=analysis_type,
                                                 analysis_id = analysis_id) 
         if not analysismarkers_data:
 
@@ -477,8 +489,6 @@ def run_analysis(request, analysis_id):
                                                         analysis_status=analysis_status,
                                                         analysis_type=analysis_type,
                                                         analysis_type_version = analysis_type_version,
-                                                        #analysis_id = analysis_id
-                                                        #analysis_id= Analysis.objects.get(analysis_id = analysis_id)
                                                         )
             analysismarkers_instance.analysis_id_id = int(analysis_id)
             analysismarkers_instance.user_id = user_id
@@ -498,7 +508,7 @@ def run_analysis(request, analysis_id):
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-            run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
+            run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
                                 pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
@@ -506,8 +516,73 @@ def run_analysis(request, analysis_id):
         else:
             return render(request, 'analysis/analysis_error.html', {'analysis_id':analysis_id})
 
-from django.db.models import F
+@login_required
+def run_analysis_autograt(request, analysis_id):
 
+    if request.method == "POST":
+
+        bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+        donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+        panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+
+        bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+        donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+        panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+
+        chosen_z1 = request.POST.get('X')
+        chosen_z1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z1).values_list('pns', flat=True))
+        chosen_y1 = request.POST.get('Y')
+        chosen_y1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_y1).values_list('pns', flat=True))
+        chosen_z2 = request.POST.get('Z2')
+        analysis_date = str(date.today())
+        analysis_status = "Waiting"
+        analysis_type = "Auto Grat"
+        analysis_type_version = "1.0"
+        user_id = request.user.id
+
+        # Checking if the Experment has alrady been Analyzed with those markers
+        analysismarkers_data = models.AnalysisMarkers.objects.values_list('chosen_z1','chosen_y1','chosen_z2').filter(
+                                                chosen_z1 = chosen_z1,
+                                                chosen_y1=chosen_y1,
+                                                chosen_z2=chosen_z2,
+                                                analysis_type=analysis_type,
+                                                analysis_id = analysis_id) 
+        if not analysismarkers_data:
+
+            analysismarkers_instance = models.AnalysisMarkers(chosen_z1=chosen_z1,
+                                                        chosen_y1=chosen_y1,
+                                                        chosen_z2=chosen_z2,
+                                                        analysis_date=analysis_date,
+                                                        analysis_status=analysis_status,
+                                                        analysis_type=analysis_type,
+                                                        analysis_type_version = analysis_type_version,
+                                                        )
+            analysismarkers_instance.analysis_id_id = int(analysis_id)
+            analysismarkers_instance.user_id = user_id
+            analysismarkers_instance.save()
+            
+            analysisMarker_id = analysismarkers_instance.analysisMarker_id
+
+
+            device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
+            device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
+            
+            outputPDFname = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png "
+            pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+            pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/")       
+            create_path(pathToExports)
+            pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/")
+            create_path(pathToOutput)
+            pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
+            rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
+            #run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
+                                #chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+                                #pathToOutput, pathToGatingFunctions, rPath, user_id
+                                #)
+            return render(request, 'analysis/analysis_ready.html')
+        else:
+            return render(request, 'analysis/analysis_error.html', {'analysis_id':analysis_id})
+        
 @login_required
 def results_to_CSV(request):
     analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id__bat_id__bat_name',
@@ -770,15 +845,8 @@ def analysis_info(request, analysisMarker_id):
 def research_questions(request):
     return render(request, "analysis/research_questions.html", {})
 
-from .serializers import ResultsSerializers
-from .pagination import StandardResultsSetPagination
-from rest_framework.generics import ListAPIView
-from django.http import JsonResponse
 def is_valid_queryparam(param):
     return param != '' and param is not None
-
-def research_questions(request):
-    return render(request, "analysis/research_questions.html", {})
 
 class ListResults(ListAPIView):
     # set the pagination and serializer class
