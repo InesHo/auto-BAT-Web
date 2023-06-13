@@ -178,9 +178,9 @@ class AnalysisResults(models.Model):
     blackQ3 = models.FloatField(blank = True, null = True)
     blackQ4 = models.FloatField(blank = True, null = True)
     zmeanQ4 = models.FloatField(blank = True, null = True)
-    CD63min = models.FloatField(blank = True, null = True)
-    CD63max = models.FloatField(blank = True, null = True)
-    msiCCR3 = models.FloatField(blank = True, null = True)
+    z1_min = models.FloatField(blank = True, null = True)
+    z1_max = models.FloatField(blank = True, null = True)
+    msi_Y = models.FloatField(blank = True, null = True)
     cellQ4 = models.FloatField(blank = True, null = True)
     responder = models.CharField(choices=RESPONDER_TYPES,max_length=120, blank = True, null=True)
     analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
@@ -191,6 +191,7 @@ class FilesPlots(models.Model):
     plot_id = models.AutoField(primary_key=True)
     plot_path = models.TextField(max_length=500, unique = True, blank = False)
     file_id = models.ForeignKey(ExperimentFiles, to_field=('file_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
 
 class Channels(models.Model):
     channel_id = models.AutoField(primary_key=True)      

@@ -384,12 +384,20 @@ $(document).ready(function () {
             send_data['tri_a_14_max'] = this.value;
         getAPIData();
     });
-    // show only mean data for each donor
-    $('#mean_donor').on('change', function () {
+    // show only average results for each sample
+    $('#AVR_sample').on('change', function () {
         if (this.checked)
-            send_data['mean_donor'] = this.value;
+            send_data['AVR_sample'] = this.value;
         else
-            send_data['mean_donor'] = "";
+            send_data['AVR_sample'] = "";
+        getAPIData();
+    });
+    // show only average results for each donor
+    $('#AVR_donor').on('change', function () {
+        if (this.checked)
+            send_data['AVR_donor'] = this.value;
+        else
+            send_data['AVR_donor'] = "";
         getAPIData();
     });
 
@@ -452,7 +460,8 @@ function resetFilters() {
     $("#tri_a_19_max").val("");
     $("#tri_a_14_min").val("");
     $("#tri_a_14_max").val("");
-    $("#mean_donor").prop('checked',false);
+    $("#AVR_sample").prop('checked',false);
+    $("#AVR_donor").prop('checked',false);
     $("#sort_by").val("none");
 
     send_data['bat_name'] = '';
@@ -495,7 +504,8 @@ function resetFilters() {
     send_data['tri_a_19_max'] = '';
     send_data['tri_a_14_min'] = '';
     send_data['tri_a_14_max'] = '';
-    send_data['mean_donor'] = '';
+    send_data['AVR_sample'] = '';
+    send_data['AVR_donor'] = '';
     send_data["sort_by"] = '',
     send_data['format'] = 'json';
 }
@@ -523,7 +533,7 @@ function putTableData(result) {
 		"<td>" + b.clinicalClass_name + "</td>" +
 		"<td>" + b.ofc_class + "</td>" +
                 "<td>" + b.wheat_flour + "</td>" +
-		"<td>" + b.redQ4 + "</td>" + 
+		"<td>" + b.redQ4.toFixed(2) + "</td>" + 
     		"<td>" + b.result + "</td>" + 
     		"<td>" + b.blackQ2.toFixed(2)+ "</td>" +
     		"<td>" + b.blackQ3.toFixed(2) + "</td>" + 

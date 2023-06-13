@@ -21,7 +21,7 @@ from .serializers import ResultsSerializers
 from .pagination import StandardResultsSetPagination
 from rest_framework.generics import ListAPIView
 from django.http import JsonResponse
-
+from django.db.models import Count, Avg, Sum
 @login_required
 def home(request):
     num_bats = models.Experiment.objects.all().count()
@@ -493,7 +493,7 @@ def run_analysis_autobat(request, analysis_id):
         chosen_z2 = request.POST.get('z2')
         analysis_date = str(date.today())
         analysis_status = "Waiting"
-        analysis_type = "Auto Bat"
+        analysis_type = "AutoBat"
         analysis_type_version = "1.0"
         user_id = request.user.id
 
@@ -524,18 +524,18 @@ def run_analysis_autobat(request, analysis_id):
             device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
             device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
             
-            outputPDFname = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png "
+            outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png"
             pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
             pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/")       
             create_path(pathToExports)
-            pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/")
+            pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/")
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-            #run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
-                                #chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
-                                #pathToOutput, pathToGatingFunctions, rPath, user_id
-                                #)
+            run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
+                                chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+                                pathToOutput, pathToGatingFunctions, rPath, user_id
+                                )
             return render(request, 'analysis/analysis_ready.html')
         else:
             return render(request, 'analysis/analysis_error.html', {'analysis_id':analysis_id})
@@ -553,27 +553,28 @@ def run_analysis_autograt(request, analysis_id):
         donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
         panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
 
-        chosen_z1 = request.POST.get('X')
-        chosen_z1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z1).values_list('pns', flat=True))
+        chosen_x = request.POST.get('X')
+        chosen_x_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_x).values_list('pns', flat=True))
         chosen_y1 = request.POST.get('Y')
         chosen_y1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_y1).values_list('pns', flat=True))
         chosen_z2 = request.POST.get('Z2')
+        chosen_z2_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z2).values_list('pns', flat=True))
         analysis_date = str(date.today())
         analysis_status = "Waiting"
-        analysis_type = "Auto Grat"
+        analysis_type = "AutoGrat"
         analysis_type_version = "1.0"
         user_id = request.user.id
 
         # Checking if the Experment has alrady been Analyzed with those markers
         analysismarkers_data = models.AnalysisMarkers.objects.values_list('chosen_z1','chosen_y1','chosen_z2').filter(
-                                                chosen_z1 = chosen_z1,
+                                                chosen_z1 = chosen_x,
                                                 chosen_y1=chosen_y1,
                                                 chosen_z2=chosen_z2,
                                                 analysis_type=analysis_type,
                                                 analysis_id = analysis_id) 
         if not analysismarkers_data:
 
-            analysismarkers_instance = models.AnalysisMarkers(chosen_z1=chosen_z1,
+            analysismarkers_instance = models.AnalysisMarkers(chosen_z1=chosen_x,
                                                         chosen_y1=chosen_y1,
                                                         chosen_z2=chosen_z2,
                                                         analysis_date=analysis_date,
@@ -591,16 +592,16 @@ def run_analysis_autograt(request, analysis_id):
             device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
             device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
             
-            outputPDFname = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png "
+            outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_x}_{chosen_y1}_{chosen_z2}.png"
             pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
             pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/")       
             create_path(pathToExports)
-            pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/")
+            pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/")
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-            run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
-                                chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+            run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z2, chosen_z2_lable,
+                                device, outputPDFname, pathToData, pathToExports, 
                                 pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
             return render(request, 'analysis/analysis_ready.html')
@@ -630,17 +631,17 @@ def re_analysis_all(request):
     user_id = request.user.id
 
     analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status').filter(analysis_status = 'Ready')
+    #analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status')
 
     for analysismarker in analysisMarker_obj:
         analysisMarker_id = analysismarker[0]
         analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
-        files_ids = models.ExperimentFiles.objects.values_list('file_id', 'file').filter(analysis_id = analysis_id)
-        for file in files_ids:
-            models.FilesPlots.objects.filter(file_id=file[0]).delete()
+        models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id).delete()
         models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
         models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
         models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).delete()
-
+        
+        analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
         bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
         donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
         panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
@@ -658,21 +659,32 @@ def re_analysis_all(request):
         device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
         device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
 
-        outputPDFname = f"Autogated_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png "
+        outputPDFname = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png"
         pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/")
         pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/")
         create_path(pathToExports)
-        pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/")
+        pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/")
         create_path(pathToOutput)
         pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
         rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-        
+ 
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Waiting")
-    
-        run_analysis_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
+
+        if analysis_type == 'AutoBat':
+            run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
                                 pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
+        elif analysis_type == 'AutoGrat':
+            chosen_x = chosen_z1
+            chosen_x_lable = chosen_z1_lable
+            outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png"
+            pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/")
+            run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z2,
+                                device, outputPDFname, pathToData, pathToExports,
+                                pathToOutput, pathToGatingFunctions, rPath, user_id
+                                )
+
     return render(request, 'analysis/analysis_ready.html')
 
 @login_required
@@ -772,10 +784,7 @@ def list_thresholds(request, analysisMarker_id):
 @login_required
 def delete_analysis(request, analysisMarker_id):
     analysisMarker_id = analysisMarker_id
-    analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
-    files_ids = models.ExperimentFiles.objects.values_list('file_id', 'file').filter(analysis_id = analysis_id)
-    for file in files_ids:
-        models.FilesPlots.objects.filter(file_id=file[0]).delete()
+    models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id).delete()
     models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
     models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).delete()
@@ -804,18 +813,16 @@ def download_xlsx(request, analysisMarker_id):
             return response
     raise Http404
 
-
 @login_required
 def analysis_report(request):
-
-
     analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
                                                             'file_id__file_name', 'file_id__allergen','file_id__control',
-                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
+                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder')
+
 
     return render(request,"analysis/analysis_report.html",{'analysis_results':analysisResults})
 
@@ -935,8 +942,49 @@ class ListResults(ListAPIView):
         tri_a_19_max = self.request.query_params.get('tri_a_19_max', None)
         tri_a_14_min = self.request.query_params.get('tri_a_14_min', None)
         tri_a_14_max = self.request.query_params.get('tri_a_14_max', None)
-        mean_donor = self.request.query_params.get('mean_donor', None)
-        
+        AVR_sample = self.request.query_params.get('AVR_sample', None)
+        AVR_donor = self.request.query_params.get('AVR_donor', None)
+
+        if AVR_sample == "Avg":
+            queryList = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
+                                                            'analysisMarker_id__analysis_id__bat_id__bat_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                            'analysisMarker_id__analysis_id__panel_id',
+                                                            'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14',
+                                                            ).annotate(file_id__file_name=Count('file_id__file_name'), file_id__allergen=Count('file_id__allergen', distinct=True),
+                                                                    file_id__control=Count('file_id__control', distinct=True),
+                                                                    analysisMarker_id__analysis_id__bat_id__date_of_measurement=Count(
+                                                                        'analysisMarker_id__analysis_id__bat_id__date_of_measurement', distinct=True),
+                                                                    redQ4=Avg('redQ4'),  blackQ2=Avg('blackQ2'), result=Count('result', distinct=True), blackQ3=Avg('blackQ3'), blackQ4=Avg('blackQ4'),
+                                                                    zmeanQ4=Avg('zmeanQ4'), CD63min=Avg('CD63min'), CD63max=Avg('CD63max'),
+                                                                    msiCCR3=Avg('msiCCR3'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
+        if AVR_donor == "Avg":
+            queryList = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19',
+                                                            'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14',
+                                                            ).annotate(analysisMarker_id__analysis_id=Count('analysisMarker_id__analysis_id', distinct=True),
+                                                                    file_id__file_name=Count('file_id__file_name'), file_id__allergen=Count('file_id__allergen', distinct=True),
+                                                                    file_id__control=Count('file_id__control', distinct=True),
+                                                                    analysisMarker_id__analysis_id__bat_id__bat_name=Count('analysisMarker_id__analysis_id__bat_id__bat_name', distinct=True),
+                                                                    analysisMarker_id__analysis_id__panel_id__panel_name=Count('analysisMarker_id__analysis_id__panel_id__panel_name', distinct=True),
+                                                                    analysisMarker_id__analysis_id__bat_id__date_of_measurement=Count(
+                                                                        'analysisMarker_id__analysis_id__bat_id__date_of_measurement', distinct=True),
+                                                                    redQ4=Avg('redQ4'),  blackQ2=Avg('blackQ2'), result=Count('result', distinct=True), blackQ3=Avg('blackQ3'), blackQ4=Avg('blackQ4'),
+                                                                    zmeanQ4=Avg('zmeanQ4'), CD63min=Avg('CD63min'), CD63max=Avg('CD63max'),
+                                                                    msiCCR3=Avg('msiCCR3'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
+
         if bat_name:
             queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__bat_name = bat_name)
         if is_valid_queryparam(donor_name):
@@ -1024,9 +1072,9 @@ class ListResults(ListAPIView):
             queryList = queryList.order_by("analysisMarker_id__analysis_id__bat_id__bat_name")
         elif sort_by == "donor_name":
             queryList = queryList.order_by("analysisMarker_id__analysis_id__donor_id__donor_abbr")
+        elif sort_by == "files":
+            queryList = queryList.order_by("file_id__file_name")
 
-        if mean_donor == "mean":
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donor_abbr="WA")
 
         return queryList
 

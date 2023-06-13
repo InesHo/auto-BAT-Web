@@ -1,0 +1,75 @@
+
+ The nummber of events in this file is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The nummber of events in this file is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The nummber of events in this file is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ Threshold checks have been passed.
+
+SSC-A-Threshold: 10.7
+
+FcR-Threshold: 10.2
+
+CD63-Threshold: 9.69
+
+Creation of q-plots and report-table for ... 
+
+[1] "d3-jg_aige--2022-06-21.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "d1-jg_us--2022-06-21.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "d2-jg_fmlp--2022-06-21.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+
+ Threshold checks have been passed.
+
+SSC-A-Threshold: 10.7
+
+FcR-Threshold: 9.2
+
+CD63-Threshold: 9.44
+
+Creation of q-plots and report-table for ... 
+
+[1] "03bat-155_jg_us-cd66b-1-50.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "01bat-155_jg_us-cd66b-1-150.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "02bat-155_jg_fmlp-cd66b-1-150.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "04bat-155_jg_fmlp-cd66b-1-50.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "05bat-155_jg_us-cd66b-1-25.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "06bat-155_jg_fmlp-cd66b-1-25.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "07bat-155_jg_aige.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "08bat-155_jg_glutks-rpmi-1.5-200ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "09bat-155_jg_glutks-hcl-6.2-200ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "10bat-155_jg_glutks-essig-1-200ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "11bat-155_jg_gliaad-rpmi-1-300ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "12bat-155_jg_gliaad-hcl-6.2-300ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "13bat-155_jg_gliaad-essig-1-300ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "14bat-155_jg_glutksbroe-rpmi-1-100ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "15bat-155_jg_glutksbroe-hcl-1-100ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "16bat-155_jg_glutksbroe-essig-1-100ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "17bat-155_jg_rec-w5gliasp5etoh-200ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "18bat-155_jg_rec-w5gliasp5essig-200ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "19bat-155_jg_rec-w5gliasp5etohessig-200ug.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
