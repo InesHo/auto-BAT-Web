@@ -15,6 +15,7 @@ $(document).ready(function () {
     getResponders();
     getOFC_classes();
     getAnalysis_results();
+    getAnalysis_type();
     // on selecting the bat_name option
     $('#bat_names').on('change', function () {
         // update the selected bat_name
@@ -45,6 +46,17 @@ $(document).ready(function () {
             send_data['panel_name'] = this.value;
         getAPIData();
     });
+
+    // on on selecting the analysis_type option
+    $('#analysis_type').on('change', function () {
+        // get the api data of updated panel_name
+        if(this.value == "all")
+            send_data['analysis_type'] = "";
+        else
+            send_data['analysis_type'] = this.value;
+        getAPIData();
+    });
+
 
     // on filtering the marker_name input
     $('#marker_names').on('input', function () {
@@ -221,59 +233,59 @@ $(document).ready(function () {
         getAPIData();
     });
     // on filtering the CD63min_min input
-    $('#CD63min_min').on('input', function () {
+    $('#z1_min_min').on('input', function () {
         // get the api data of updated redQ4_min
         if(this.value == "all")
-            send_data['CD63min_min'] = "";
+            send_data['z1_min_min'] = "";
         else
-            send_data['CD63min_min'] = this.value;
+            send_data['z1_min_min'] = this.value;
         getAPIData();
     });
     // on filtering the file CD63min_max input
-    $('#CD63min_max').on('input', function () {
+    $('#z1_min_max').on('input', function () {
         // get the api data of updated file date_max
         if(this.value == "all")
-            send_data['CD63min_max'] = "";
+            send_data['z1_min_max'] = "";
         else
-            send_data['CD63min_max'] = this.value;
+            send_data['z1_min_max'] = this.value;
         getAPIData();
     });
 
     // on filtering the CD63max_min input
-    $('#CD63max_min').on('input', function () {
+    $('#z1_max_min').on('input', function () {
         // get the api data of updated redQ4_min
         if(this.value == "all")
-            send_data['CD63max_min'] = "";
+            send_data['z1_max_min'] = "";
         else
-            send_data['CD63max_min'] = this.value;
+            send_data['z1_max_min'] = this.value;
         getAPIData();
     });
     // on filtering the file CD63max_max input
-    $('#CD63max_max').on('input', function () {
+    $('#z1_max_max').on('input', function () {
         // get the api data of updated file date_max
         if(this.value == "all")
-            send_data['CD63max_max'] = "";
+            send_data['z1_max_max'] = "";
         else
-            send_data['CD63max_max'] = this.value;
+            send_data['z1_max_max'] = this.value;
         getAPIData();
     });
 
     // on filtering the msiCCR3_min input
-    $('#msiCCR3_min').on('input', function () {
+    $('#msi_Y_min').on('input', function () {
         // get the api data of updated redQ4_min
         if(this.value == "all")
-            send_data['msiCCR3_min'] = "";
+            send_data['msi_Y_min'] = "";
         else
-            send_data['msiCCR3_min'] = this.value;
+            send_data['msi_Y_min'] = this.value;
         getAPIData();
     });
     // on filtering the file msiCCR3_max input
-    $('#msiCCR3_max').on('input', function () {
+    $('#msi_Y_max').on('input', function () {
         // get the api data of updated file date_max
         if(this.value == "all")
-            send_data['msiCCR3_max'] = "";
+            send_data['msi_Y_max'] = "";
         else
-            send_data['msiCCR3_max'] = this.value;
+            send_data['msi_Y_max'] = this.value;
         getAPIData();
     });
     // on filtering the cellQ4_min input
@@ -423,6 +435,7 @@ function resetFilters() {
     $("#bat_names").val("all");
     $("#donor_names").val("");
     $("#panel_names").val("all");
+    $("#analysis_type").val("all");
     $("#marker_names").val("");
     $("#date_min").val("");
     $("#date_max").val("");
@@ -442,12 +455,12 @@ function resetFilters() {
     $("#blackQ4_max").val("");
     $("#zmeanQ4_min").val("");
     $("#zmeanQ4_max").val("");
-    $("#CD63min_min").val("");
-    $("#CD63min_max").val("");
-    $("#CD63max_min").val("");
-    $("#CD63max_max").val("");
-    $("#msiCCR3_min").val("");
-    $("#msiCCR3_max").val("");
+    $("#z1_min_min").val("");
+    $("#z1_min_max").val("");
+    $("#z1_max_min").val("");
+    $("#z1_max_max").val("");
+    $("#msi_Y_min").val("");
+    $("#msi_Y_max").val("");
     $("#cellQ4_min").val("");
     $("#cellQ4_max").val("");
     $("#wheatFlour_min").val("");
@@ -467,6 +480,7 @@ function resetFilters() {
     send_data['bat_name'] = '';
     send_data['donor_name'] = '';
     send_data['panel_name'] = '';
+    send_data['analysis_type'] = '';
     send_data['marker_name'] = '';
     send_data['date_min'] = '';
     send_data['date_max'] = '';
@@ -486,12 +500,12 @@ function resetFilters() {
     send_data['blackQ4_max'] = '';
     send_data['zmeanQ4_min'] = '';
     send_data['zmeanQ4_max'] = '';
-    send_data['CD63min_min'] = '';
-    send_data['CD63min_max'] = '';
-    send_data['CD63max_min'] = '';
-    send_data['CD63max_max'] = '';
-    send_data['msiCCR3_min'] = '';
-    send_data['msiCCR3_max'] = '';
+    send_data['z1_min_min'] = '';
+    send_data['z1_min_max'] = '';
+    send_data['z1_max_min'] = '';
+    send_data['z1_max_max'] = '';
+    send_data['msi_Y_min'] = '';
+    send_data['msi_Y_max'] = '';
     send_data['cellQ4_min'] = '';
     send_data['cellQ4_max'] = '';
     send_data['wheatFlour_min'] = '';
@@ -527,6 +541,7 @@ function putTableData(result) {
                 "<td>" + b.donor_name + "</td>" +
 		"<td>" + b.panel_name + "</td>" +
 		"<td>" + b.date_of_measurement + "</td>" +
+		"<td>" + b.analysis_type + "</td>" +
 		"<td>" + b.file_name + "</td>" +
 		"<td>" + b.allergen + "</td>" +
 		"<td>" + b.control + "</td>" +
@@ -539,9 +554,9 @@ function putTableData(result) {
     		"<td>" + b.blackQ3.toFixed(2) + "</td>" + 
     		"<td>" + b.blackQ4.toFixed(2) + "</td>" +
     		"<td>" + b.zmeanQ4.toFixed(2) + "</td>" + 
-    		"<td>" + b.CD63min.toFixed(2) + "</td>" +
-    		"<td>" + b.CD63max.toFixed(2) + "</td>" + 
-    		"<td>" + b.msiCCR3.toFixed(2) + "</td>" + 
+    		"<td>" + b.z1_min.toFixed(2) + "</td>" +
+    		"<td>" + b.z1_max.toFixed(2) + "</td>" + 
+    		"<td>" + b.msi_Y.toFixed(2) + "</td>" + 
     		"<td>" + b.cellQ4 + "</td>" +
     		"<td>" + b.responder + "</td>" + 
             $("#list_results").append(row);   
@@ -759,6 +774,25 @@ function getAnalysis_results() {
                                         "<option value='positiv'>positiv</option>"]; 
 
                 $("#analysis_results").html(analysis_results_options)
+        },
+        error: function(response){
+                        console.log(response)
+        }
+  });
+}
+
+function getAnalysis_type() {
+    let url = $("#analysis_type").attr("url");
+    $.ajax({
+        method: 'GET',
+        url: url,
+        data: {},
+        success: function (result) {
+                analysis_type_options = ["<option value='all' selected>Analysis Type</option>",
+                                        "<option value='AutoBat'>AutoBat</option>",
+                                        "<option value='AutoGrat'>AutoGrat</option>"];
+
+                $("#analysis_type").html(analysis_type_options)
         },
         error: function(response){
                         console.log(response)

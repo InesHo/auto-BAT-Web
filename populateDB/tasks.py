@@ -98,37 +98,38 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
     chosen_z2_lable = ""
     info_messages = ""
     i = 0
-    for sample in sample_obj:
-        file_path = sample[1]
-        file_name = sample[2]
-        allergen = sample[3]
-        algList[i] = allergen
+    try:
+        for sample in sample_obj:
+            file_path = sample[1]
+            file_name = sample[2]
+            allergen = sample[3]
+            algList[i] = allergen
 
-        control = sample[4]
-        if control == 'Primary Positive control':
-            posFileName = file_name
-        elif control == 'Secondary Positive control':
-            posTwoFileName = file_name
+            control = sample[4]
+            if control == 'Primary Positive control':
+                posFileName = file_name
+            elif control == 'Secondary Positive control':
+                posTwoFileName = file_name
 
-        elif control == 'Negative control':
-            usName = file_name
+            elif control == 'Negative control':
+                usName = file_name
         
-        if panel_name in ['full-panel', 'grat-panel']:
-            pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
-            files_list.append(pathToExports + file_name)
-        else:
-            baumgrassgater = BaumgrassGating(allergen,               
+            if panel_name in ['full-panel', 'grat-panel']:
+                pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
+                files_list.append(pathToExports + file_name)
+            else:
+                baumgrassgater = BaumgrassGating(allergen,               
                                 chosen_z1,
                                 file_path,            
                                 pathToGatingFunctions, 
                                 device, 
                                 pathToExports)
 
-            reports[i] = baumgrassgater.runbaumgrassgating()
-            files_list.append(pathToExports + file_name)
-            info_messages = str(reports[i][1])
-            i += 1
-    try:
+                reports[i] = baumgrassgater.runbaumgrassgating()
+                files_list.append(pathToExports + file_name)
+                info_messages = str(reports[i][1])
+                i += 1
+        
         autoworkflow = AutoBatWorkflow(files_list,
                                     pathToData,
                                     pathToExports,
@@ -236,6 +237,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             plot_name = f'{plot_name[:-4]}.png'
             plot_path=os.path.join(pathToOutput, plot_name)
             PNGresults_instance = models.FilesPlots(plot_path=plot_path)
+            PNGresults_instance.analysisMarker_id_id = int(analysisMarker_id)
             PNGresults_instance.file_id_id = int(file_id)
             PNGresults_instance.save()
             img_list.append(plot_path)
@@ -278,37 +280,37 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
 
     i = 0
     info_messages = ""
-    for sample in sample_obj:
-        file_path = sample[1]
-        file_name = sample[2]
-        allergen = sample[3]
-        algList[i] = allergen
+    try:
+        for sample in sample_obj:
+            file_path = sample[1]
+            file_name = sample[2]
+            allergen = sample[3]
+            algList[i] = allergen
 
-        control = sample[4]
-        if control == 'Primary Positive control':
-            posFileName = file_name
-        elif control == 'Secondary Positive control':
-            posTwoFileName = file_name
+            control = sample[4]
+            if control == 'Primary Positive control':
+                posFileName = file_name
+            elif control == 'Secondary Positive control':
+                posTwoFileName = file_name
 
-        elif control == 'Negative control':
-            usName = file_name
+            elif control == 'Negative control':
+                usName = file_name
 
-        if panel_name in ['full-panel', 'grat-panel']:
-            pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
-            files_list.append(pathToExports + file_name)
-        else:
-            baumgrassgater = BaumgrassGating(allergen,
+            if panel_name in ['full-panel', 'grat-panel']:
+                pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
+                files_list.append(pathToExports + file_name)
+            else:
+                baumgrassgater = BaumgrassGating(allergen,
                                 chosen_x,
                                 file_path,
                                 pathToGatingFunctions,
                                 device,
                                 pathToExports)
 
-            reports[i] = baumgrassgater.runbaumgrassgating()
-            files_list.append(pathToExports + file_name)
-            info_messages = str(reports[i][1])
-            i += 1
-    try:
+                reports[i] = baumgrassgater.runbaumgrassgating()
+                files_list.append(pathToExports + file_name)
+                info_messages = str(reports[i][1])
+                i += 1
         autoworkflow = AutoBatWorkflow(files_list,
                                     pathToData,
                                     pathToExports,

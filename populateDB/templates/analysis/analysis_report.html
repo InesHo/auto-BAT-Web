@@ -13,6 +13,7 @@
 	<th>BAT_ID</th>
 	<th>Donor</th>
 	<th>Panel</th>
+	<th>Type</th>
 	<th>File Name</th>
 	<th>File Allergen</th>
 	<th>File Control</th>
@@ -33,8 +34,9 @@
       <tr>
         <td >{{ r.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
         <td >{{ r.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
-	<td> <a href="show_channels/{{r.analysisMarker_id__analysis_id}}">{{r.analysisMarker_id__analysis_id__panel_id__panel_name}}</a></td>
-        <td >{{ r.file_id__file_name }}</td>
+	<td > <a href="show_channels/{{r.analysisMarker_id__analysis_id}}">{{r.analysisMarker_id__analysis_id__panel_id__panel_name}}</a></td>
+	<td >{{ r.analysisMarker_id__analysis_type}}</td>
+	<td >{{ r.file_id__file_name }}</td>
         <td >{{ r.file_id__allergen }}</td>
 	<td >{{ r.file_id__control }}</td>
 	<td >{{ r.redQ4|floatformat:2 }}</td>

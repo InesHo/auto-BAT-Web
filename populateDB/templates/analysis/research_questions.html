@@ -36,12 +36,17 @@
 			<div class = "col-md-2 col-lg-2">
 				<input type="date" class="form-control" id="date_max">
                         </div>
-
-                        <div class="col-md-2 col-lg-2">
-                                <input class="form-control" id="allergens" placeholder="Allergen">
+                        <div class="form-group col-md-2 col-lg-2">
+                                <select id="analysis_type" class="form-control">
+                                        <option value="All" selected="true" disabled="disabled">Analysis Type</option>
+                                </select>
                         </div>
 		</div>
 		<div class="row">
+                        <div class="col-md-2 col-lg-2">
+                                <input class="form-control" id="allergens" placeholder="Allergen">
+                        </div>
+
 			<div class="form-group col-md-2 col-lg-2">
                                 <select class="form-control" id="file_controls" url = "{%url 'populateDB:getFile_controls' %}">
 					<option value='all' selected"true" disabled="disabled">File Control</option>
@@ -69,17 +74,6 @@
                                 <select class="form-control" id="responders" url = "{%url 'populateDB:getResponders' %}">
 					<option value="All" selected>Responder</option>
                                 </select>
-                        </div>
-			<div class="col-sm-2 col-2">
-                                <div class="form-group">
-                                        <select class="form-control" id="sort_by">
-                                                <option selected="true"
-                                                        disabled="disabled" value = "none">Sort By</option>
-                                                <option value='bat_name'>bat_names</option>
-                                                <option value='donor_name'>donor_names</option>
-						<option value='files'>Files</option>
-                                        </select>
-                                </div>
                         </div>
 
 		</div>
@@ -141,34 +135,34 @@
                                 <input class="form-control" id="zmeanQ4_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="" id="CD63min" checked>
-                                <label class="form-check-label" for="CD63min">CD63min</label>
+                                <input class="form-check-input" type="checkbox" value="" id="z1_min" checked>
+                                <label class="form-check-label" for="z1_min">z1_min</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="CD63min_min" placeholder="min..">
+                                <input class="form-control" id="z1_min_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="CD63min_max" placeholder="max..">
+                                <input class="form-control" id="z1_min_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="" id="CD63max" checked>
-                                <label class="form-check-label" for="CD63max">CD63max</label>
+                                <input class="form-check-input" type="checkbox" value="" id="z1_max" checked>
+                                <label class="form-check-label" for="z1_max">z1_max</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="CD63max_min" placeholder="min..">
+                                <input class="form-control" id="z1_max_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="CD63max_max" placeholder="max..">
+                                <input class="form-control" id="z1_max_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="" id="msiCCR3" checked>
-                                <label class="form-check-label" for="msiCCR3">msiCCR3</label>
+                                <input class="form-check-input" type="checkbox" value="" id="msi_Y" checked>
+                                <label class="form-check-label" for="msi_Y">msi_Y</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="msiCCR3_min" placeholder="min..">
+                                <input class="form-control" id="msi_Y_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="msiCCR3_max" placeholder="max..">
+                                <input class="form-control" id="msi_Y_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
                                 <input class="form-check-input" type="checkbox" value="" id="cellQ4" checked>
@@ -236,6 +230,18 @@
                         <div class="form-group col-md-1 col-lg-1">
                                 <input class="form-control" id="tri_a_14_max" placeholder="max..">
                         </div>.
+                        <div class="col-sm-2 col-2">
+                                <div class="form-group">
+                                        <select class="form-control" id="sort_by">
+                                                <option selected="true"
+                                                        disabled="disabled" value = "none">Sort By</option>
+                                                <option value='bat_name'>bat_names</option>
+                                                <option value='donor_name'>donor_names</option>
+                                                <option value='files'>Files</option>
+                                        </select>
+                                </div>
+                        </div>
+
 		</div>
 		<hr />
 		<div class="row justify-content-center">
@@ -272,6 +278,8 @@
         </div>
     </section>
     <br />
+    <!--
+
     <section>
         <div class="container-fluid">
             <div id = "result-count" class="text-right">
@@ -287,8 +295,9 @@
                             <th data-field="bat_name">BATs</th>
 			    <th data-field="donor_name">Donors</th>
 			    <th data-field="panel_name">Panels</th>
-			    <th data-field="date_of_measurement">Dates</th>
-                            <th data-field="file_name">Filese</th>
+			    <th data-field="date_of_measurement">Date</th>
+			    <th data-field="analysis_type">Analysis Type</th>
+                            <th data-field="file_name">File</th>
 			    <th data-field="file_allergen">Allergen</th>
                             <th data-field="file_control">Control</th>
 			    <th data-field="clinical_class">Clinical Classifications</th>
@@ -300,9 +309,9 @@
                             <th data-field="blackQ3">blackQ3</th>
                             <th data-field="blackQ4">blackQ4</th>
                             <th data-field="zmeanQ4">zmeanQ4</th>
-                            <th data-field="CD63min">CD63min</th>
-                            <th data-field="CD63max">CD63max</th>
-                            <th data-field="msiCCR3">msiCCR3</th>
+                            <th data-field="z1_min">z1_min</th>
+                            <th data-field="z1_max">z1_max</th>
+                            <th data-field="msi_Y">msi_Y</th>
                             <th data-field="cellQ4">cellQ4</th>
                             <th data-field="responder">responder</th>
                             
@@ -326,6 +335,7 @@
             </div>
         </div>
     </section>
+    -->
 {% endblock %}
 <!--
 <style type="text/css">

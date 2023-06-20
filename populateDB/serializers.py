@@ -10,6 +10,7 @@ class ResultsSerializers(serializers.ModelSerializer):
     panel_name = serializers.SerializerMethodField()
     analysis_id = serializers.SerializerMethodField()
     date_of_measurement = serializers.SerializerMethodField()
+    analysis_type = serializers.SerializerMethodField()
     file_name = serializers.SerializerMethodField()
     allergen = serializers.SerializerMethodField()
     control =serializers.SerializerMethodField()
@@ -22,10 +23,11 @@ class ResultsSerializers(serializers.ModelSerializer):
     tri_a_14 = serializers.SerializerMethodField()
     class Meta:
         model = models.AnalysisResults
-        fields = ('id', 'bat_name', 'donor_name', 'panel_name', 'analysis_id',
+        fields = ('id', 'bat_name', 'donor_name', 'panel_name', 'analysis_type', 'analysis_id',
                 'date_of_measurement', 'file_name', 'allergen', 'control',
                 'clinicalClass_name', 'ofc_class', 'wheat_flour', 'gluten', 'gliadin', 'tri_a_19', 'tri_a_14',
-                'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
+                'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder')
+
     def get_bat_name(self, obj):
         bat_name = obj['analysisMarker_id__analysis_id__bat_id__bat_name']
         if bat_name:
@@ -44,6 +46,13 @@ class ResultsSerializers(serializers.ModelSerializer):
             return panel_name
         else:
             return None
+    def get_analysis_type(self, obj):
+        analysis_type = obj['analysisMarker_id__analysis_type']
+        if analysis_type:
+            return analysis_type
+        else:
+            return None
+
     def get_analysis_id(self, obj):
         analysis_id = obj['analysisMarker_id__analysis_id']
         if analysis_id:

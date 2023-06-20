@@ -630,17 +630,19 @@ def thresholds_to_CSV(request):
 def re_analysis_all(request):
     user_id = request.user.id
 
-    analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status').filter(analysis_status = 'Ready')
-    #analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status')
+    analysisMarker_obj = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 'analysis_status').filter(analysis_status='Ready')
 
     for analysismarker in analysisMarker_obj:
         analysisMarker_id = analysismarker[0]
         analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
-        models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id).delete()
-        models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+        """
         models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
         models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).delete()
-        
+        models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+        models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+        models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+        models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+        """
         analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
         bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
         donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
@@ -668,23 +670,29 @@ def re_analysis_all(request):
         pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
         rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
  
-        models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Waiting")
-
         if analysis_type == 'AutoBat':
+            """
             run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
                                 pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
-        elif analysis_type == 'AutoGrat':
+            """
+            pass
+        if analysis_type == 'AutoGrat':
+            models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+            models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+            models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+            models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+            models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Waiting")
+
             chosen_x = chosen_z1
             chosen_x_lable = chosen_z1_lable
+            chosen_z2_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z2).values_list('pns', flat=True))
             outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png"
             pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/")
             run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z2,
-                                device, outputPDFname, pathToData, pathToExports,
-                                pathToOutput, pathToGatingFunctions, rPath, user_id
+                                chosen_z2_lable, device, outputPDFname, pathToData, pathToExports, pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
-
     return render(request, 'analysis/analysis_ready.html')
 
 @login_required
@@ -820,6 +828,7 @@ def analysis_report(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'analysisMarker_id__analysis_type',
                                                             'file_id__file_name', 'file_id__allergen','file_id__control',
                                                             'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder')
 
@@ -892,6 +901,7 @@ class ListResults(ListAPIView):
                                                             'analysisMarker_id__analysis_id__panel_id',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
                                                             'analysisMarker_id__analysis_id__bat_id__date_of_measurement',
+                                                            'analysisMarker_id__analysis_type',
                                                             'file_id','file_id__file_name', 'file_id__allergen','file_id__control',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc',
@@ -900,7 +910,7 @@ class ListResults(ListAPIView):
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14',
-                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
+                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder')
         bat_name = self.request.query_params.get('bat_name', None)
         donor_name = self.request.query_params.get('donor_name', None)
         panel_name = self.request.query_params.get('panel_name', None)
@@ -908,6 +918,7 @@ class ListResults(ListAPIView):
         date_min = self.request.query_params.get('date_min', None)
         date_max = self.request.query_params.get('date_max', None)
         allergen_name = self.request.query_params.get('allergens', None)
+        analysis_type = self.request.query_params.get('analysis_type', None)
         file_controls = self.request.query_params.get('file_controls', None)
         OFC_classes = self.request.query_params.get('OFC_classes', None)
         clinical_classes = self.request.query_params.get('clinical_classes', None)
@@ -924,12 +935,12 @@ class ListResults(ListAPIView):
         blackQ4_max = self.request.query_params.get('blackQ4_max', None)
         zmeanQ4_min = self.request.query_params.get('zmeanQ4_min', None)
         zmeanQ4_max = self.request.query_params.get('zmeanQ4_max', None)
-        CD63min_min = self.request.query_params.get('CD63min_min', None)
-        CD63min_max = self.request.query_params.get('CD63min_max', None)
-        CD63max_min = self.request.query_params.get('CD63max_min', None)
-        CD63max_max = self.request.query_params.get('CD63max_max', None)
-        msiCCR3_min = self.request.query_params.get('msiCCR3_min', None)
-        msiCCR3_max = self.request.query_params.get('msiCCR3_max', None)
+        z1_min_min = self.request.query_params.get('z1_min_min', None)
+        z1_min_max = self.request.query_params.get('z1_min_max', None)
+        z1_max_min = self.request.query_params.get('z1_max_min', None)
+        z1_max_max = self.request.query_params.get('z1_max_max', None)
+        msi_Y_min = self.request.query_params.get('msi_Y_min', None)
+        msi_Y_max = self.request.query_params.get('msi_Y_max', None)
         cellQ4_min = self.request.query_params.get('cellQ4_min', None)
         cellQ4_max = self.request.query_params.get('cellQ4_max', None)
         wheatFlour_min = self.request.query_params.get('wheatFlour_min', None)
@@ -944,8 +955,10 @@ class ListResults(ListAPIView):
         tri_a_14_max = self.request.query_params.get('tri_a_14_max', None)
         AVR_sample = self.request.query_params.get('AVR_sample', None)
         AVR_donor = self.request.query_params.get('AVR_donor', None)
-
+        
         if AVR_sample == "Avg":
+            pass
+            """
             queryList = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
@@ -963,9 +976,12 @@ class ListResults(ListAPIView):
                                                                     analysisMarker_id__analysis_id__bat_id__date_of_measurement=Count(
                                                                         'analysisMarker_id__analysis_id__bat_id__date_of_measurement', distinct=True),
                                                                     redQ4=Avg('redQ4'),  blackQ2=Avg('blackQ2'), result=Count('result', distinct=True), blackQ3=Avg('blackQ3'), blackQ4=Avg('blackQ4'),
-                                                                    zmeanQ4=Avg('zmeanQ4'), CD63min=Avg('CD63min'), CD63max=Avg('CD63max'),
-                                                                    msiCCR3=Avg('msiCCR3'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
+                                                                    zmeanQ4=Avg('zmeanQ4'), z1_min=Avg('z1_min'), CD63max=Avg('z1_max'),
+                                                                    msi_Y=Avg('msi_Y'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
+            """
         if AVR_donor == "Avg":
+            pass
+            """
             queryList = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc',
@@ -982,9 +998,9 @@ class ListResults(ListAPIView):
                                                                     analysisMarker_id__analysis_id__bat_id__date_of_measurement=Count(
                                                                         'analysisMarker_id__analysis_id__bat_id__date_of_measurement', distinct=True),
                                                                     redQ4=Avg('redQ4'),  blackQ2=Avg('blackQ2'), result=Count('result', distinct=True), blackQ3=Avg('blackQ3'), blackQ4=Avg('blackQ4'),
-                                                                    zmeanQ4=Avg('zmeanQ4'), CD63min=Avg('CD63min'), CD63max=Avg('CD63max'),
-                                                                    msiCCR3=Avg('msiCCR3'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
-
+                                                                    zmeanQ4=Avg('zmeanQ4'), z1_min=Avg('z1_min'), CD63max=Avg('z1_max'),
+                                                                    msi_Y=Avg('msi_Y'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
+            """
         if bat_name:
             queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__bat_name = bat_name)
         if is_valid_queryparam(donor_name):
@@ -996,6 +1012,8 @@ class ListResults(ListAPIView):
             queryList = queryList.filter(analysisMarker_id__analysis_id__in=markers)
         if is_valid_queryparam(allergen_name):
             queryList = queryList.filter(file_id__allergen__icontains=allergen_name)
+        if is_valid_queryparam(analysis_type):
+            queryList = queryList.filter(analysisMarker_id__analysis_type=analysis_type)
         if is_valid_queryparam(file_controls):
             queryList = queryList.filter(file_id__control=file_controls)
         if is_valid_queryparam(date_min):
@@ -1030,18 +1048,18 @@ class ListResults(ListAPIView):
             queryList = queryList.filter(zmeanQ4__gte=zmeanQ4_min)
         if is_valid_queryparam(zmeanQ4_max):
             queryList = queryList.filter(zmeanQ4__lt=zmeanQ4_max)
-        if is_valid_queryparam(CD63min_min):
-            queryList = queryList.filter(CD63min__gte=CD63min_min)
-        if is_valid_queryparam(CD63min_max):
-            queryList = queryList.filter(CD63min__lt=CD63min_max)
-        if is_valid_queryparam(CD63max_min):
-            queryList = queryList.filter(CD63max__gte=CD63max_min)
-        if is_valid_queryparam(CD63max_max):
-            queryList = queryList.filter(CD63max__lt=CD63max_max)
-        if is_valid_queryparam(msiCCR3_min):
-            queryList = queryList.filter(msiCCR3__gte=msiCCR3_min)
-        if is_valid_queryparam(msiCCR3_max):
-            queryList = queryList.filter(msiCCR3__lt=msiCCR3_max)
+        if is_valid_queryparam(z1_min_min):
+            queryList = queryList.filter(z1_min__gte=z1_min_min)
+        if is_valid_queryparam(z1_min_max):
+            queryList = queryList.filter(z1_min__lt=z1_min_max)
+        if is_valid_queryparam(z1_max_min):
+            queryList = queryList.filter(z1_max__gte=z1_max_min)
+        if is_valid_queryparam(z1_max_max):
+            queryList = queryList.filter(z1_max__lt=z1_max_max)
+        if is_valid_queryparam(msi_Y_min):
+            queryList = queryList.filter(msi_Y__gte=msi_Y_min)
+        if is_valid_queryparam(msi_Y_max):
+            queryList = queryList.filter(msi_Y__lt=msi_Y_max)
         if is_valid_queryparam(cellQ4_min):
             queryList = queryList.filter(cellQ4__gte=cellQ4_min)
         if is_valid_queryparam(cellQ4_max):
@@ -1122,4 +1140,3 @@ def getResponders(request):
         responder = models.AnalysisResults.objects.all().values_list('responder').distinct()
         responder = [c[0] for c in list(responder)]
         return JsonResponse({"responder": responder,}, status = 200)
-
