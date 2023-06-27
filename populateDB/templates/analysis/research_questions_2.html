@@ -7,72 +7,73 @@
                 <h3>Research Questions</h3>
         </div>
         <hr />
-    <form method="GET" action= "{%url 'populateDB:research_results' %}" autocomplete="off">
+    <section class="site_filter">
+    <form method="GET" action= "{% url 'populateDB:analysis_report' %}">
         <div class="container-fluid">
 		<h5 class = "text-center"> 1. General Search:</h3>
 		<div class="row">
                         <div class="col-sm-1 col-1">
-                       		<select class="form-control" id="bat_names" name="bat_name" url = "{%url 'populateDB:getBat_names' %}">
+                       		<select class="form-control" id="bat_names" url = "{%url 'populateDB:getBat_names' %}">
 					<option value='all' selected"true" disabled="disabled">BAT Name</option>
                         	</select>
                         </div>
 
                         <div class="col-md-1 col-lg-1">
-              			<input class="form-control" id="donor_names" name="donor_names" placeholder="Donor Abrr."> 
+              			<input class="form-control" id="donor_names"   placeholder="Donor Abrr."> 
                         </div>
 			<div class="form-group col-md-2 col-lg-2">
-                                <select class="form-control" id="panel_names" name ="panel_names" url = "{%url 'populateDB:getPanel_names' %}">
+                                <select class="form-control" id="panel_names" url = "{%url 'populateDB:getPanel_names' %}">
 					<option value='all' selected"true" disabled="disabled">Panel Name</option>
                                 </select>
                         </div>
                         <div class="form-group col-md-2 col-lg-2">
-                                <input class="form-control" id="marker_names" name="marker_names" placeholder="Marker Contains..">
+                                <input class="form-control" id="marker_names" placeholder="Marker Contains..">
                         </div>
 
 			<div class = "col-md-2 col-lg-2">
-				<input type="date" class="form-control" id="date_min" name="date_min">
+				<input type="date" class="form-control" id="date_min">
 				
 			</div>
 			<div class = "col-md-2 col-lg-2">
-				<input type="date" class="form-control" id="date_max" name="date_max">
+				<input type="date" class="form-control" id="date_max">
                         </div>
                         <div class="form-group col-md-2 col-lg-2">
-                                <select id="analysis_type" name="analysis_type" class="form-control">
-                                        <option value="all"  selected="true" disabled="disabled">Analysis Type</option>
+                                <select id="analysis_type" class="form-control">
+                                        <option value="All" selected="true" disabled="disabled">Analysis Type</option>
                                 </select>
                         </div>
 		</div>
 		<div class="row">
                         <div class="col-md-2 col-lg-2">
-                                <input class="form-control" id="allergens" name="allergens" placeholder="Allergen">
+                                <input class="form-control" id="allergens" placeholder="Allergen">
                         </div>
 
 			<div class="form-group col-md-2 col-lg-2">
-                                <select class="form-control" name="file_controls" id="file_controls" url = "{%url 'populateDB:getFile_controls' %}">
+                                <select class="form-control" id="file_controls" url = "{%url 'populateDB:getFile_controls' %}">
 					<option value='all' selected"true" disabled="disabled">File Control</option>
                                 </select>
                         </div>
 			<div class="form-group col-md-2 col-lg-2">
-                                <select id="OFC_classes" name="OFC_classes" class="form-control">
-                                        <option value="all" selected"true" disabled="disabled">OFC Class.</option>
+                                <select id="OFC_classes" class="form-control">
+                                        <option value="All" selected"true" disabled="disabled">OFC Class.</option>
                                 </select>
 			</div>
 
                         <div class="form-group col-md-2 col-lg-2">
-                                <select class="form-control" id="clinical_classes" name="clinical_classes" url = "{%url 'populateDB:getClinical_classes' %}">
+                                <select class="form-control" id="clinical_classes" url = "{%url 'populateDB:getClinical_classes' %}">
 					<option value='all' selected>clinical class.</option>
                                 </select>
                         </div>
 
                         <div class="form-group col-md-2 col-lg-2">
-                                <select id="analysis_results" name="analysis_results" class="form-control">
-                                        <option value="all" selected="true" disabled="disabled">Results</option>
+                                <select id="analysis_results" class="form-control">
+                                        <option value="All" selected="true" disabled="disabled">Results</option>
                                 </select>
                         </div>
 
                         <div class="form-group col-md-2 col-lg-2">
-                                <select class="form-control" id="responders" name="responders" url = "{%url 'populateDB:getResponders' %}">
-					<option value="all" selected>Responder</option>
+                                <select class="form-control" id="responders" url = "{%url 'populateDB:getResponders' %}">
+					<option value="All" selected>Responder</option>
                                 </select>
                         </div>
 
@@ -81,98 +82,98 @@
 		<h5 class = "text-center"> 2. Search based on a range in the results data:</h3>
 		<div class="row">
                         <div class="form-group col-md-1 col-lg-1">
-                               	<input class="form-check-input" type="checkbox" value="y" id="redQ4" name="redQ4" checked>
+                               	<input class="form-check-input" type="checkbox" value="" id="redQ4" checked>
                                	<label class="form-check-label" for="redQ4">Red Q4</label>
                        	</div>
                        	<div class="form-group col-md-1 col-lg-1">
-                               	<input class="form-control" id="redQ4_min" type="number" name="redQ4_min" placeholder="min..">
+                               	<input class="form-control" id="redQ4_min" placeholder="min..">
                        	</div>
                        	<div class="form-group col-md-1 col-lg-1">
-                               	<input class="form-control" id="redQ4_max" type="number" name="redQ4_max" placeholder="max..">
+                               	<input class="form-control" id="redQ4_max" placeholder="max..">
                        	</div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="blackQ2" name="blackQ2" checked>
+                                <input class="form-check-input" type="checkbox" value="" id="blackQ2" checked>
                                 <label class="form-check-label" for="BlackQ2">Black Q2</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="blackQ2_min" type="number" name="blackQ2_min" placeholder="min..">
+                                <input class="form-control" id="blackQ2_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="blackQ2_max" type="number" name="blackQ2_max" placeholder="max..">
+                                <input class="form-control" id="blackQ2_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="blackQ3" name="blackQ3" checked>
+                                <input class="form-check-input" type="checkbox" value="" id="blackQ3" checked>
                                 <label class="form-check-label" for="BlackQ3">Black Q3</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="blackQ3_min" type="number" name="blackQ3_min" placeholder="min..">
+                                <input class="form-control" id="blackQ3_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="blackQ3_max" type="number" name="blackQ3_max" placeholder="max..">
+                                <input class="form-control" id="blackQ3_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="blackQ4" name="blackQ4" checked>
+                                <input class="form-check-input" type="checkbox" value="" id="blackQ4" checked>
                                 <label class="form-check-label" for="BlackQ4">Black Q4</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="blackQ4_min" type="number" name="blackQ4_min" placeholder="min..">
+                                <input class="form-control" id="blackQ4_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="blackQ4_max" type="number" name="blackQ4_max" placeholder="max..">
+                                <input class="form-control" id="blackQ4_max" placeholder="max..">
                         </div>
 
 		</div>
 
                 <div class="row">
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="zmeanQ4" name="zmeanQ4" checked>
+                                <input class="form-check-input" type="checkbox" value="" id="zmeanQ4" checked>
                                 <label class="form-check-label" for="zmeanQ4">Z Mean Q4</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="zmeanQ4_min" type="number" name="zmeanQ4_min" placeholder="min..">
+                                <input class="form-control" id="zmeanQ4_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="zmeanQ4_max" type="number" name="zmeanQ4_max" placeholder="max..">
+                                <input class="form-control" id="zmeanQ4_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="z1_min" name="z1_min" checked>
+                                <input class="form-check-input" type="checkbox" value="" id="z1_min" checked>
                                 <label class="form-check-label" for="z1_min">z1_min</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="z1_min_min" type="number" name="z1_min_min" placeholder="min..">
+                                <input class="form-control" id="z1_min_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="z1_min_max" type="number" name="z1_min_max" placeholder="max..">
+                                <input class="form-control" id="z1_min_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="z1_max" name="z1_max" checked>
+                                <input class="form-check-input" type="checkbox" value="" id="z1_max" checked>
                                 <label class="form-check-label" for="z1_max">z1_max</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="z1_max_min" type="number" name="z1_max_min" placeholder="min..">
+                                <input class="form-control" id="z1_max_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="z1_max_max" type="number" name="z1_max_max" placeholder="max..">
+                                <input class="form-control" id="z1_max_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="msi_Y" name="msi_Y" checked>
+                                <input class="form-check-input" type="checkbox" value="" id="msi_Y" checked>
                                 <label class="form-check-label" for="msi_Y">msi_Y</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="msi_Y_min" type="number" name="msi_Y_min" placeholder="min..">
+                                <input class="form-control" id="msi_Y_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="msi_Y_max" type="number" name="msi_Y_max" placeholder="max..">
+                                <input class="form-control" id="msi_Y_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="cellQ4" name="cellQ4" checked>
+                                <input class="form-check-input" type="checkbox" value="" id="cellQ4" checked>
                                 <label class="form-check-label" for="cellQ4">cellQ4</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="cellQ4_min" type="number" name="cellQ4_min" placeholder="min..">
+                                <input class="form-control" id="cellQ4_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="cellQ4_max" type="number" name="cellQ4_max" placeholder="max..">
+                                <input class="form-control" id="cellQ4_max" placeholder="max..">
                         </div>
 
 		</div>
@@ -181,58 +182,58 @@
 
 		<div class="row">
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="wheatFlour" name="wheatFlour">
+                                <input class="form-check-input" type="checkbox" value="" id="wheatFlour" checked>
                                 <label class="form-check-label" for="wheatFlour">Wheat Flour</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="wheatFlour_min" type="number" name="wheatFlour_min" placeholder="min..">
+                                <input class="form-control" id="wheatFlour_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="wheatFlour_max" type="number" name="wheatFlour_max" placeholder="max..">
+                                <input class="form-control" id="wheatFlour_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="gluten" name="gluten">
+                                <input class="form-check-input" type="checkbox" value="" id="gluten" checked>
                                 <label class="form-check-label" for="gluten">gluten</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="gluten_min" type="number" name="gluten_min" placeholder="min..">
+                                <input class="form-control" id="gluten_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="gluten_max" type="number" name="gluten_max" placeholder="max..">
+                                <input class="form-control" id="gluten_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="gliadin" name="gliadin">
+                                <input class="form-check-input" type="checkbox" value="" id="gliadin" checked>
                                 <label class="form-check-label" for="gliadin">gliadin</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="gliadin_min" type="number" name="gliadin_min" placeholder="min..">
+                                <input class="form-control" id="gliadin_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="gliadin_max" type="number" name="gliadin_max" placeholder="max..">
+                                <input class="form-control" id="gliadin_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" value="y" id="tri_a_19" name="tri_a_19">
+                                <input class="form-check-input" type="checkbox" value="" id="tri_a_19" checked>
                                 <label class="form-check-label" for="tri_a_19">tri_a_19</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="tri_a_19_min" type="number" name="tri_a_19_min" placeholder="min..">
+                                <input class="form-control" id="tri_a_19_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="tri_a_19_max" type="number" name="tri_a_19_max" placeholder="max..">
+                                <input class="form-control" id="tri_a_19_max" placeholder="max..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-check-input" type="checkbox" type="number" value="" id="tri_a_14" name="tri_a_14">
+                                <input class="form-check-input" type="checkbox" value="" id="tri_a_19" checked>
                                 <label class="form-check-label" for="tri_a_14">tri_a_14</label>
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="tri_a_14_min" type="number" name="tri_a_14_min" placeholder="min..">
+                                <input class="form-control" id="tri_a_14_min" placeholder="min..">
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
-                                <input class="form-control" id="tri_a_14_max" type="number" name="tri_a_14_max" placeholder="max..">
+                                <input class="form-control" id="tri_a_14_max" placeholder="max..">
                         </div>.
                         <div class="col-sm-2 col-2">
                                 <div class="form-group">
-                                        <select class="form-control" id="sort_by" name="sort_by">
+                                        <select class="form-control" id="sort_by">
                                                 <option selected="true"
                                                         disabled="disabled" value = "none">Sort By</option>
                                                 <option value='bat_name'>BAT Name</option>
@@ -245,33 +246,30 @@
 		</div>
 		<hr />
 		<div class="row justify-content-center">
-			<!--
 			<div class="col-8">
                                 <div class="form-check form-switch">
-                                        <input class="form-check-input" type="radio" name="AVG" id="All" checked>
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="All" checked>
                                         <label class="form-check-label" for="flexRadioDefault2">
                                                 All
                                         </label>
                                 </div>
 				<div class="form-check form-switch">
-					<input class="form-check-input" type="radio" name="AVG" value="AVG_sample" id="AVG_sample">
+					<input class="form-check-input" type="radio" name="flexRadioDefault" value="Avg" id="AVR_sample">
   					<label class="form-check-label" for="AVR_sample">
     						Show only Average results for each Sample
   					</label>
 				</div>
                                 <div class="form-check form-switch">
-                                        <input class="form-check-input" type="radio" name="AVG" value="AVG_donor" id="AVG_donor">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" value="Avg" id="AVR_donor">
                                         <label class="form-check-label" for="AVR_donor">
                                                 Show only Average results for each Donor
                                         </label>
                                 </div>
 			</div>
-			-->
 
 			<div class="col-2">
                         	<button type="button" id="reset_filters" class="btn btn-secondary">Reset Filters</button>
 	                </div>
-			{{queryList}}
 			<div class="col-2">
 				<button type="submit" id= "search" class="btn btn-primary"> Search</button>
 			</div>
@@ -280,7 +278,66 @@
 
         </div>
     </form>
+    </section>
     <br />
+    <!--
+
+    <section>
+        <div class="container-fluid">
+            <div id = "result-count" class="text-right">
+                <span class='font-weight-bold'></span> results found.
+            </div>
+            <div class="row properties_table justify-content-center">
+                <div id = "no_results">
+                    <h5>No results found</h5>
+                </div>
+                <table class="table table-striped table-hover" id="list_data" data-toggle="table" url = "{% url 'populateDB:list_results' %}">
+                    <thead>
+                        <tr>
+                            <th data-field="bat_name">BATs</th>
+			    <th data-field="donor_name">Donors</th>
+			    <th data-field="panel_name">Panels</th>
+			    <th data-field="date_of_measurement">Date</th>
+			    <th data-field="analysis_type">Analysis Type</th>
+                            <th data-field="file_name">File</th>
+			    <th data-field="file_allergen">Allergen</th>
+                            <th data-field="file_control">Control</th>
+			    <th data-field="clinical_class">Clinical Classifications</th>
+                            <th data-field="OFC_class">OFC Classification</th>
+                            <th data-field="wheat_flour">Wheat Flour</th>
+			    <th data-field="redQ4">redQ4</th>
+                            <th data-field="result">result</th>
+                            <th data-field="blackQ2">blackQ2</th>
+                            <th data-field="blackQ3">blackQ3</th>
+                            <th data-field="blackQ4">blackQ4</th>
+                            <th data-field="zmeanQ4">zmeanQ4</th>
+                            <th data-field="z1_min">z1_min</th>
+                            <th data-field="z1_max">z1_max</th>
+                            <th data-field="msi_Y">msi_Y</th>
+                            <th data-field="cellQ4">cellQ4</th>
+                            <th data-field="responder">responder</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody id="list_results">
+                    </tbody>
+                </table>
+            </div>
+            <div class="row justify-content-center">
+                <nav aria-label="navigation">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <button class="btn btn-primary page-link" id="previous">Previous</button>
+                        </li>
+                        <li class="page-item pull-right">
+                            <button class="btn btn-primary page-link" id="next">Next</button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+    -->
 {% endblock %}
 <!--
 <style type="text/css">

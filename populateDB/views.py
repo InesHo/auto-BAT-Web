@@ -14,7 +14,7 @@ import config
 sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from django.conf import settings
 from Data import Data
-from .functions import create_path
+from .functions import create_path, image_grid
 from .tasks import run_analysis_autobat_task, run_analysis_autograt_task, proccess_files
 from djqscsv import render_to_csv_response
 from .serializers import ResultsSerializers
@@ -22,6 +22,10 @@ from .pagination import StandardResultsSetPagination
 from rest_framework.generics import ListAPIView
 from django.http import JsonResponse
 from django.db.models import Count, Avg, Sum
+import pandas as pd
+import time
+from django.db.models import F
+
 @login_required
 def home(request):
     num_bats = models.Experiment.objects.all().count()
@@ -881,20 +885,14 @@ def analysis_info(request, analysisMarker_id):
 
 
 ######################################################################
-
+#@login_required(login_url='/login/') #redirect when user is not logged in
 def research_questions(request):
-    return render(request, "analysis/research_questions.html", {})
+    return render(request, "analysis/research_questions.html")
 
 def is_valid_queryparam(param):
     return param != '' and param is not None
-
-class ListResults(ListAPIView):
-    # set the pagination and serializer class
-    pagination_class = StandardResultsSetPagination
-    serializer_class = ResultsSerializers
-    def get_queryset(self):
-        # filter the queryset based on the filters applied
-        queryList = models.AnalysisResults.objects.values(  'id',
+def research_results(request):
+    queryList = models.AnalysisResults.objects.values(  'id',
                                                             'analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
@@ -903,6 +901,7 @@ class ListResults(ListAPIView):
                                                             'analysisMarker_id__analysis_id__bat_id__date_of_measurement',
                                                             'analysisMarker_id__analysis_type',
                                                             'file_id','file_id__file_name', 'file_id__allergen','file_id__control',
+
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour',
@@ -910,56 +909,65 @@ class ListResults(ListAPIView):
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14',
-                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder')
-        bat_name = self.request.query_params.get('bat_name', None)
-        donor_name = self.request.query_params.get('donor_name', None)
-        panel_name = self.request.query_params.get('panel_name', None)
-        marker_name = self.request.query_params.get('marker_name', None)
-        date_min = self.request.query_params.get('date_min', None)
-        date_max = self.request.query_params.get('date_max', None)
-        allergen_name = self.request.query_params.get('allergens', None)
-        analysis_type = self.request.query_params.get('analysis_type', None)
-        file_controls = self.request.query_params.get('file_controls', None)
-        OFC_classes = self.request.query_params.get('OFC_classes', None)
-        clinical_classes = self.request.query_params.get('clinical_classes', None)
-        results = self.request.query_params.get('analysis_results', None)
-        responders = self.request.query_params.get('responders', None)
-        sort_by = self.request.query_params.get('sort_by', None)
-        redQ4_min = self.request.query_params.get('redQ4_min', None)
-        redQ4_max = self.request.query_params.get('redQ4_max', None)
-        blackQ2_min = self.request.query_params.get('blackQ2_min', None)
-        blackQ2_max = self.request.query_params.get('blackQ2_max', None)
-        blackQ3_min = self.request.query_params.get('blackQ3_min', None)
-        blackQ3_max = self.request.query_params.get('blackQ3_max', None)
-        blackQ4_min = self.request.query_params.get('blackQ4_min', None)
-        blackQ4_max = self.request.query_params.get('blackQ4_max', None)
-        zmeanQ4_min = self.request.query_params.get('zmeanQ4_min', None)
-        zmeanQ4_max = self.request.query_params.get('zmeanQ4_max', None)
-        z1_min_min = self.request.query_params.get('z1_min_min', None)
-        z1_min_max = self.request.query_params.get('z1_min_max', None)
-        z1_max_min = self.request.query_params.get('z1_max_min', None)
-        z1_max_max = self.request.query_params.get('z1_max_max', None)
-        msi_Y_min = self.request.query_params.get('msi_Y_min', None)
-        msi_Y_max = self.request.query_params.get('msi_Y_max', None)
-        cellQ4_min = self.request.query_params.get('cellQ4_min', None)
-        cellQ4_max = self.request.query_params.get('cellQ4_max', None)
-        wheatFlour_min = self.request.query_params.get('wheatFlour_min', None)
-        wheatFlour_max = self.request.query_params.get('wheatFlour_max', None)
-        gluten_min = self.request.query_params.get('gluten_min', None)
-        gluten_max = self.request.query_params.get('gluten_max', None)
-        gliadin_min = self.request.query_params.get('gliadin_min', None)
-        gliadin_max = self.request.query_params.get('gliadin_max', None)
-        tri_a_19_min = self.request.query_params.get('tri_a_19_min', None)
-        tri_a_19_max = self.request.query_params.get('tri_a_19_max', None)
-        tri_a_14_min = self.request.query_params.get('tri_a_14_min', None)
-        tri_a_14_max = self.request.query_params.get('tri_a_14_max', None)
-        AVR_sample = self.request.query_params.get('AVR_sample', None)
-        AVR_donor = self.request.query_params.get('AVR_donor', None)
-        
-        if AVR_sample == "Avg":
-            pass
-            """
-            queryList = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
+                                                            'result','redQ4','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder').annotate(
+                                                                BAT_ID=F('analysisMarker_id__analysis_id__bat_id__bat_name'),
+                                                                Donor=F('analysisMarker_id__analysis_id__donor_id__donor_abbr'),
+                                                                Panel=F('analysisMarker_id__analysis_id__panel_id__panel_name'),
+                                                                Date=F('analysisMarker_id__analysis_id__bat_id__date_of_measurement'),
+                                                                Analysis_Type=F('analysisMarker_id__analysis_type'),
+                                                                File_Name = F('file_id__file_name'),
+                                                                Allergen = F('file_id__allergen'),
+                                                                Control = F('file_id__control'),
+                                                                Clinical_class=F('analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name'),
+                                                                OFC_class = F('analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc'))
+    bat_name = request.GET.get('bat_name')
+    donor_name = request.GET.get('donor_names')
+    panel_name = request.GET.get('panel_names')
+    marker_name = request.GET.get('marker_names')
+    date_min = request.GET.get('date_min')
+    date_max = request.GET.get('date_max')
+    allergen_name = request.GET.get('allergens')
+    analysis_type = request.GET.get('analysis_type')
+    file_controls = request.GET.get('file_controls')
+    OFC_classes = request.GET.get('OFC_classes')
+    clinical_classes = request.GET.get('clinical_classes')
+    results = request.GET.get('analysis_results')
+    responders = request.GET.get('responders')
+    sort_by = request.GET.get('sort_by')
+    redQ4_min = request.GET.get('redQ4_min')
+    redQ4_max = request.GET.get('redQ4_max')
+    blackQ2_min = request.GET.get('blackQ2_min')
+    blackQ2_max = request.GET.get('blackQ2_max')
+    blackQ3_min = request.GET.get('blackQ3_min')
+    blackQ3_max = request.GET.get('blackQ3_max')
+    blackQ4_min = request.GET.get('blackQ4_min')
+    blackQ4_max = request.GET.get('blackQ4_max')
+    zmeanQ4_min = request.GET.get('zmeanQ4_min')
+    zmeanQ4_max = request.GET.get('zmeanQ4_max')
+    z1_min_min = request.GET.get('z1_min_min')
+    z1_min_max = request.GET.get('z1_min_max')
+    z1_max_min = request.GET.get('z1_max_min')
+    z1_max_max = request.GET.get('z1_max_max')
+    msi_Y_min = request.GET.get('msi_Y_min')
+    msi_Y_max = request.GET.get('msi_Y_max')
+    cellQ4_min = request.GET.get('cellQ4_min')
+    cellQ4_max = request.GET.get('cellQ4_max')
+    wheatFlour_min = request.GET.get('wheatFlour_min')
+    wheatFlour_max = request.GET.get('wheatFlour_max')
+    gluten_min = request.GET.get('gluten_min')
+    gluten_max = request.GET.get('gluten_max')
+    gliadin_min = request.GET.get('gliadin_min')
+    gliadin_max = request.GET.get('gliadin_max')
+    tri_a_19_min = request.GET.get('tri_a_19_min')
+    tri_a_19_max = request.GET.get('tri_a_19_max')
+    tri_a_14_min = request.GET.get('tri_a_14_min')
+    tri_a_14_max = request.GET.get('tri_a_14_max')
+    AVG = request.GET.get('AVG')
+    #AVG_donor = request.GET.get('AVG_donor')
+    redQ4 = request.GET.get('redQ4')
+    """
+    if AVG =="AVG_sample":
+        queryList = models.AnalysisResults.objects.values('id', 'analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id',
@@ -976,13 +984,10 @@ class ListResults(ListAPIView):
                                                                     analysisMarker_id__analysis_id__bat_id__date_of_measurement=Count(
                                                                         'analysisMarker_id__analysis_id__bat_id__date_of_measurement', distinct=True),
                                                                     redQ4=Avg('redQ4'),  blackQ2=Avg('blackQ2'), result=Count('result', distinct=True), blackQ3=Avg('blackQ3'), blackQ4=Avg('blackQ4'),
-                                                                    zmeanQ4=Avg('zmeanQ4'), z1_min=Avg('z1_min'), CD63max=Avg('z1_max'),
+                                                                    zmeanQ4=Avg('zmeanQ4'), z1_min=Avg('z1_min'), z1_max=Avg('z1_max'),
                                                                     msi_Y=Avg('msi_Y'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
-            """
-        if AVR_donor == "Avg":
-            pass
-            """
-            queryList = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id__donor_id__donor_abbr',
+    elif AVG == "AVG_donor":
+        queryList = models.AnalysisResults.objects.values('id', 'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour',
@@ -998,104 +1003,122 @@ class ListResults(ListAPIView):
                                                                     analysisMarker_id__analysis_id__bat_id__date_of_measurement=Count(
                                                                         'analysisMarker_id__analysis_id__bat_id__date_of_measurement', distinct=True),
                                                                     redQ4=Avg('redQ4'),  blackQ2=Avg('blackQ2'), result=Count('result', distinct=True), blackQ3=Avg('blackQ3'), blackQ4=Avg('blackQ4'),
-                                                                    zmeanQ4=Avg('zmeanQ4'), z1_min=Avg('z1_min'), CD63max=Avg('z1_max'),
+                                                                    zmeanQ4=Avg('zmeanQ4'), z1_min=Avg('z1_min'), z1_max=Avg('z1_max'),
                                                                     msi_Y=Avg('msi_Y'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
-            """
-        if bat_name:
-            queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__bat_name = bat_name)
-        if is_valid_queryparam(donor_name):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donor_abbr__icontains=donor_name)
-        if panel_name:
-            queryList = queryList.filter(analysisMarker_id__analysis_id__panel_id__panel_name = panel_name)
-        if is_valid_queryparam(marker_name):
-            markers = list(models.Channels.objects.filter(pns__icontains=marker_name).values_list('analysis_id', flat=True))
-            queryList = queryList.filter(analysisMarker_id__analysis_id__in=markers)
-        if is_valid_queryparam(allergen_name):
-            queryList = queryList.filter(file_id__allergen__icontains=allergen_name)
-        if is_valid_queryparam(analysis_type):
-            queryList = queryList.filter(analysisMarker_id__analysis_type=analysis_type)
-        if is_valid_queryparam(file_controls):
-            queryList = queryList.filter(file_id__control=file_controls)
-        if is_valid_queryparam(date_min):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__date_of_measurement__gte=date_min)
-        if is_valid_queryparam(date_max):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__bat_id__date_of_measurement__lt=date_max)
-        if is_valid_queryparam(results):
-            queryList = queryList.filter(result=results)
-        if is_valid_queryparam(responders):
-            queryList = queryList.filter(responder=responders)
-        if is_valid_queryparam(clinical_classes):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name=clinical_classes)
-        if is_valid_queryparam(OFC_classes):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc=OFC_classes)
-        if is_valid_queryparam(redQ4_min):
-            queryList = queryList.filter(redQ4__gte=redQ4_min)
-        if is_valid_queryparam(redQ4_max):
-            queryList = queryList.filter(redQ4__lt=redQ4_max)
-        if is_valid_queryparam(blackQ2_min):
-            queryList = queryList.filter(blackQ2__gte=blackQ2_min)
-        if is_valid_queryparam(blackQ2_max):
-            queryList = queryList.filter(blackQ2__lt=blackQ2_max)
-        if is_valid_queryparam(blackQ3_min):
-            queryList = queryList.filter(blackQ3__gte=blackQ3_min)
-        if is_valid_queryparam(blackQ3_max):
-            queryList = queryList.filter(blackQ3__lt=blackQ3_max)
-        if is_valid_queryparam(blackQ4_min):
-            queryList = queryList.filter(blackQ4__gte=blackQ4_min)
-        if is_valid_queryparam(blackQ4_max):
-            queryList = queryList.filter(blackQ4__lt=blackQ4_max)
-        if is_valid_queryparam(zmeanQ4_min):
-            queryList = queryList.filter(zmeanQ4__gte=zmeanQ4_min)
-        if is_valid_queryparam(zmeanQ4_max):
-            queryList = queryList.filter(zmeanQ4__lt=zmeanQ4_max)
-        if is_valid_queryparam(z1_min_min):
-            queryList = queryList.filter(z1_min__gte=z1_min_min)
-        if is_valid_queryparam(z1_min_max):
-            queryList = queryList.filter(z1_min__lt=z1_min_max)
-        if is_valid_queryparam(z1_max_min):
-            queryList = queryList.filter(z1_max__gte=z1_max_min)
-        if is_valid_queryparam(z1_max_max):
-            queryList = queryList.filter(z1_max__lt=z1_max_max)
-        if is_valid_queryparam(msi_Y_min):
-            queryList = queryList.filter(msi_Y__gte=msi_Y_min)
-        if is_valid_queryparam(msi_Y_max):
-            queryList = queryList.filter(msi_Y__lt=msi_Y_max)
-        if is_valid_queryparam(cellQ4_min):
-            queryList = queryList.filter(cellQ4__gte=cellQ4_min)
-        if is_valid_queryparam(cellQ4_max):
-            queryList = queryList.filter(cellQ4__lt=cellQ4_max)
-        if is_valid_queryparam(wheatFlour_min):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour__gte=wheatFlour_min)
-        if is_valid_queryparam(wheatFlour_max):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour__lt=wheatFlour_max)
-        if is_valid_queryparam(gluten_min):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten__gte=gluten_min)
-        if is_valid_queryparam(gluten_max):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten__lt=gluten_max)
-        if is_valid_queryparam(gliadin_min):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin__gte=gliadin_min)
-        if is_valid_queryparam(gliadin_max):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin__lt=gliadin_max)
-        if is_valid_queryparam(tri_a_19_min):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19__gte=tri_a_19_min)
-        if is_valid_queryparam(tri_a_19_max):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19__lt=tri_a_19_max)
-        if is_valid_queryparam(tri_a_14_min):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14__gte=tri_a_14_min)
-        if is_valid_queryparam(tri_a_14_max):
-            queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14__lt=tri_a_14_max)
 
-        # sort it if applied on based on bat_name/donor_name
-        if sort_by == "bat_name":
-            queryList = queryList.order_by("analysisMarker_id__analysis_id__bat_id__bat_name")
-        elif sort_by == "donor_name":
-            queryList = queryList.order_by("analysisMarker_id__analysis_id__donor_id__donor_abbr")
-        elif sort_by == "files":
-            queryList = queryList.order_by("file_id__file_name")
+    """
+    if bat_name != "all":
+        queryList = queryList.filter(BAT_ID = bat_name)
+    if is_valid_queryparam(donor_name):
+        queryList = queryList.filter(Donor__icontains=donor_name)
+    if panel_name !="all":
+        queryList = queryList.filter(Panel = panel_name)
+    elif is_valid_queryparam(marker_name):
+        markers = list(models.Channels.objects.filter(pns__icontains=marker_name).values_list('analysis_id', flat=True))
+        queryList = queryList.filter(analysisMarker_id__analysis_id__in=markers)
+    if is_valid_queryparam(allergen_name):
+        queryList = queryList.filter(Allergen__icontains=allergen_name)
+    if analysis_type != "all":
+        queryList = queryList.filter(Analysis_Type=analysis_type)
+    if file_controls !="all":
+        queryList = queryList.filter(Control=file_controls)
+    if is_valid_queryparam(date_min):
+        queryList = queryList.filter(Date__gte=date_min)
+    if is_valid_queryparam(date_max):
+        queryList = queryList.filter(Date__lt=date_max)
+    if results !="all":
+        queryList = queryList.filter(result=results)
+    if responders !="all":
+        queryList = queryList.filter(responder=responders)
+    if clinical_classes !="all":
+        queryList = queryList.filter(Clinical_class=clinical_classes)
+    if OFC_classes !="all":
+        queryList = queryList.filter(OFC_class=OFC_classes)
+    if is_valid_queryparam(redQ4_min):
+        queryList = queryList.filter(redQ4__gte=redQ4_min)
+    if is_valid_queryparam(redQ4_max):
+        queryList = queryList.filter(redQ4__lt=redQ4_max)
+    if is_valid_queryparam(blackQ2_min):
+        queryList = queryList.filter(blackQ2__gte=blackQ2_min)
+    if is_valid_queryparam(blackQ2_max):
+        queryList = queryList.filter(blackQ2__lt=blackQ2_max)
+    if is_valid_queryparam(blackQ3_min):
+        queryList = queryList.filter(blackQ3__gte=blackQ3_min)
+    if is_valid_queryparam(blackQ3_max):
+        queryList = queryList.filter(blackQ3__lt=blackQ3_max)
+    if is_valid_queryparam(blackQ4_min):
+        queryList = queryList.filter(blackQ4__gte=blackQ4_min)
+    if is_valid_queryparam(blackQ4_max):
+        queryList = queryList.filter(blackQ4__lt=blackQ4_max)
+    if is_valid_queryparam(zmeanQ4_min):
+        queryList = queryList.filter(zmeanQ4__gte=zmeanQ4_min)
+    if is_valid_queryparam(zmeanQ4_max):
+        queryList = queryList.filter(zmeanQ4__lt=zmeanQ4_max)
+    if is_valid_queryparam(z1_min_min):
+        queryList = queryList.filter(z1_min__gte=z1_min_min)
+    if is_valid_queryparam(z1_min_max):
+        queryList = queryList.filter(z1_min__lt=z1_min_max)
+    if is_valid_queryparam(z1_max_min):
+        queryList = queryList.filter(z1_max__gte=z1_max_min)
+    if is_valid_queryparam(z1_max_max):
+        queryList = queryList.filter(z1_max__lt=z1_max_max)
+    if is_valid_queryparam(msi_Y_min):
+        queryList = queryList.filter(msi_Y__gte=msi_Y_min)
+    if is_valid_queryparam(msi_Y_max):
+        queryList = queryList.filter(msi_Y__lt=msi_Y_max)
+    if is_valid_queryparam(cellQ4_min):
+        queryList = queryList.filter(cellQ4__gte=cellQ4_min)
+    if is_valid_queryparam(cellQ4_max):
+        queryList = queryList.filter(cellQ4__lt=cellQ4_max)
+    if is_valid_queryparam(wheatFlour_min):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour__gte=wheatFlour_min)
+    if is_valid_queryparam(wheatFlour_max):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__wheat_flour__lt=wheatFlour_max)
+    if is_valid_queryparam(gluten_min):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten__gte=gluten_min)
+    if is_valid_queryparam(gluten_max):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gluten__lt=gluten_max)
+    if is_valid_queryparam(gliadin_min):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin__gte=gliadin_min)
+    if is_valid_queryparam(gliadin_max):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin__lt=gliadin_max)
+    if is_valid_queryparam(tri_a_19_min):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19__gte=tri_a_19_min)
+    if is_valid_queryparam(tri_a_19_max):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19__lt=tri_a_19_max)
+    if is_valid_queryparam(tri_a_14_min):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14__gte=tri_a_14_min)
+    if is_valid_queryparam(tri_a_14_max):
+        queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14__lt=tri_a_14_max)
 
-
-        return queryList
-
+    # sort it if applied on based on bat_name/donor_name
+    if sort_by == "bat_name":
+        queryList = queryList.order_by("analysisMarker_id__analysis_id__bat_id__bat_name")
+    elif sort_by == "donor_name":
+        queryList = queryList.order_by("analysisMarker_id__analysis_id__donor_id__donor_abbr")
+    elif sort_by == "files":
+        queryList = queryList.order_by("file_id__file_name")
+    time_stamp = time.time()
+    excel_name = str(request.user.last_name) + str(time_stamp) + ".xlsx"
+    path = os.path.join(settings.MEDIA_ROOT, "user-data")
+    create_path(path)
+    excel_path = os.path.join(path, excel_name)
+    writer = pd.ExcelWriter(excel_path, engine='xlsxwriter')
+    df = pd.DataFrame.from_records(queryList.values('BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'File_Name', 'Allergen', 'Control', 
+                                                    'Clinical_class', 'OFC_class', 'result','redQ4','blackQ2',
+                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder'))
+    df.to_excel(writer, sheet_name='Sheet1', columns=['BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'File_Name', 'Allergen', 'Control',
+                                                    'Clinical_class', 'OFC_class', 'result','redQ4','blackQ2',
+                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder'])
+    
+    worksheet = writer.sheets['Sheet1']
+    worksheet.autofit()
+    writer.save()
+    files_ids = None
+    if len(queryList) <= 15:
+        files_ids = [file_id['file_id'] for file_id in queryList]
+       #files_ids = [1, 2, 3]
+    return render(request,"analysis/research_results.html",{'analysis_results':queryList, 'excel_name':str(excel_name), 'files_ids':files_ids})
 
 def getBat_names(request):
     # get Results from the database 
@@ -1140,3 +1163,51 @@ def getResponders(request):
         responder = models.AnalysisResults.objects.all().values_list('responder').distinct()
         responder = [c[0] for c in list(responder)]
         return JsonResponse({"responder": responder,}, status = 200)
+
+@login_required
+def downloadResults_pdf(request, files_ids):
+    files_ids = files_ids.replace('[', '')
+    files_ids = files_ids.replace(']', '')
+    files_ids = files_ids.split(',')
+    files_ids = [ int(x) for x in files_ids ]
+    time_stamp = time.time()
+    file_path = str(request.user.last_name) + str(time_stamp) + ".pdf"
+    paths = models.FilesPlots.objects.values_list('plot_path','file_id').filter(file_id__in=files_ids)
+    img_list = []
+    for i in paths:
+        img_list.append(str(i[0]))
+    if request.method == "POST":
+        file_name = request.POST.get('file_name')
+        if len(file_name) > 0:
+            file_path = str(file_name) + ".pdf"
+        image_grid(img_list, file_path)
+        if os.path.exists(str(file_path)):
+            with open(file_path, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="application/vnd.pdf")
+                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+                return response
+        raise Http404
+
+
+
+@login_required
+def downloadResults_xlsx(request, excel_name):
+    if request.method == "POST":
+        path = os.path.join(settings.MEDIA_ROOT, "user-data", excel_name)
+        file_name = request.POST.get('file_name') 
+        if len(file_name) > 0:
+            file_name = str(file_name) + '.xlsx'
+            old_path = path
+            new_path = os.path.join(settings.MEDIA_ROOT, "user-data", file_name)
+            os.rename(old_path, new_path)
+        #os.popen(f'cp {old_path}, {new_path}')
+            path = new_path
+        if os.path.exists(str(path)):
+            with open(path, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
+                return response
+        raise Http404
+        #return render(request, 'analysis/choose_analysis_type.html')
+
+

@@ -153,8 +153,20 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
     
         results = autoworkflow.runCD32thresholding()
         df = results[0]
-        df_excel = df
+        for row in df.index:
+            df['responder'][row] = 'NA'
+            if "aige" in df['filename'][row]:
+                if df['redQ4'][row] >= 3.0:
+                    df['responder'][row] = "aIgE Responder"
+                elif df['redQ4'][row] < 3.0:
+                    df['responder'][row] = "aIgE None_Responder"
+            elif "fmlp" in df['filename'][row]:
+                if df['redQ4'][row] >= 5.0:
+                    df['responder'][row] = "fMLP Responder"
+                elif df['redQ4'][row] < 5.0:
+                    df['responder'][row] = "fMLP None_Responder"
         excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
+        df_excel = df
         df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
     
         # Create a Pandas Excel writer using XlsxWriter as the engine.
@@ -199,17 +211,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             Z1_max = row['Z1_max']
             msi_Y = row['msi_Y']
             cellQ4 = row['cellQ4']
-            responder = "NA"
-            if "aige" in file_name.lower():
-                if redQ4 >= 3.0:
-                    responder = "aIgE Responder"
-                elif redQ4 < 3.0:
-                    responder = "aIgE None_Responder"
-            elif "fmlp" in file_name.lower():
-                if redQ4 >= 5.0:
-                    responder = "fMLP Responder"
-                elif redQ4 >= 5.0:
-                    responder = "fMLP None_Responder"
+            responder = row['responder']
             results_instance = models.AnalysisResults(
                                         redQ4 = redQ4,
                                         result = result,
@@ -265,6 +267,14 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
     start_time = Berlin_time()
     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_start_time=start_time)
     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="In Progress")
+    
+    print("variables at the beginning of GRAT:")
+    print(chosen_x)
+    print(chosen_x_label)
+    print(chosen_y1)
+    print(chosen_y1_lable)
+    print(chosen_z2)
+    print(chosen_z2_lable)
 
     sample_obj = models.ExperimentFiles.objects.values_list('file_id', 'file', 'file_name','allergen', 'control').filter(analysis_id = analysis_id)
     nrFiles = len(sample_obj)
@@ -275,8 +285,8 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
     posFileName = ''
     posTwoFileName= ''
     #chosen_x_label = "Siglec-8"
-    chosen_z1 = chosen_x
-    chosen_z1_lable = chosen_x_label
+    chosen_z1 = "FSC-A"
+    chosen_z1_lable = "FSC_A"
 
     i = 0
     info_messages = ""
@@ -334,8 +344,21 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
 
         results = autoworkflow.runAutoGRAT()
         df = results[0]
-        df_excel = df
+        for row in df.index:
+            df['responder'][row] = 'NA'
+            if "aige" in df['filename'][row]:
+                if df['redQ4'][row] >= 3.0:
+                    df['responder'][row] = "aIgE Responder"
+                elif df['redQ4'][row] < 3.0:
+                    df['responder'][row] = "aIgE None_Responder"
+            elif "fmlp" in df['filename'][row]:
+                if df['redQ4'][row] >= 5.0:
+                    df['responder'][row] = "fMLP Responder"
+                elif df['redQ4'][row] < 5.0:
+                    df['responder'][row] = "fMLP None_Responder"
+
         excel_file = os.path.join(pathToOutput, f'AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
+        df_excel = df
         df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
 
         # Create a Pandas Excel writer using XlsxWriter as the engine.
@@ -380,17 +403,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             Z1_max = row['Z1_max']
             msi_Y = row['msi_Y']
             cellQ4 = row['cellQ4']
-            responder = "NA"
-            if "aige" in file_name.lower():
-                if redQ4 >= 3.0:
-                    responder = "aIgE Responder"
-                elif redQ4 < 3.0:
-                    responder = "aIgE None_Responder"
-            elif "fmlp" in file_name.lower():
-                if redQ4 >= 5.0:
-                    responder = "fMLP Responder"
-                elif redQ4 >= 5.0:
-                    responder = "fMLP None_Responder"
+            responder = row['responder']
             results_instance = models.AnalysisResults(
                                         redQ4 = redQ4,
                                         result = result,

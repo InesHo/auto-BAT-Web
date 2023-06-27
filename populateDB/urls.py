@@ -60,12 +60,14 @@ urlpatterns = [
     path('thresholds_report/', views.thresholds_report, name='thresholds_report'),
     path('analysis/analysis_error/<analysisMarker_id>', views.analysis_error, name='analysis_error'),
     path('analysis/analysis_info/<analysisMarker_id>', views.analysis_info, name='analysis_info'),
-    
     path('research_questions/', views.research_questions, name='research_questions'),
-    path('results/', views.ListResults.as_view(), name = 'list_results'),
+    path('research_results/', views.research_results, name='research_results'),
+    #path('results/', views.ListResults.as_view(), name = 'list_results'),
     path('ajax/bat_names', views.getBat_names, name = "getBat_names"),
     path('ajax/file_controls', views.getFile_controls, name = "getFile_controls"),
     path('ajax/panel_names', views.getPanel_names, name = "getPanel_names"),
     path('ajax/clinical_classes', views.getClinical_classes, name = "getClinical_classes"),
     path('ajax/responders', views.getResponders, name = "getResponders"),
+    path('research_results/downloadResults_pdf/<files_ids>', views.downloadResults_pdf, name='downloadResults_pdf'),
+    path('research_results/downloadResults_xlsx/<excel_name>', views.downloadResults_xlsx, name='downloadResults_xlsx'),
     ]

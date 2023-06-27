@@ -1,0 +1,217 @@
+
+  {% include "base.html" %}
+  {% include "navbar.html" %}
+
+  <br></br>
+ <div>
+<div>
+    <center><h1>Research Results</h1></center>
+    <br></br>
+       <div class="row">
+              <div class="col-sm-1 col-1">
+              </div>
+              <div class="col-sm-1 col-1">
+                            <button class="btn btn-primary" onclick="history.back()">Go Back</button>
+              </div>
+
+              <div class="col-md-2 col-lg-2">
+		      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#excel">Download Excel</button>
+	      </div>
+              <div class="form-group col-md-2 col-lg-2">
+		      <button type="button" class="btn btn-danger" data-bs-toggle="modal" 
+				{% if files_ids != None %}
+				data-bs-target="#pdf"
+				 {% endif %}
+				>Download PDF</button>
+	      </div>
+       </div>
+    <br></br>
+     <table id="analysisResults-table" class="table table-striped table-bordered nowrap" cellspacing="0" width="80%">
+     <thead>
+     <tr>
+        <th>BAT_ID</th>
+        <th>Donor</th>
+        <th>Panel</th>
+        <th>Type</th>
+	<th> Date </th>
+        <th>File Name</th>
+        <th>File Allergen</th>
+        <th>File Control</th>
+        <th>Clinical Class.</th>
+        <th>OFC Class.</th>
+	<th>redQ4</th>
+        <th>result</th>
+        <th>blackQ2</th>
+        <th>blackQ3</th>
+        <th>blackQ4</th>
+        <th>zmeanQ4</th>
+        <th>Z1_min</th>
+        <th>Z1_max</th>
+        <th>msi_Y</th>
+        <th>cellQ4</th>
+        <th>responder</th>
+     </thead>
+     <tbody>
+      {% for r in analysis_results %}
+      <tr>
+        <td >{{ r.BAT_ID }}</td>
+        <td >{{ r.Donor }}</td>
+        <td > <a href="show_channels/{{r.analysisMarker_id__analysis_id}}">{{r.Panel}}</a></td>
+        <td >{{ r.Analysis_Type}}</td>
+        <td >{{ r.Date}}</td>
+        <td >{{ r.File_Name }}</td>
+        <td >{{ r.Allergen }}</td>
+        <td >{{ r.Control }}</td>
+        <td >{{ r.Clinical_class }}</td>
+        <td >{{ r.OFC_class }}</td>
+	<td >{{ r.redQ4|floatformat:2 }}</td>
+        <td >{{ r.result }}</td>
+        <td >{{ r.blackQ2 |floatformat:2 }}</td>
+        <td >{{ r.blackQ3 |floatformat:2}}</td>
+        <td >{{ r.blackQ4|floatformat:2 }}</td>
+        <td >{{ r.zmeanQ4|floatformat:2 }}</td>
+        <td >{{ r.z1_min|floatformat:2 }}</td>
+        <td >{{ r.z1_max|floatformat:2 }}</td>
+        <td >{{ r.msi_Y|floatformat:2 }}</td>
+        <td >{{ r.cellQ4|floatformat:2 }}</td>
+        <td >{{ r.responder }}</td>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center bg-warning">No Data</td>
+      </tr>
+    {% endfor %}
+
+     </tbody>
+     </table>
+ </div>
+
+<!-- Modal -->
+<div class="modal fade" id="excel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+	<form method="POST" action= 'downloadResults_xlsx/{{excel_name}}' id="download-excel" autocomplete="off">
+          {% csrf_token %}
+	  <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">File Name:</label>
+            <input type="text" class="form-control" id="file-name" name="file_name">
+          </div>
+      	<div class="modal-footer">
+		<button type="submit" class="btn btn-primary" > Download</button>
+        	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      	</div>
+	</form>
+	</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="pdf" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action= 'downloadResults_pdf/{{files_ids}}' id="download-pdf" autocomplete="off">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">File Name:</label>
+            <input type="text" class="form-control" id="file-name" name="file_name">
+          </div>
+        <div class="modal-footer">
+                <button id="download" type="submit" class="btn btn-primary" > Download</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+        </form>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+$('#download-excel').submit(function() {
+    $('#excel').modal('hide');
+});
+$('#download-pdf').submit(function() {
+    $('#pdf').modal('hide');
+});
+
+$(document).ready(function () {
+    // Setup - add a text input to each footer cell
+    $('#aanalysisResults-table thead tr')
+        .clone(true)
+        .addClass('filters')
+        .appendTo('#analysisResults-table thead');
+
+
+var table = $('#analysisResults-table').DataTable({
+        orderCellsTop: true,
+        fixedHeader: true,
+        pageLength: 10,
+        aaSorting: [],
+	autoWidth: false,
+        initComplete: function () {
+            var api = this.api();
+            // For each column
+            api
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                    // Set the header cell to contain the input element
+                    var cell = $('.filters th').eq(
+                        $(api.column(colIdx).header()).index()
+                    );
+                    var title = $(cell).text();
+                    $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                    // On every keypress in this input
+                    $(
+                        'input',
+                        $('.filters th').eq($(api.column(colIdx).header()).index())
+                    )
+                        .off('keyup change')
+                        .on('change', function (e) {
+                            // Get the search value
+                            $(this).attr('title', $(this).val());
+                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
+
+                            var cursorPosition = this.selectionStart;
+                            // Search the column for that value
+                            api
+                                .column(colIdx)
+                                .search(
+                                    this.value != ''
+                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                        : '',
+                                    this.value != '',
+                                    this.value == ''
+                                )
+                                .draw();
+                        })
+                        .on('keyup', function (e) {
+                            e.stopPropagation();
+
+                            $(this).trigger('change');
+                            $(this)
+                                .focus()[0]
+                                .setSelectionRange(cursorPosition, cursorPosition);
+                        });
+                });
+        },
+    });
+
+});
+
+</script>
+<style>
+thead input {
+        width: 80%;
+    }
+
+</style>
