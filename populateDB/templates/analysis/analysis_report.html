@@ -23,9 +23,9 @@
 	<th>blackQ3</th>
 	<th>blackQ4</th>
 	<th>zmeanQ4</th>
-	<th>Z1_min</th>
-	<th>Z1_max</th>
-	<th>msi_Y</th>
+	<th>Z1_minQ4</th>
+	<th>Z1_maxQ4</th>
+	<th>msi_YQ4</th>
 	<th>cellQ4</th>
 	<th>responder</th>
      </thead>
@@ -45,9 +45,9 @@
 	<td >{{ r.blackQ3 |floatformat:2}}</td>
         <td >{{ r.blackQ4|floatformat:2 }}</td>
         <td >{{ r.zmeanQ4|floatformat:2 }}</td>
-        <td >{{ r.z1_min|floatformat:2 }}</td>
-        <td >{{ r.z1_max|floatformat:2 }}</td>
-        <td >{{ r.msi_Y|floatformat:2 }}</td>
+        <td >{{ r.Z1_minQ4|floatformat:2 }}</td>
+        <td >{{ r.Z1_maxQ4|floatformat:2 }}</td>
+        <td >{{ r.msi_YQ4|floatformat:2 }}</td>
         <td >{{ r.cellQ4|floatformat:2 }}</td>
         <td >{{ r.responder }}</td>
       {% empty %}

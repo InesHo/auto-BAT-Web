@@ -619,7 +619,7 @@ def results_to_CSV(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
                                                             'file_id__file_name', "analysisMarker_id__analysis_error", "analysisMarker_id__analysis_info_messages",
-                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder')
+                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder')
     return render_to_csv_response(analysisResults)
 
 @login_required
@@ -850,7 +850,7 @@ def analysis_report(request):
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
                                                             'analysisMarker_id__analysis_type',
                                                             'file_id__file_name', 'file_id__allergen','file_id__control',
-                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder')
+                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder')
 
 
     return render(request,"analysis/analysis_report.html",{'analysis_results':analysisResults})
@@ -925,7 +925,7 @@ def research_results(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__gliadin',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_19',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_sige__Tri_a_14',
-                                                            'result','redQ4','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder').annotate(
+                                                            'result','redQ4','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder').annotate(
                                                                 BAT_ID=F('analysisMarker_id__analysis_id__bat_id__bat_name'),
                                                                 Donor=F('analysisMarker_id__analysis_id__donor_id__donor_abbr'),
                                                                 Panel=F('analysisMarker_id__analysis_id__panel_id__panel_name'),
@@ -960,12 +960,12 @@ def research_results(request):
     blackQ4_max = request.GET.get('blackQ4_max')
     zmeanQ4_min = request.GET.get('zmeanQ4_min')
     zmeanQ4_max = request.GET.get('zmeanQ4_max')
-    z1_min_min = request.GET.get('z1_min_min')
-    z1_min_max = request.GET.get('z1_min_max')
-    z1_max_min = request.GET.get('z1_max_min')
-    z1_max_max = request.GET.get('z1_max_max')
-    msi_Y_min = request.GET.get('msi_Y_min')
-    msi_Y_max = request.GET.get('msi_Y_max')
+    Z1_minQ4_min = request.GET.get('Z1_minQ4_min')
+    Z1_minQ4_max = request.GET.get('Z1_minQ4_max')
+    Z1_maxQ4_min = request.GET.get('Z1_maxQ4_min')
+    Z1_maxQ4_max = request.GET.get('Z1_maxQ4_max')
+    msi_YQ4_min = request.GET.get('msi_YQ4_min')
+    msi_YQ4_max = request.GET.get('msi_YQ4_max')
     cellQ4_min = request.GET.get('cellQ4_min')
     cellQ4_max = request.GET.get('cellQ4_max')
     wheatFlour_min = request.GET.get('wheatFlour_min')
@@ -1000,8 +1000,8 @@ def research_results(request):
                                                                     analysisMarker_id__analysis_id__bat_id__date_of_measurement=Count(
                                                                         'analysisMarker_id__analysis_id__bat_id__date_of_measurement', distinct=True),
                                                                     redQ4=Avg('redQ4'),  blackQ2=Avg('blackQ2'), result=Count('result', distinct=True), blackQ3=Avg('blackQ3'), blackQ4=Avg('blackQ4'),
-                                                                    zmeanQ4=Avg('zmeanQ4'), z1_min=Avg('z1_min'), z1_max=Avg('z1_max'),
-                                                                    msi_Y=Avg('msi_Y'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
+                                                                    zmeanQ4=Avg('zmeanQ4'), Z1_minQ4=Avg('Z1_minQ4'), Z1_maxQ4=Avg('Z1_maxQ4'),
+                                                                    msi_YQ4=Avg('msi_YQ4'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
     elif AVG == "AVG_donor":
         queryList = models.AnalysisResults.objects.values('id', 'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
@@ -1019,8 +1019,8 @@ def research_results(request):
                                                                     analysisMarker_id__analysis_id__bat_id__date_of_measurement=Count(
                                                                         'analysisMarker_id__analysis_id__bat_id__date_of_measurement', distinct=True),
                                                                     redQ4=Avg('redQ4'),  blackQ2=Avg('blackQ2'), result=Count('result', distinct=True), blackQ3=Avg('blackQ3'), blackQ4=Avg('blackQ4'),
-                                                                    zmeanQ4=Avg('zmeanQ4'), z1_min=Avg('z1_min'), z1_max=Avg('z1_max'),
-                                                                    msi_Y=Avg('msi_Y'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
+                                                                    zmeanQ4=Avg('zmeanQ4'), Z1_minQ4=Avg('Z1_minQ4'), Z1_maxQ4=Avg('Z1_maxQ4'),
+                                                                    msi_YQ4=Avg('msi_YQ4'), cellQ4=Sum('cellQ4'), responder=Count('responder', distinct=True))
 
     """
     if bat_name != "all":
@@ -1070,18 +1070,18 @@ def research_results(request):
         queryList = queryList.filter(zmeanQ4__gte=zmeanQ4_min)
     if is_valid_queryparam(zmeanQ4_max):
         queryList = queryList.filter(zmeanQ4__lt=zmeanQ4_max)
-    if is_valid_queryparam(z1_min_min):
-        queryList = queryList.filter(z1_min__gte=z1_min_min)
-    if is_valid_queryparam(z1_min_max):
-        queryList = queryList.filter(z1_min__lt=z1_min_max)
-    if is_valid_queryparam(z1_max_min):
-        queryList = queryList.filter(z1_max__gte=z1_max_min)
-    if is_valid_queryparam(z1_max_max):
-        queryList = queryList.filter(z1_max__lt=z1_max_max)
-    if is_valid_queryparam(msi_Y_min):
-        queryList = queryList.filter(msi_Y__gte=msi_Y_min)
-    if is_valid_queryparam(msi_Y_max):
-        queryList = queryList.filter(msi_Y__lt=msi_Y_max)
+    if is_valid_queryparam(Z1_minQ4_min):
+        queryList = queryList.filter(Z1_minQ4__gte=Z1_minQ4_min)
+    if is_valid_queryparam(Z1_minQ4_max):
+        queryList = queryList.filter(Z1_minQ4__lt=Z1_minQ4_max)
+    if is_valid_queryparam(Z1_maxQ4_min):
+        queryList = queryList.filter(Z1_maxQ4__gte=Z1_maxQ4_min)
+    if is_valid_queryparam(Z1_maxQ4_max):
+        queryList = queryList.filter(Z1_maxQ4__lt=Z1_maxQ4_max)
+    if is_valid_queryparam(msi_YQ4_min):
+        queryList = queryList.filter(msi_YQ4__gte=msi_YQ4_min)
+    if is_valid_queryparam(msi_YQ4_max):
+        queryList = queryList.filter(msi_YQ4__lt=msi_YQ4_max)
     if is_valid_queryparam(cellQ4_min):
         queryList = queryList.filter(cellQ4__gte=cellQ4_min)
     if is_valid_queryparam(cellQ4_max):
@@ -1124,10 +1124,10 @@ def research_results(request):
         writer = pd.ExcelWriter(excel_path, engine='xlsxwriter')
         df = pd.DataFrame.from_records(queryList.values('BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'File_Name', 'Allergen', 'Control', 
                                                     'Clinical_class', 'OFC_class', 'result','redQ4','blackQ2',
-                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder'))
+                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder'))
         df.to_excel(writer, sheet_name='Sheet1', columns=['BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'File_Name', 'Allergen', 'Control',
                                                     'Clinical_class', 'OFC_class', 'result','redQ4','blackQ2',
-                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder'])
+                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder'])
     
         worksheet = writer.sheets['Sheet1']
         worksheet.autofit()
