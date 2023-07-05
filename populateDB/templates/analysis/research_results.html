@@ -15,7 +15,11 @@
               </div>
 
               <div class="col-md-2 col-lg-2">
-		      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#excel">Download Excel</button>
+		      <button type="button" class="btn btn-info" data-bs-toggle="modal" 
+			      	{% if excel_name != 'None' %}
+			      		data-bs-target="#excel"
+				{% endif %}
+			      >Download Excel</button>
 	      </div>
               <div class="form-group col-md-2 col-lg-2">
 		      <button type="button" class="btn btn-danger" data-bs-toggle="modal" 

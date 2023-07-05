@@ -1,0 +1,539 @@
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:06 later at 2023-06-29 14:00:49.253588+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:06 later at 2023-06-29 14:00:49.308773+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:06 later at 2023-06-29 14:00:49.329710+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:06 later at 2023-06-29 14:00:54.377050+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:06 later at 2023-06-29 14:00:54.400944+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:21 later at 2023-06-29 14:01:14.432256+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:21 later at 2023-06-29 14:01:14.500975+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:21 later at 2023-06-29 14:01:14.608635+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:21 later at 2023-06-29 14:01:19.741548+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:00:21 later at 2023-06-29 14:01:19.784668+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:01:26 later at 2023-06-29 14:02:44.984707+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:01:26 later at 2023-06-29 14:02:45.030876+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:01:26 later at 2023-06-29 14:02:45.111302+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:01:26 later at 2023-06-29 14:02:50.190223+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:01:26 later at 2023-06-29 14:02:50.242931+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:04:21 later at 2023-06-29 14:07:10.780807+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:04:21 later at 2023-06-29 14:07:10.891050+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:04:21 later at 2023-06-29 14:07:10.919546+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:04:21 later at 2023-06-29 14:07:15.964154+00:00
+Rescheduling populateDB.tasks.run_analysis_autograt_task
+Traceback (most recent call last):
+  File "/home/abusr/anaconda3/envs/AutoBat/lib/python3.8/site-packages/background_task/tasks.py", line 43, in bg_runner
+    func(*args, **kwargs)
+TypeError: run_analysis_autograt_task() missing 2 required positional arguments: 'rPath' and 'user_id'
+Rescheduling task populateDB.tasks.run_analysis_autograt_task for 0:04:21 later at 2023-06-29 14:07:16.018710+00:00
+variables at the beginning of GRAT:
+X: FJComp-B2-A
+Siglec-8-PE-A
+Y: FJComp-B1-A
+CD66b-FITC-A
+Z1: FSC-A
+FSC_A
+Z2 FJComp-V2-A
+CD11b-VioGreen-A
+01BAT179-WNCt25-fullpan_us.fcs
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/WNCt25/full-panel/
+/home/abusr/autoBatWeb/auto-BAT-Web/media/output/BAT_179/WNCt25/full-panel/autograt/
+['/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/WNCt25/full-panel/01BAT179-WNCt25-fullpan_us.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/WNCt25/full-panel/02BAT179-WNCt25-fullpan_fMLP.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/WNCt25/full-panel/03BAT179-WNCt25-fullpan_IL5-100ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/WNCt25/full-panel/04BAT179-WNCt25-fullpan_TNFa-500ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/WNCt25/full-panel/05BAT179-WNCt25-fullpan_PAF16-500ng.fcs']
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/WNCt25/full-panel/
+Debugging CD66b Threshold:
+The dataframe with minimas and maximas:
+          data       kde       min       max
+78    0.263870  0.000048  0.000048       NaN
+127   5.697196  0.543769       NaN  0.543769
+150   8.247532  0.003397  0.003397       NaN
+168  10.243447  0.255819       NaN  0.255819
+The two maximas:
+          data       kde  min       max
+127   5.697196  0.543769  NaN  0.543769
+168  10.243447  0.255819  NaN  0.255819
+thre final threshold:
+8.247532007866475
+File Name: /home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/WNCt25/full-panel/01BAT179-WNCt25-fullpan_us.fcs
+Debugging CD66b threhsold in AutoBatWorkflow.py
+01BAT179-WNCt25-fullpan_us.fcs
+calculated threshold:
+8.2
+Marker we calculate threshold for:
+FJComp-B1-A
+
+Useful info for debugging:
+
+
+CD66-Threshold: 8.2
+
+Siglec-8-Threshold: 9.8
+
+zMarker: FJComp-V2-A-threshold: 9.5
+variables at the beginning of GRAT:
+X: FJComp-B2-A
+Siglec-8-PE-A
+Y: FJComp-B1-A
+CD66b-FITC-A
+Z1: FSC-A
+FSC_A
+Z2 FJComp-V2-A
+CD11b-VioGreen-A
+01BAT179-JG-fullpan_us.fcs
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/JG/full-panel/
+/home/abusr/autoBatWeb/auto-BAT-Web/media/output/BAT_179/JG/full-panel/autograt/
+['/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/JG/full-panel/01BAT179-JG-fullpan_us.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/JG/full-panel/02BAT179-JG-fullpan_fMLP.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/JG/full-panel/03BAT179-JG-fullpan_IL5-100ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/JG/full-panel/04BAT179-JG-fullpan_TNFa-500ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/JG/full-panel/05BAT179-JG-fullpan_PAF16-500ng.fcs']
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/JG/full-panel/
+Debugging CD66b Threshold:
+The dataframe with minimas and maximas:
+          data       kde       min       max
+73    0.061928  0.000031  0.000031       NaN
+80    0.782474  0.000097       NaN  0.000097
+83    1.091279  0.000074  0.000074       NaN
+87    1.503020  0.000096       NaN  0.000096
+88    1.605955  0.000093  0.000093       NaN
+133   6.238035  0.488249       NaN  0.488249
+155   8.502608  0.004462  0.004462       NaN
+176  10.664245  0.363676       NaN  0.363676
+The two maximas:
+          data       kde  min       max
+133   6.238035  0.488249  NaN  0.488249
+176  10.664245  0.363676  NaN  0.363676
+thre final threshold:
+8.50260793671696
+File Name: /home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_179/JG/full-panel/01BAT179-JG-fullpan_us.fcs
+Debugging CD66b threhsold in AutoBatWorkflow.py
+01BAT179-JG-fullpan_us.fcs
+calculated threshold:
+8.5
+Marker we calculate threshold for:
+FJComp-B1-A
+
+Useful info for debugging:
+
+
+CD66-Threshold: 8.5
+
+Siglec-8-Threshold: 10.6
+
+zMarker: FJComp-V2-A-threshold: 9.5
+variables at the beginning of GRAT:
+X: FJComp-B2-A
+Siglec-8-PE-A
+Y: FJComp-B1-A
+CD66b-FITC-A
+Z1: FSC-A
+FSC_A
+Z2 FJComp-V2-A
+CD11b-VioGreen-A
+01BAT176-WNAt61-fullpan-preOFC_us.fcs
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/
+/home/abusr/autoBatWeb/auto-BAT-Web/media/output/BAT_176/WNAt61/full-panel/autograt/
+['/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/01BAT176-WNAt61-fullpan-preOFC_us.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/02BAT176-WNAt61-fullpan-preOFC_fMLP.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/03BAT176-WNAt61-fullpan-preOFC_IL5-50ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/04BAT176-WNAt61-fullpan-preOFC_PAF16-500ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/05BAT176-WNAt61-fullpan-90mpost1stdose_us.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/06BAT176-WNAt61-fullpan-90mpost1stdose_fMLP.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/07BAT176-WNAt61-fullpan-90mpost1stdose_IL5-50ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/08BAT176-WNAt61-fullpan-90mpost1stdose_PAF16-500ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/09BAT176-WNAt61-fullpan-60mpostreact_us.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/10BAT176-WNAt61-fullpan-60mpostreact_fMLP.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/11BAT176-WNAt61-fullpan-60mpostreact_IL5-50ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/12BAT176-WNAt61-fullpan-60mpostreact_PAF16-500ng.fcs']
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/
+Debugging CD66b Threshold:
+The dataframe with minimas and maximas:
+         data       kde       min       max
+120  4.961650  0.193324       NaN  0.193324
+143  7.448669  0.002523  0.002523       NaN
+160  9.286901  0.495732       NaN  0.495732
+The two maximas:
+         data       kde  min       max
+160  9.286901  0.495732  NaN  0.495732
+120  4.961650  0.193324  NaN  0.193324
+thre final threshold:
+7.448669101961681
+File Name: /home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_176/WNAt61/full-panel/01BAT176-WNAt61-fullpan-preOFC_us.fcs
+Debugging CD66b threhsold in AutoBatWorkflow.py
+01BAT176-WNAt61-preOFC-fulpan_us.fcs
+calculated threshold:
+7.4
+Marker we calculate threshold for:
+FJComp-B1-A
+
+Useful info for debugging:
+
+
+CD66-Threshold: 7.4
+
+Siglec-8-Threshold: 8.4
+
+zMarker: FJComp-V2-A-threshold: 8.7
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+variables at the beginning of GRAT:
+X: B2-A
+Siglec-8-PE-A
+Y: B1-A
+CD66b-FITC-A
+Z1: FSC-A
+FSC_A
+Z2 V2-A
+CD11b-VioGreen-A
+
+ The number of events in file A3-WNAt65-bat-preOFC_fMLP--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A4-WNAt65-bat-preOFC_timgrass-1ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A5-WNAt65-bat-preOFC_timgrass-50ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A6-WNAt65-bat-preOFC_DST-wheat-50ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A7-WNAt65-bat-preOFC_DST-wheat-500ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A8-WNAt65-bat-preOFC_glutKSRPMI-0-8ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A9-WNAt65-bat-preOFC_glutKSRPMI-8ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A12-WNAt65-bat-preOFC_glutKSRPMI-800ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file B1-WNAt65-bat-preOFC_gliaADEtPBS-300ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+A1-WNAt65-bat-preOFC_us--2023-03-23.0001.fcs
+/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/
+/home/abusr/autoBatWeb/auto-BAT-Web/media/output/BAT_180/WNAt65/bat-panel/autograt/
+['/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A1-WNAt65-bat-preOFC_us--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A2-WNAt65-bat-preOFC_aIgE--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A3-WNAt65-bat-preOFC_fMLP--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A4-WNAt65-bat-preOFC_timgrass-1ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A5-WNAt65-bat-preOFC_timgrass-50ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A6-WNAt65-bat-preOFC_DST-wheat-50ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A7-WNAt65-bat-preOFC_DST-wheat-500ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A8-WNAt65-bat-preOFC_glutKSRPMI-0-8ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A9-WNAt65-bat-preOFC_glutKSRPMI-8ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A10-WNAt65-bat-preOFC_glutKSRPMI-80ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A11-WNAt65-bat-preOFC_glutKSRPMI-400ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A12-WNAt65-bat-preOFC_glutKSRPMI-800ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/B1-WNAt65-bat-preOFC_gliaADEtPBS-300ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/B2-WNAt65-bat-preOFC_hdm1-10ug--2023-03-23.0001.fcs']
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_180/WNAt65/bat-panel/
+Debugging CD66b Threshold:
+The dataframe with minimas and maximas:
+          data           kde           min       max
+128   4.546290  7.266560e-01           NaN  0.726656
+144   5.953871  7.500030e-04  7.500030e-04       NaN
+154   6.833610  2.604078e-02           NaN  0.026041
+166   7.889296  2.832064e-05  2.832064e-05       NaN
+170   8.241191  1.017527e-04           NaN  0.000102
+173   8.505113  5.452129e-05  5.452129e-05       NaN
+178   8.944982  1.092497e-04           NaN  0.000109
+187   9.736746  6.519927e-08  6.519927e-08       NaN
+194  10.352563  2.606103e-05           NaN  0.000026
+The two maximas:
+        data       kde  min       max
+128  4.54629  0.726656  NaN  0.726656
+154  6.83361  0.026041  NaN  0.026041
+thre final threshold:
+5.95387138915081
+File Name: /home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A1-WNAt65-bat-preOFC_us--2023-03-23.0001.fcs
+Debugging CD66b threhsold in AutoBatWorkflow.py
+None
+calculated threshold:
+6.0
+Marker we calculate threshold for:
+B1-A
+
+ The number of events in file A3-WNAt65-bat-preOFC_fMLP--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A4-WNAt65-bat-preOFC_timgrass-1ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A5-WNAt65-bat-preOFC_timgrass-50ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A6-WNAt65-bat-preOFC_DST-wheat-50ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A7-WNAt65-bat-preOFC_DST-wheat-500ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A8-WNAt65-bat-preOFC_glutKSRPMI-0-8ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A9-WNAt65-bat-preOFC_glutKSRPMI-8ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A12-WNAt65-bat-preOFC_glutKSRPMI-800ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file B1-WNAt65-bat-preOFC_gliaADEtPBS-300ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ Threshold checks have been passed.
+
+SSC-A-Threshold: 11.5
+
+FcR-Threshold: 9.7
+
+CD63-Threshold: 9.36
+
+Creation of q-plots and report-table for ... 
+
+[1] "a1-wnat65-bat-preofc_us--2023-03-23.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "a2-wnat65-bat-preofc_aige--2023-03-23.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "a3-wnat65-bat-preofc_fmlp--2023-03-23.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "a4-wnat65-bat-preofc_timgrass-1ug--2023-03-23.0001.fcs"
+[1] "a5-wnat65-bat-preofc_timgrass-50ug--2023-03-23.0001.fcs"
+[1] "a6-wnat65-bat-preofc_dst-wheat-50ug--2023-03-23.0001.fcs"
+[1] "a7-wnat65-bat-preofc_dst-wheat-500ug--2023-03-23.0001.fcs"
+[1] "a8-wnat65-bat-preofc_glutksrpmi-0-8ug--2023-03-23.0001.fcs"
+[1] "a9-wnat65-bat-preofc_glutksrpmi-8ug--2023-03-23.0001.fcs"
+[1] "a10-wnat65-bat-preofc_glutksrpmi-80ug--2023-03-23.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "a11-wnat65-bat-preofc_glutksrpmi-400ug--2023-03-23.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "a12-wnat65-bat-preofc_glutksrpmi-800ug--2023-03-23.0001.fcs"
+[1] "b1-wnat65-bat-preofc_gliaadetpbs-300ug--2023-03-23.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "b2-wnat65-bat-preofc_hdm1-10ug--2023-03-23.0001.fcs"
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+variables at the beginning of GRAT:
+X: B2-A
+Siglec-8-PE-A
+Y: B1-A
+CD66b-FITC-A
+Z1: FSC-A
+FSC_A
+Z2 V2-A
+CD11b-VioGreen-A
+
+ The number of events in file A3-WNAt65-bat-preOFC_fMLP--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A4-WNAt65-bat-preOFC_timgrass-1ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A5-WNAt65-bat-preOFC_timgrass-50ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A6-WNAt65-bat-preOFC_DST-wheat-50ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A7-WNAt65-bat-preOFC_DST-wheat-500ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A8-WNAt65-bat-preOFC_glutKSRPMI-0-8ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A9-WNAt65-bat-preOFC_glutKSRPMI-8ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file A12-WNAt65-bat-preOFC_glutKSRPMI-800ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+
+ The number of events in file B1-WNAt65-bat-preOFC_gliaADEtPBS-300ug--2023-03-23.0001.fcs is below 150.000. This is very likely to result in problems for the analysis and the results must be handled with care. 
+
+A1-WNAt65-bat-preOFC_us--2023-03-23.0001.fcs
+/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/
+/home/abusr/autoBatWeb/auto-BAT-Web/media/output/BAT_180/WNAt65/bat-panel/autograt/
+['/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A1-WNAt65-bat-preOFC_us--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A2-WNAt65-bat-preOFC_aIgE--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A3-WNAt65-bat-preOFC_fMLP--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A4-WNAt65-bat-preOFC_timgrass-1ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A5-WNAt65-bat-preOFC_timgrass-50ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A6-WNAt65-bat-preOFC_DST-wheat-50ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A7-WNAt65-bat-preOFC_DST-wheat-500ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A8-WNAt65-bat-preOFC_glutKSRPMI-0-8ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A9-WNAt65-bat-preOFC_glutKSRPMI-8ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A10-WNAt65-bat-preOFC_glutKSRPMI-80ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A11-WNAt65-bat-preOFC_glutKSRPMI-400ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A12-WNAt65-bat-preOFC_glutKSRPMI-800ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/B1-WNAt65-bat-preOFC_gliaADEtPBS-300ug--2023-03-23.0001.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/B2-WNAt65-bat-preOFC_hdm1-10ug--2023-03-23.0001.fcs']
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_180/WNAt65/bat-panel/
+Debugging CD66b Threshold:
+The dataframe with minimas and maximas:
+          data           kde           min       max
+128   4.546290  7.266560e-01           NaN  0.726656
+144   5.953871  7.500030e-04  7.500030e-04       NaN
+154   6.833610  2.604078e-02           NaN  0.026041
+166   7.889296  2.832064e-05  2.832064e-05       NaN
+170   8.241191  1.017527e-04           NaN  0.000102
+173   8.505113  5.452129e-05  5.452129e-05       NaN
+178   8.944982  1.092497e-04           NaN  0.000109
+187   9.736746  6.519927e-08  6.519927e-08       NaN
+194  10.352563  2.606103e-05           NaN  0.000026
+The two maximas:
+        data       kde  min       max
+128  4.54629  0.726656  NaN  0.726656
+154  6.83361  0.026041  NaN  0.026041
+thre final threshold:
+5.95387138915081
+File Name: /home/abusr/autoBatWeb/auto-BAT-Web/media/gated_files/BAT_180/WNAt65/bat-panel/A1-WNAt65-bat-preOFC_us--2023-03-23.0001.fcs
+Debugging CD66b threhsold in AutoBatWorkflow.py
+None
+calculated threshold:
+6.0
+Marker we calculate threshold for:
+B1-A
+variables at the beginning of GRAT:
+X: FJComp-B2-A
+Siglec-8-PE-A
+Y: FJComp-B1-A
+CD66b-FITC-A
+Z1: FSC-A
+FSC_A
+Z2 FJComp-V4-A
+CD10-BV605-A
+01BAT173_WNAt60_grat-preOFC-us.fcs
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/
+/home/abusr/autoBatWeb/auto-BAT-Web/media/output/BAT_173/WNAt60/grat-panel/autograt/
+['/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/14BAT173_WNAt60_grat-60minpost3rddose-eotax1-10ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/13BAT173_WNAt60_grat-60minpost3rddose-IL5-10ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/12BAT173_WNAt60_grat-60minpost3rddose-fMLP.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/11BAT173_WNAt60_grat-60minpost3rddose-us.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/10BAT173_WNAt60_grat-90minpost1stdose-eotax1-100ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/09BAT173_WNAt60_grat-90minpost1stdose-eotax1-10ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/08BAT173_WNAt60_grat-90minpost1stdose-IL5-10ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/07BAT173_WNAt60_grat-90minpost1stdose-fMLP.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/06BAT173_WNAt60_grat-90minpost1stdose-us.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/05BAT173_WNAt60_grat-preOFC-eotax1-100ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/04BAT173_WNAt60_grat-preOFC-eotax1-10ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/03BAT173_WNAt60_grat-preOFC-IL5-10ng.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/02BAT173_WNAt60_grat-preOFC-fMLP.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/01BAT173_WNAt60_grat-preOFC-us.fcs', '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/15BAT173_WNAt60_grat-60minpost3rddose-eotax1-100ng.fcs']
+/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/
+Debugging CD66b Threshold:
+The dataframe with minimas and maximas:
+         data       kde       min       max
+70   0.242439  0.663117       NaN  0.663117
+97   1.637834  0.002932  0.002932       NaN
+125  3.084911  0.588960       NaN  0.588960
+The two maximas:
+         data       kde  min       max
+70   0.242439  0.663117  NaN  0.663117
+125  3.084911  0.588960  NaN  0.588960
+thre final threshold:
+1.6378344591852696
+File Name: /home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/BAT_173/WNAt60/grat-panel/01BAT173_WNAt60_grat-preOFC-us.fcs
+Debugging CD66b threhsold in AutoBatWorkflow.py
+01BAT173_WNAt54_grat-preOFC-us.fcs
+calculated threshold:
+1.6
+Marker we calculate threshold for:
+FJComp-B1-A
+
+Useful info for debugging:
+
+
+CD66-Threshold: 1.6
+
+Siglec-8-Threshold: 3.0
+
+zMarker: FJComp-V4-A-threshold: 4.2
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the x-axis."
+[1] "More than 1 % of events get lost in the q-plot due to the min and max limitations of the y-axis."

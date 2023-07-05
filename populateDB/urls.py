@@ -70,4 +70,5 @@ urlpatterns = [
     path('ajax/responders', views.getResponders, name = "getResponders"),
     path('research_results/downloadResults_pdf/<files_ids>', views.downloadResults_pdf, name='downloadResults_pdf'),
     path('research_results/downloadResults_xlsx/<excel_name>', views.downloadResults_xlsx, name='downloadResults_xlsx'),
+    path('files_data_CSV', views.files_data_CSV, name='files_data_CSV'),
     ]

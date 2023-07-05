@@ -564,6 +564,8 @@ def run_analysis_autograt(request, analysis_id):
         chosen_z2 = request.POST.get('Z2')
         chosen_z2_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z2).values_list('pns', flat=True))
         analysis_date = str(date.today())
+        chosen_z1 = "FSC-A"
+        chosen_z1_lable = "FSC_A"
         analysis_status = "Waiting"
         analysis_type = "AutoGrat"
         analysis_type_version = "1.0"
@@ -604,9 +606,8 @@ def run_analysis_autograt(request, analysis_id):
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-            run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z2, chosen_z2_lable,
-                                device, outputPDFname, pathToData, pathToExports, 
-                                pathToOutput, pathToGatingFunctions, rPath, user_id
+            run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1, chosen_z1_lable,
+                                chosen_z2, chosen_z2_lable, device, outputPDFname, pathToData, pathToExports, pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
             return render(request, 'analysis/analysis_ready.html')
         else:
@@ -618,7 +619,7 @@ def results_to_CSV(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
                                                             'file_id__file_name', "analysisMarker_id__analysis_error", "analysisMarker_id__analysis_info_messages",
-                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'CD63min', 'CD63max', 'msiCCR3', 'cellQ4', 'responder')
+                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder')
     return render_to_csv_response(analysisResults)
 
 @login_required
@@ -676,6 +677,11 @@ def re_analysis_all(request):
  
         if analysis_type == 'AutoBat':
             """
+            models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+            models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+            models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+            models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).delete()
+            models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Waiting")
             run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
                                 pathToOutput, pathToGatingFunctions, rPath, user_id
@@ -691,10 +697,13 @@ def re_analysis_all(request):
 
             chosen_x = chosen_z1
             chosen_x_lable = chosen_z1_lable
+            chosen_z1 = "FSC-A"
+            chosen_z1_lable = "FSC_A"
+
             chosen_z2_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z2).values_list('pns', flat=True))
             outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.png"
             pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/")
-            run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z2,
+            run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1, chosen_z1_lable, chosen_z2,
                                 chosen_z2_lable, device, outputPDFname, pathToData, pathToExports, pathToOutput, pathToGatingFunctions, rPath, user_id
                                 )
     return render(request, 'analysis/analysis_ready.html')
@@ -755,7 +764,14 @@ def show_analysis(request):
 
 @login_required
 def delete_analysis_alert(request, analysisMarker_id):
-    return render(request, 'analysis/analysis_delete_alert.html', {'analysisMarker_id':analysisMarker_id})
+    analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+    return render(request, 'analysis/analysis_delete_alert.html', {'analysisMarker_id':analysisMarker_id, 'bat_name': bat_name, 'donor_name': donor_name, 'panel_name': panel_name})
 
 
 @login_required
@@ -1099,23 +1115,25 @@ def research_results(request):
     elif sort_by == "files":
         queryList = queryList.order_by("file_id__file_name")
     time_stamp = time.time()
-    excel_name = str(request.user.last_name) + str(time_stamp) + ".xlsx"
-    path = os.path.join(settings.MEDIA_ROOT, "user-data")
-    create_path(path)
-    excel_path = os.path.join(path, excel_name)
-    writer = pd.ExcelWriter(excel_path, engine='xlsxwriter')
-    df = pd.DataFrame.from_records(queryList.values('BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'File_Name', 'Allergen', 'Control', 
+    excel_name = "None"
+    if len(queryList) > 0:
+        excel_name = str(request.user.last_name) + str(time_stamp) + ".xlsx"
+        path = os.path.join(settings.MEDIA_ROOT, "user-data")
+        create_path(path)
+        excel_path = os.path.join(path, excel_name)
+        writer = pd.ExcelWriter(excel_path, engine='xlsxwriter')
+        df = pd.DataFrame.from_records(queryList.values('BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'File_Name', 'Allergen', 'Control', 
                                                     'Clinical_class', 'OFC_class', 'result','redQ4','blackQ2',
                                                     'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder'))
-    df.to_excel(writer, sheet_name='Sheet1', columns=['BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'File_Name', 'Allergen', 'Control',
+        df.to_excel(writer, sheet_name='Sheet1', columns=['BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'File_Name', 'Allergen', 'Control',
                                                     'Clinical_class', 'OFC_class', 'result','redQ4','blackQ2',
                                                     'blackQ3', 'blackQ4', 'zmeanQ4', 'z1_min', 'z1_max', 'msi_Y', 'cellQ4', 'responder'])
     
-    worksheet = writer.sheets['Sheet1']
-    worksheet.autofit()
-    writer.save()
+        worksheet = writer.sheets['Sheet1']
+        worksheet.autofit()
+        writer.save()
     files_ids = None
-    if len(queryList) <= 15:
+    if len(queryList) <= 15 and len(queryList) > 0:
         files_ids = [file_id['file_id'] for file_id in queryList]
        #files_ids = [1, 2, 3]
     return render(request,"analysis/research_results.html",{'analysis_results':queryList, 'excel_name':str(excel_name), 'files_ids':files_ids})
@@ -1172,6 +1190,7 @@ def downloadResults_pdf(request, files_ids):
     files_ids = [ int(x) for x in files_ids ]
     time_stamp = time.time()
     file_path = str(request.user.last_name) + str(time_stamp) + ".pdf"
+    file_path = os.path.join(settings.MEDIA_ROOT, "user-data", file_path)
     paths = models.FilesPlots.objects.values_list('plot_path','file_id').filter(file_id__in=files_ids)
     img_list = []
     for i in paths:
@@ -1180,6 +1199,7 @@ def downloadResults_pdf(request, files_ids):
         file_name = request.POST.get('file_name')
         if len(file_name) > 0:
             file_path = str(file_name) + ".pdf"
+            file_path = os.path.join(settings.MEDIA_ROOT, "user-data", file_path)
         image_grid(img_list, file_path)
         if os.path.exists(str(file_path)):
             with open(file_path, 'rb') as fh:
@@ -1209,5 +1229,17 @@ def downloadResults_xlsx(request, excel_name):
                 return response
         raise Http404
         #return render(request, 'analysis/choose_analysis_type.html')
+@login_required
+def files_data_CSV(request):
+    """
+    data = models.AnalysisResults.objects.values('file_id__file', 'file_id__allergen','file_id__control','analysisMarker_id__analysis_id__donor_id__donor_abbr',
+                                                    'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
+                                                    'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc', 'result')
+    """
+    #data = models.Channels.objects.values('pnn','pns').distinct('pnn')
+    #data = models.Channels.objects.values('pnn', 'pns', 'analysis_id', 'analysis_id__analysismarkers__analysis_type')
+    #data = models.ExperimentFiles.objects.values('allergen').distinct('allergen')
+    
+    return render_to_csv_response(data)
 
 
