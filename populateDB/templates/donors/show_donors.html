@@ -12,26 +12,18 @@
     <thead >  
         <tr>  
             <th>Donor Abbr</th>
-	    <th> Wheat Flour </th>
-	    <th> Gluten  </th>
-	    <th> Gliadin  </th>
-	    <th> Tri a 19  </th>
-	    <th> Tri a 14  </th>
-            <th>OFC Classifications</th>
-            <th>Clinical Classifications</th>
+	    <th> Age in months </th>
+	    <th> Age in years </th>
+	    <th> Sex </th>
         </tr>  
         </thead>  
         <tbody>  
     {% for donor in donors_data %}  
         <tr>  
             <td>{{ donor.donor_abbr }}</td>  
-	    <td>{{donor.donorclass_sige__wheat_flour}}</td>  
-	    <td>{{donor.donorclass_sige__gluten}}</td>
-	    <td>{{donor.donorclass_sige__gliadin}}</td>
-	    <td>{{donor.donorclass_sige__Tri_a_19}}</td>
-	    <td>{{donor.donorclass_sige__Tri_a_14}}</td>
-	    <td> {{donor.donorclass_ofc__donor_ofc}}</td>
-	    <td> {{donor.donorclass_clinical__donor_clinicalClass_id__clinicalClass_name}}</td>
+	    <td>{{donor.donor_age_months}}</td>  
+	    <td>{{donor.donor_age_years}}</td>
+	    <td>{{donor.donor_sex}}</td>
         </tr> 
     {% empty %}
     <tr>

@@ -20,8 +20,7 @@
             <li><a class="dropdown-item" href="{% url 'populateDB:show_device' %}"><i ></i>Devices</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i></i>Administraion</a></li>
-
-	    <!-- <li><a class="dropdown-item" href="{% url 'populateDB:files_data_CSV' %}"><i></i>Download Files</a></li> -->
+	    <!--<li><a class="dropdown-item" href="{% url 'populateDB:files_data_CSV' %}"><i></i>Download Files</a></li> -->
           </ul>
         </li>
         <li class="nav-item">
@@ -42,6 +41,17 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'populateDB:show_analysis' %}">Analysis</a>
         </li>
+	<li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Clinical Tests
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'populateDB:blood_tests' %}">IgE test</a></li>
+            <li><a class="dropdown-item" href="{% url 'populateDB:skin_tests' %}">skin prick test</a></li>
+            <li><a class="dropdown-item" href="{% url 'populateDB:ofc_tests' %}">OFC</a></li>
+
+          </ul>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Reports
@@ -49,7 +59,7 @@
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" href="{% url 'populateDB:analysis_report' %}">Analysis Results</a></li>
             <li><a class="dropdown-item" href="{% url 'populateDB:thresholds_report' %}">Thresholds</a></li>
-            <li><hr class="dropdown-divider"></li>
+	    <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'populateDB:research_questions' %}">Research Questions</a></li>
             
           </ul>
@@ -63,15 +73,6 @@
             <li><a class="dropdown-item" href="{% url 'populateDB:password_change' %}" >Change your password</a></li>
           </ul>
         </li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
-        <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
         <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
         <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>
         <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"></a></li>

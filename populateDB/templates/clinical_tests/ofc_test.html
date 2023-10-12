@@ -5,39 +5,27 @@
   <br></br>
  <div>
 <div>
-    <center><h1>Analysis Thresholds</h1></center>
+    <center><h1>Oral Food Challenge</h1></center>
     <br></br>
-      <table id="analysis-thresholds" class="display" style="width:100%">
+     <table id="analysisResults-table" class="stripe row-border order-column"  width="80%">
      <thead>
      <tr>
-	<th>BAT_ID</th>
-	<th>Donor</th>
-	<th>Panel</th>
-	<th>Version</th>
-	<th>Z1</th>
-	<th>Y1</th>
-        <th>Z2_1</th>
-	<th>Z2_2</th>
-	<th>X Threshold</th>
-	<th>Y Threshold</th>
-        <th>Z2_1 Threshold</th>
-	<th>Z2_1 Threshold</th>
+	<th>Donor</th>i
+    	<th>Clinical Class</th>
+	<th>Gram Limit (OFC)</th>
+        <th>OFC results</th>
+        <th>Gram Limit (OFC with exercise)</th>
+        <th>OFC with exercise results</th>
      </thead>
      <tbody>
-      {% for t in analysisThresholds %}
+      {% for r in test_results %}
       <tr>
-        <td >{{ t.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
-        <td >{{ t.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
-        <td >{{ t.analysisMarker_id__analysis_id__panel_id__panel_name}}</td>
-	<td >{{ t.analysisMarker_id__analysis_type_version}}</td>
-	<td >{{ t.analysisMarker_id__chosen_z1 }}</td>
-        <td >{{ t.analysisMarker_id__chosen_y1 }}</td>
-        <td >{{ t.analysisMarker_id__chosen_z2 }}</td>
-        <td >{{ t.analysisMarker_id__chosen_z2_1 }}</td>
-	<td >{{ t.X_Threshold }}</td>
-        <td >{{ t.Y_Threshold }}</td>
-        <td >{{ t.Z2_1_Threshold }}</td>
-	<td >{{ t.Z2_2_Threshold }}</td>
+        <td >{{ r.donor_id__donor_abbr }}</td>
+	<td>{{ r.donor_id__donorclinicalclass__clinicalClass_id__clinicalClass_name }}</td>
+        <td>{{ r.gram_limit_ofc }}</td>
+        <td>{{ r.donor_ofc }}</td>
+        <td>{{ r.donor_id__donortestofc_exercise__gram_limit_ofc_exercise }}</td>
+        <td>{{ r.donor_id__donortestofc_exercise__donor_ofc_exercise }}</td>
       {% empty %}
       <tr>
         <td colspan="7" class="text-center bg-warning">No Data</td>
@@ -54,17 +42,25 @@
 
 $(document).ready(function () {
     // Setup - add a text input to each footer cell
-    $('#analysis-thresholds thead tr')
+    $('#analysisResults-table thead tr')
         .clone(true)
         .addClass('filters')
-        .appendTo('#analysis-thresholds thead');
+        .appendTo('#analysisResults-table thead');
 
 
-var table = $('#analysis-thresholds').DataTable({
-        orderCellsTop: true,
+var table = $('#analysisResults-table').DataTable({
+        fixedColumns: {
+        		left: 0,
+			right: 0
+    			},
+    	scrollCollapse: true,
+    	scrollX: true,
+    	scrollY: 620,
+	orderCellsTop: true,
         fixedHeader: true,
         pageLength: 15,
         aaSorting: [],
+	autoWidth: false,
         initComplete: function () {
             var api = this.api();
             // For each column
@@ -123,5 +119,10 @@ var table = $('#analysis-thresholds').DataTable({
 thead input {
         width: 80%;
     }
-
+/* Ensure that the demo table scrolls */
+    th, td { white-space: nowrap; }
+    div.dataTables_wrapper {
+        width: 1800px;
+        margin: 0 auto;
+    }
 </style>

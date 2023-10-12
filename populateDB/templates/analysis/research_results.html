@@ -37,14 +37,38 @@
         <th>Donor</th>
         <th>Panel</th>
         <th>Type</th>
+	<th>Version</th>
 	<th> Date </th>
         <th>File Name</th>
         <th>File Allergen</th>
         <th>File Control</th>
         <th>Clinical Class.</th>
-        <th>OFC Class.</th>
-	<th>redQ4</th>
+        <th>Gram Limit (OFC)</th>
+	<th>OFC Class.</th>
+	<th>Gram Limit (OFC with exercise)</th>
+	<th>OFC Class - Exercise</th>
+	<th>(Ige) gIgE</th>
+        <th>(Ige) wheat_flour</th>
+        <th>(Ige) gluten</th>
+        <th>(IgE) gliadin</th>
+        <th>(IgE) Tri_a_19</th>
+        <th>(IgE) Tri_a_14</th>
+        <th>(IgE) Tryptase</th>
+        <th>(SPT) Histamine</th>
+        <th>(SPT NaCl</th>
+        <th>(SPT) wheat_flour</th>
+        <th>(SPT) wheat_gluten</th>
+        <th>(SPT) birch</th>
+        <th>(SPT) mugworth</th>
+        <th>(SPT) timothy</th>
+        <th>(SPT) house_dust_mite</th>
+        <th>(SPT) cat</th>
+
+	<th>responder</th>
         <th>result</th>
+	<th>Tri_a_19</th>
+	<th>zMarker</th>
+	<th>redQ4</th>
         <th>blackQ2</th>
         <th>blackQ3</th>
         <th>blackQ4</th>
@@ -53,7 +77,7 @@
         <th>Z1_maxQ4</th>
         <th>msi_YQ4</th>
         <th>cellQ4</th>
-        <th>responder</th>
+        <th>cellTotal</th>
      </thead>
      <tbody>
       {% for r in analysis_results %}
@@ -62,14 +86,39 @@
         <td >{{ r.Donor }}</td>
         <td > <a href="show_channels/{{r.analysisMarker_id__analysis_id}}">{{r.Panel}}</a></td>
         <td >{{ r.Analysis_Type}}</td>
+	<td >{{ r.Analysis_Version }}</td>
         <td >{{ r.Date}}</td>
         <td >{{ r.File_Name }}</td>
         <td >{{ r.Allergen }}</td>
         <td >{{ r.Control }}</td>
         <td >{{ r.Clinical_class }}</td>
-        <td >{{ r.OFC_class }}</td>
+        <td >{{ r.gramLimit_OFC}}</td>
+	<td >{{ r.OFC_class }}</td>
+	<td >{{ r.gramLimit_OFC_exercise}}</td>
+	<td >{{ r.OFC_classesExercise}}</td>
+        <td >{{ r.gIgE}}</td>
+        <td >{{ r.IgE_wheat_flour}}</td>
+        <td >{{ r.IgE_gluten}}</td>
+        <td >{{ r.IgE_gliadin}}</td>
+        <td >{{ r.IgE_Tri_a_19}}</td>
+        <td >{{ r.IgE_Tri_a_14}}</td>
+        <td >{{ r.IgE_Tryptase }}</td>
+        <td >{{ r.SPT_Histamine}}</td>
+        <td >{{ r.SPT_NaCl }}</td>
+        <td >{{ r.SPT_wheat_flour}}</td>
+        <td >{{ r.SPT_wheat_gluten}}</td>
+        <td >{{ r.SPT_birch }}</td>
+        <td >{{ r.SPT_mugworth}}</td>
+        <td >{{ r.SPT_timothy}}</td>
+        <td >{{ r.SPT_house_dust_mite}}</td>
+        <td >{{ r.SPT_cat}}</td>
+
+
+	<td >{{ r.responder }}</td>
+	<td >{{ r.result }}</td>
+	<td >{{ r.analysisMarker_id__analysis_id__donor_id__donortestblood__Tri_a_19}}</td>
+	<td>{{r.zMarker}}</td>
 	<td >{{ r.redQ4|floatformat:2 }}</td>
-        <td >{{ r.result }}</td>
         <td >{{ r.blackQ2 |floatformat:2 }}</td>
         <td >{{ r.blackQ3 |floatformat:2}}</td>
         <td >{{ r.blackQ4|floatformat:2 }}</td>
@@ -78,7 +127,7 @@
         <td >{{ r.Z1_maxQ4|floatformat:2 }}</td>
         <td >{{ r.msi_YQ4|floatformat:2 }}</td>
         <td >{{ r.cellQ4|floatformat:2 }}</td>
-        <td >{{ r.responder }}</td>
+        <td >{{ r.cellTotal }}</td>
       {% empty %}
       <tr>
         <td colspan="7" class="text-center bg-warning">No Data</td>
@@ -145,74 +194,8 @@ $('#download-excel').submit(function() {
 $('#download-pdf').submit(function() {
     $('#pdf').modal('hide');
 });
-
-$(document).ready(function () {
-    // Setup - add a text input to each footer cell
-    $('#aanalysisResults-table thead tr')
-        .clone(true)
-        .addClass('filters')
-        .appendTo('#analysisResults-table thead');
-
-
-var table = $('#analysisResults-table').DataTable({
-        orderCellsTop: true,
-        fixedHeader: true,
-        pageLength: 10,
-        aaSorting: [],
-	autoWidth: false,
-        initComplete: function () {
-            var api = this.api();
-            // For each column
-            api
-                .columns()
-                .eq(0)
-                .each(function (colIdx) {
-                    // Set the header cell to contain the input element
-                    var cell = $('.filters th').eq(
-                        $(api.column(colIdx).header()).index()
-                    );
-                    var title = $(cell).text();
-                    $(cell).html('<input type="text" placeholder="' + title + '" />');
-
-                    // On every keypress in this input
-                    $(
-                        'input',
-                        $('.filters th').eq($(api.column(colIdx).header()).index())
-                    )
-                        .off('keyup change')
-                        .on('change', function (e) {
-                            // Get the search value
-                            $(this).attr('title', $(this).val());
-                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
-
-                            var cursorPosition = this.selectionStart;
-                            // Search the column for that value
-                            api
-                                .column(colIdx)
-                                .search(
-                                    this.value != ''
-                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
-                                        : '',
-                                    this.value != '',
-                                    this.value == ''
-                                )
-                                .draw();
-                        })
-                        .on('keyup', function (e) {
-                            e.stopPropagation();
-
-                            $(this).trigger('change');
-                            $(this)
-                                .focus()[0]
-                                .setSelectionRange(cursorPosition, cursorPosition);
-                        });
-                });
-        },
-    });
-
-});
-
 </script>
+
 <style>
 thead input {
         width: 80%;

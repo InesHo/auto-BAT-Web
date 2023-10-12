@@ -57,6 +57,11 @@
                                         <option value="all" selected"true" disabled="disabled">OFC Class.</option>
                                 </select>
 			</div>
+                        <div class="form-group col-md-2 col-lg-2">
+                                <select id="OFC_classesExercise" name="OFC_classesExercise" class="form-control">
+                                        <option value="all" selected"true" disabled="disabled">OFC classes - Exercise</option>
+                                </select>
+                        </div>
 
                         <div class="form-group col-md-2 col-lg-2">
                                 <select class="form-control" id="clinical_classes" name="clinical_classes" url = "{%url 'populateDB:getClinical_classes' %}">
@@ -74,6 +79,9 @@
                                 <select class="form-control" id="responders" name="responders" url = "{%url 'populateDB:getResponders' %}">
 					<option value="all" selected>Responder</option>
                                 </select>
+                        </div>
+			<div class="form-group col-md-2 col-lg-2">
+                                <input class="form-control" id="zmarker" name="zmarker" placeholder="zMarker Contains..">
                         </div>
 
 		</div>
@@ -177,9 +185,21 @@
 
 		</div>
                 <hr />
-                <h5 class="text-center"> 3. Search based on a range in the Classifications data</h3>
+		<h5 class="text-center"> 3. Search based on a range in the results of the blood test (IgE): </h3>
 
 		<div class="row">
+			<div class="form-group col-md-1 col-lg-1">
+                                <input class="form-check-input" type="checkbox" value="y" id="gIgE" name="gIgE">
+                                <label class="form-check-label" for="gIgE">gIgE</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="gIgE_min" type="number" name="gIgE_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="gIgE_max" type="number" name="gIgE_max" placeholder="max..">
+                        </div>
+
+
                         <div class="form-group col-md-1 col-lg-1">
                                 <input class="form-check-input" type="checkbox" value="y" id="wheatFlour" name="wheatFlour">
                                 <label class="form-check-label" for="wheatFlour">Wheat Flour</label>
@@ -229,7 +249,121 @@
                         </div>
                         <div class="form-group col-md-1 col-lg-1">
                                 <input class="form-control" id="tri_a_14_max" type="number" name="tri_a_14_max" placeholder="max..">
-                        </div>.
+                        </div>
+			<div class="form-group col-md-1 col-lg-1">
+                                <input class="form-check-input" type="checkbox" value="y" id="Tryptase" name="Tryptase">
+                                <label class="form-check-label" for="Tryptase">Tryptase</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="Tryptase_min" type="number" name="Tryptase_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="Tryptase_max" type="number" name="Tryptase_max" placeholder="max..">
+                        </div>
+		</div>
+		<hr />
+                <h5 class="text-center"> 4. Search based on a range in the results of the Skin prick test (SPT): </h3>
+
+                <div class="row">
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-check-input" type="checkbox" value="y" id="Histamine" name="Histamine">
+                                <label class="form-check-label" for="Histamine">Histamine</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="Histamine_min" type="number" name="Histamine_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="Histamine_max" type="number" name="Histamine_max" placeholder="max..">
+                        </div>
+
+
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-check-input" type="checkbox" value="y" id="NaCl" name="NaCl">
+                                <label class="form-check-label" for="NaCl">NaCl</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="NaCl_min" type="number" name="NaCl_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="NaCl_max" type="number" name="NaCl_max" placeholder="max..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-check-input" type="checkbox" value="y" id="wheatFlourSPT" name="wheatFlourSPT">
+                                <label class="form-check-label" for="wheatFlourSPT">Wheat Flour</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="wheatFlourSPT_min" type="number" name="wheatFlourSPT_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="wheatFlourSPT_max" type="number" name="wheatFlourSPT_max" placeholder="max..">
+                        </div>
+
+                        <div class="form-group col-md-1 col-lg-1">
+                            <input class="form-check-input" type="checkbox" value="y" id="glutenSPT" name="glutenSPT">
+                            <label class="form-check-label" for="glutenSPT">gluten</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="glutenSPT_min" type="number" name="glutenSPT_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="glutenSPT_max" type="number" name="glutenSPT_max" placeholder="max..">
+                        </div>
+			                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-check-input" type="checkbox" value="y" id="birch" name="birch">
+                                <label class="form-check-label" for="birch">birch</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="birch_min" type="number" name="birch_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="birch_max" type="number" name="birch_max" placeholder="max..">
+                        </div>
+
+
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-check-input" type="checkbox" value="y" id="mugworth" name="mugworth">
+                                <label class="form-check-label" for="mugworth">mugworth</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="mugworth_min" type="number" name="mugworth_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="mugworth_max" type="number" name="mugworth_max" placeholder="max..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-check-input" type="checkbox" value="y" id="timothy" name="timothy">
+                                <label class="form-check-label" for="timothy">timothy</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="timothy_min" type="number" name="timothy_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="timothy_max" type="number" name="timothy_max" placeholder="max..">
+                        </div>
+
+                        <div class="form-group col-md-1 col-lg-1">
+                            <input class="form-check-input" type="checkbox" value="y" id="house_dust_mite" name="house_dust_mite">
+                            <label class="form-check-label" for="house_dust_mite">house dustmite</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="house_dust_mite_min" type="number" name="house_dust_mite_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="house_dust_mite_max" type="number" name="house_dust_mite_max" placeholder="max..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                            <input class="form-check-input" type="checkbox" value="y" id="cat" name="cat">
+                            <label class="form-check-label" for="cat">cat</label>
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="cat_min" type="number" name="cat_min" placeholder="min..">
+                        </div>
+                        <div class="form-group col-md-1 col-lg-1">
+                                <input class="form-control" id="cat_max" type="number" name="cat_max" placeholder="max..">
+                        </div>
+		</div>
+               	<hr />
+		<!--
                         <div class="col-sm-2 col-2">
                                 <div class="form-group">
                                         <select class="form-control" id="sort_by" name="sort_by">
@@ -241,7 +375,7 @@
                                         </select>
                                 </div>
                         </div>
-
+		-->
 		</div>
 		<hr />
 		<div class="row justify-content-center">

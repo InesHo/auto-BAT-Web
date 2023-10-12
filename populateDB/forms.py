@@ -42,12 +42,12 @@ class DevicesForm(forms.ModelForm):
         model = models.Devices  
         fields = "__all__"  
 
-class DonorForm_old(forms.ModelForm):  
+class DonorForm(forms.ModelForm):  
     class Meta:  
         model = models.Donor  
         fields = "__all__"  
 
-class DonorForm(forms.ModelForm):
+class DonorForm_new(forms.ModelForm):
     wheat_flour = forms.FloatField(required=False)
     gluten = forms.FloatField(required=False)
     gliadin = forms.FloatField(required=False)

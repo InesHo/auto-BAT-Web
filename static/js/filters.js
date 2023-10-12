@@ -14,6 +14,7 @@ $(document).ready(function () {
     getClinical_classes();
     getResponders();
     getOFC_classes();
+    getOFC_classesExercise();
     getAnalysis_results();
     getAnalysis_type();
     // on selecting the bat_name option
@@ -445,6 +446,7 @@ function resetFilters() {
     $("#clinical_classes").val("all");
     $("#analysis_results").val("all");
     $("#responders").val("all");
+    $("#zmarker").val("");
     $("#redQ4_min").val("");
     $("#redQ4_max").val("");
     $("#blackQ2_min").val("");
@@ -455,14 +457,16 @@ function resetFilters() {
     $("#blackQ4_max").val("");
     $("#zmeanQ4_min").val("");
     $("#zmeanQ4_max").val("");
-    $("#z1_min_min").val("");
-    $("#z1_min_max").val("");
-    $("#z1_max_min").val("");
-    $("#z1_max_max").val("");
-    $("#msi_Y_min").val("");
-    $("#msi_Y_max").val("");
+    $("#Z1_minQ4_min").val("");
+    $("#Z1_minQ4_max").val("");
+    $("#Z1_maxQ4_min").val("");
+    $("#Z1_maxQ4_max").val("");
+    $("#msi_YQ4_min").val("");
+    $("#msi_YQ4_max").val("");
     $("#cellQ4_min").val("");
     $("#cellQ4_max").val("");
+    $("#gIgEmin_min").val("");
+    $("#gIgEmin_max").val("");
     $("#wheatFlour_min").val("");
     $("#wheatFlour_max").val("");
     $("#gluten_min").val("");
@@ -473,6 +477,26 @@ function resetFilters() {
     $("#tri_a_19_max").val("");
     $("#tri_a_14_min").val("");
     $("#tri_a_14_max").val("");
+    $("#Tryptase_min").val("");
+    $("#Tryptase_max").val("");
+    $("#Histamine_min").val("");
+    $("#Histamine_max").val("");
+    $("#NaCl_min").val("");
+    $("#NaCl_max").val("");
+    $("#wheatFlourSPT_min").val("");
+    $("#wheatFlourSPT_max").val("");
+    $("#glutenSPT_min").val("");
+    $("#glutenSPT_max").val("");
+    $("#birch_min").val("");
+    $("#birch_max").val("");
+    $("#mugworth_min").val("");
+    $("#mugworth_max").val("");
+    $("#timothy_min").val("");
+    $("#timothy_max").val("");
+    $("#house_dust_mite_min").val("");
+    $("#house_dust_mite_max").val("");
+    $("#cat_min").val("");
+    $("#cat_max").val("");
     $("#AVR_sample").prop('checked',false);
     $("#AVR_donor").prop('checked',false);
     $("#sort_by").val("none");
@@ -490,6 +514,7 @@ function resetFilters() {
     send_data['clinical_classes'] = '';
     send_data['analysis_results'] = '';
     send_data['responders'] = '';
+    send_data['zmarker'] = '';
     send_data['redQ4_min'] = '';
     send_data['redQ4_max'] = '';
     send_data['blackQ2_min'] = '';
@@ -751,9 +776,8 @@ function getOFC_classes() {
         data: {},
         success: function (result) {
                 OFC_classes_options = ["<option value='all' selected>OFC Classification</option>",
-					"<option value='NA'>NA</option>",
-					"<option value='negative'>negativ</option>",
-					"<option value='positive'>positiv</option>"]; 
+					"<option value='negative'>negative</option>",
+					"<option value='positive'>positive</option>"]; 
 
                 $("#OFC_classes").html(OFC_classes_options)
         },
@@ -762,6 +786,25 @@ function getOFC_classes() {
         }
   });
 }
+function getOFC_classesExercise() {
+    let url = $("#OFC_classesExercise").attr("url");
+    $.ajax({
+        method: 'GET',
+        url: url,
+        data: {},
+        success: function (result) {
+                OFC_classesExercise_options = ["<option value='all' selected>OFC Class - Exercise</option>",
+                                        "<option value='negative'>negative</option>",
+                                        "<option value='positive'>positive</option>"];
+
+                $("#OFC_classesExercise").html(OFC_classesExercise_options)
+        },
+        error: function(response){
+                        console.log(response)
+        }
+  });
+}
+
 function getAnalysis_results() {
     let url = $("#analysis_results").attr("url");
     $.ajax({
