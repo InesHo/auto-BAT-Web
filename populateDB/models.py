@@ -5,10 +5,6 @@ import os
 import sys
 
 
-class AddUser(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
 class Institutes(models.Model):
 
     institute_id = models.AutoField(primary_key=True)      
@@ -31,6 +27,11 @@ class Departments(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
     def __str__(self):
         return (self.department_name) 
+
+class AddUser(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    department_id = models.ForeignKey(Departments, to_field='department_id', on_delete = models.CASCADE, null = True)
+    institute_id = models.ForeignKey(Institutes, to_field='institute_id', on_delete = models.CASCADE, null = True)
 
 class Experimenters(models.Model):
 

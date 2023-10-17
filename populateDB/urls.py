@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.conf.urls import url
 from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView)
+from django.urls import reverse_lazy
 
 app_name = 'populateDB'
 
@@ -11,7 +12,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('', LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', LogoutView.as_view(template_name='users/logged_out.html'), name='logout'),
-    path('password_change/', PasswordChangeView.as_view( template_name='users/password_change_form.html'), name='password_change'),
+    path('password-change/', PasswordChangeView.as_view(success_url=reverse_lazy('populateDB:password_change_done'), template_name='users/password_change_form.html'), name='password_change'),
     path('password_change/done/', PasswordChangeDoneView.as_view(template_name='users/password_change_done.html'),name='password_change_done'),    
     path('add_experiment/', views.add_experiment, name='add_experiment'),
     path('show_experiment', views.show_experiment, name='show_experiment'),

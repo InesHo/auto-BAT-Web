@@ -98,12 +98,13 @@ class UpdateFilesForm(forms.ModelForm):
         fields = ('file_id', 'file_name', 'allergen', 'control')
         widgets = {
             'file_id' : forms.TextInput(attrs={'size':'2'}),
-            'file_name' : forms.TextInput(attrs={'size':'30'}),
-            'allergen' : forms.TextInput(attrs={'size':'10'})
+            'file_name' : forms.TextInput(attrs={'size':'40'}),
+            'allergen' : forms.TextInput(attrs={'size':'30'})
 
             }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['file_name'].disabled = True
         self.fields['file_id'].widget = forms.HiddenInput()
 
 class ChannelsForm(forms.ModelForm):
