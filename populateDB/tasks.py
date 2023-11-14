@@ -23,7 +23,7 @@ logger = getLogger(__name__)
        
 #@background(queue='autoBat-queue-save', schedule=10)
 def save_pdf(pdf_path, img_list, analysisMarker_id, analysis_type=None):
-        
+    img_list.reverse()
     image_grid(img_list, pdf_path, analysis_type)
 
     # Save pdf plot to database
@@ -165,6 +165,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                                     str(usName),
                                     str(posFileName),
                                     str(posTwoFileName),
+                                    '',
                                     rPath,
                                     webapp="Yes")
     
@@ -379,6 +380,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
     #usName = ''
     posFileName = ''
     posTwoFileName= ''
+    unstainedFileName = ''
     #chosen_x_label = "Siglec-8"
     #chosen_z1 = "FSC-A"
     #chosen_z1_lable = "FSC_A"
@@ -401,12 +403,14 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             elif control == 'Negative control':
                 usName = file_name
 
+            elif control == 'Unstained':
+                unstainedFileName = file_name
+
             if panel_name in ['full-panel', 'grat-panel']:
                 pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
                 files_list.append(pathToExports + file_name)
             else:
-                baumgrassgater = BaumgrassGating(allergen,
-                                chosen_x,
+                baumgrassgater = BaumgrassGating(chosen_x,
                                 file_path,
                                 pathToGatingFunctions,
                                 device,
@@ -439,11 +443,13 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                                     str(usName),
                                     str(posFileName),
                                     str(posTwoFileName),
+                                    str(unstainedFileName),
                                     rPath,
                                     webapp="Yes")
 
         #results = autoworkflow.runAutoGRAT()
-        df, Siglec, CD66, CD62L, CD69 = autoworkflow.runAutoGRAT()
+        df, Siglec, CD66, threshold_df = autoworkflow.runAutoGRAT()
+
         #df = results[0]
         """
         for row in df.index:
@@ -461,6 +467,8 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         """
         chosen_z2_1 = str(chosen_z2[0]) 
         chosen_z2_2 = str(chosen_z2[1])
+        chosen_z2_3 = str(chosen_z2[2])
+        chosen_z2_4 = str(chosen_z2[3])
         excel_file = os.path.join(pathToOutput, f'AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.xlsx')
         df_excel = df
         df_excel['Version'] = analysis_type_version
@@ -485,11 +493,29 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         writer.save()
 
         # Save Thresholds to the Database
+        try:
+            Z2_1_Threshold = float(threshold_df.loc[threshold_df['Channel'] == chosen_z2_1, 'Value'])
+        except:
+            Z2_1_Threshold = None
+        try:
+            Z2_2_Threshold = float(threshold_df.loc[threshold_df['Channel'] == chosen_z2_2, 'Value'])
+        except:
+            Z2_2_Threshold = None
+        try:
+            Z2_3_Threshold = float(threshold_df.loc[threshold_df['Channel'] == chosen_z2_3, 'Value'])
+        except:
+            Z2_3_Threshold = None
+        try:
+            Z2_4_Threshold = float(threshold_df.loc[threshold_df['Channel'] == chosen_z2_4, 'Value'])
+        except:
+            Z2_4_Threshold = None
         thresholds_instance = models.AnalysisThresholds(
                                         X_Threshold = float(Siglec),
                                         Y_Threshold = float(CD66),
-                                        Z2_1_Threshold = float(CD62L),
-                                        Z2_2_Threshold = float(CD69),
+                                        Z2_1_Threshold = Z2_1_Threshold,
+                                        Z2_2_Threshold = Z2_2_Threshold,
+                                        Z2_3_Threshold = Z2_3_Threshold,
+                                        Z2_4_Threshold = Z2_4_Threshold
             )
         thresholds_instance.analysisMarker_id_id = int(analysisMarker_id)
         thresholds_instance.save()
@@ -539,14 +565,17 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         for file in sample_obj:
             file_id = file[0]
             file_name = file[2].lower()
+            control = file[4]
             for marker in chosen_z2:
-                plot_name = f'{file_name[:-4]}_{marker}.png'
-                plot_path=os.path.join(pathToOutput, plot_name)
-                PNGresults_instance = models.FilesPlots(plot_path=plot_path)
-                PNGresults_instance.file_id_id = int(file_id)
-                PNGresults_instance.analysisMarker_id_id = int(analysisMarker_id)
-                PNGresults_instance.save()
-                img_list.append(plot_path)
+                if marker:
+                    plot_name = f'{file_name[:-4]}_{marker}.png'
+                    plot_path=os.path.join(pathToOutput, plot_name)
+                    PNGresults_instance = models.FilesPlots(plot_path=plot_path)
+                    PNGresults_instance.file_id_id = int(file_id)
+                    PNGresults_instance.analysisMarker_id_id = int(analysisMarker_id)
+                    PNGresults_instance.save()
+                    if control != "Unstained":
+                        img_list.append(plot_path)
     
         # Save Excel File's path to the Database
         EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
@@ -558,5 +587,6 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         pdf = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
         save_pdf(pdf_path, img_list, analysisMarker_id, 'autograt')
-    except Exception as e:
+    except Exception:
+        e = traceback.format_exc()
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)

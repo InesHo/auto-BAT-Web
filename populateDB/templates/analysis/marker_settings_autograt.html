@@ -5,7 +5,7 @@
 <div class="container-fluid vh-100">
   <div class="" style="margin-top:50px">
       <div class="rounded d-flex justify-content-center">
-          <div class="col-md-8 col-sm-12 shadow-lg p-5 bg-light">
+          <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
               <div class="text-center">
                   <h3 class="text-primary">Select Marker Settings for Auto-Grat</h3>
                   <div class="modal-footer"></div>
@@ -39,18 +39,37 @@
                             {% include "analysis/channels.html" %}
                         </select>
                       </div>
-                      <div class="col-sm">
+		      <div class="col-sm">
                         <label for="floatingInput">Z2_1: </label>
                         <select name = "Z2_1" class="form-select" style="width: 220px;">
-                            {% include "analysis/channels.html" %}
+                            <option value="None" selected>None</option>
+			    {% include "analysis/channels.html" %}
                         </select>
                       </div>
+		    </div>
+                    <div class="row">
 		      <div class="col-sm">
                         <label for="floatingInput">Z2_2: </label>
                         <select name = "Z2_2" class="form-select" style="width: 220px;">
-                            {% include "analysis/channels.html" %}
+                            <option value="None" selected>None</option>
+			    {% include "analysis/channels.html" %}
                         </select>
                       </div>
+                      <div class="col-sm">
+                        <label for="floatingInput">Z2_3: </label>
+                        <select name = "Z2_3" class="form-select" style="width: 220px;">
+                            <option value="None" selected>None</option>
+			    {% include "analysis/channels.html" %}
+                        </select>
+                      </div>
+                      <div class="col-sm">
+                        <label for="floatingInput">Z2_4: </label>
+                        <select name = "Z2_4" class="form-select" style="width: 220px;">
+                            <option value="None" selected>None</option>
+			    {% include "analysis/channels.html" %}
+                        </select>
+                      </div>
+		    <div class="row">
 
                     </div>
                 <br>
@@ -60,6 +79,7 @@
                 <h5 class="text-danger">Y : Should be CD66b</h5>
                 <h5 class="text-danger">Z2_1 : Should be CD62L</h5>
                 <h5 class="text-danger">Z2_2 : Should be CD69</h5>
+		<h5 class="text-danger">Z2_3 : Should be CD62P</h5>
 		<div class="modal-footer"></div>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </form>              

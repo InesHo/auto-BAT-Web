@@ -145,5 +145,5 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'populateDB:home'
-LOGIN_URL = 'login'
+LOGIN_URL = 'populateDB:login'
 LOGOUT_URL = 'logout'

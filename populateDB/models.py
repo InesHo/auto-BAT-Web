@@ -116,8 +116,8 @@ class AnalysisMarkers(models.Model):
     analysisMarker_id = models.AutoField(primary_key=True)
     chosen_z1 = models.CharField(max_length=20, blank = True, null = True)
     chosen_y1 = models.CharField(max_length=20, blank = True, null = True)
-    chosen_z2 = models.CharField(max_length=20, blank = True, null = True)
-    chosen_z2_2 = models.CharField(max_length=20, blank = True, null = True)
+    chosen_z2 = models.CharField(max_length=100, blank = True, null = True)
+    chosen_z2_2 = models.CharField(max_length=200, blank = True, null = True)
     analysis_date = models.DateField(blank = True, null=True)
     analysis_start_time = models.TimeField(blank = True, null=True)
     analysis_end_time = models.TimeField(blank = True, null=True)
@@ -139,6 +139,8 @@ class AnalysisThresholds(models.Model):
     Y_Threshold = models.FloatField(blank = True, null = True)
     Z2_1_Threshold = models.FloatField(blank = True, null = True)
     Z2_2_Threshold = models.FloatField(blank = True, null = True)
+    Z2_3_Threshold = models.FloatField(blank = True, null = True)
+    Z2_4_Threshold = models.FloatField(blank = True, null = True)
     analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
 
 
@@ -159,6 +161,7 @@ class ExperimentFiles(models.Model):
         (u"Negative control", u'Negative control'),
         (u"Primary Positive control", u'Primary Positive control'),
         (u"Secondary Positive control", u'Secondary Positive control'),
+        (u"Unstained", u'Unstained'),
         (u"Allergen", u'Allergen'),
     )
     file_id = models.AutoField(primary_key=True)

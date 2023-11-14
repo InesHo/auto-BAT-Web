@@ -55,6 +55,8 @@ urlpatterns = [
     path('analysis_report/', views.analysis_report, name='analysis_report'),
     path('analysis_report/show_channels/<analysis_id>', views.show_channels, name='show_channels'),
     path('analysis/re_analysis_alert', views.re_analysis_alert, name='re_analysis_alert'),
+    path('analysis/run_re_analysis_all', views.run_re_analysis_all, name='run_re_analysis_all'),
+
     path('analysis/re_analysis_all', views.re_analysis_all, name='re_analysis_all'),
     path('analysis/results_to_CSV', views.results_to_CSV, name='results_to_CSV'),
     path('analysis/thresholds_to_CSV', views.thresholds_to_CSV, name='thresholds_to_CSV'),

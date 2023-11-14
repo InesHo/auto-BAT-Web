@@ -30,10 +30,16 @@
 	      </div>
        </div>
     <br></br>
-     <table id="analysisResults-table" class="table table-striped table-bordered nowrap" cellspacing="0" width="80%">
+    <div class="text-left p-3" style="background-color: rgba(219, 212, 212, 0.2);">
+      Number of rows:
+      <a class="fw-bold" >{{rows_count}}</a>
+    </div>
+   
+    <br></br>
+     <table id="analysisResults-table" cellspacing="0" width="80%">
      <thead>
-     <tr>
-        <th>BAT_ID</th>
+     <tr class="red">
+        <th >BAT_ID</th>
         <th>Donor</th>
         <th>Panel</th>
         <th>Type</th>
@@ -200,5 +206,30 @@ $('#download-pdf').submit(function() {
 thead input {
         width: 80%;
     }
+
+
+body {
+  margin: 0;
+  padding: 2rem;
+}
+
+table {
+  text-align: left;
+  position: relative;
+  border-collapse: collapse; 
+}
+th, td {
+  padding: 0.25rem;
+}
+tr.red th {
+  background: red;
+  color: white;
+}
+th {
+  background: white;
+  position: sticky;
+  top: 0; /* Don't forget this, required for the stickiness */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
 
 </style>

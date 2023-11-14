@@ -86,7 +86,26 @@
 
 		</div>
 		<hr />
-		<h5 class = "text-center"> 2. Search based on a range in the results data:</h3>
+                <h5 class = "text-center"> 2. Comparison of wheat extract with control files:</h3>
+                <div class="row">
+			<div class="col-md-2 col-lg-3">
+                        </div>
+
+			<div class="form-group col-md-2 col-lg-2">
+                                <select class="form-control" name="compare_file_controls" id="compare_file_controls" url = "{%url 'populateDB:getFile_controls' %}">
+                                        <option value='all' selected"true" disabled="disabled">File Control</option>
+                                </select>
+			</div>
+			<div class="col-md-1 col-lg-1">
+				<div class="text-center"> VS </div>
+                        </div>
+			<div class="col-md-2 col-lg-2">
+                                <input class="form-control" id="compare_allergen" name="compare_allergen" placeholder="Allergen">
+                        </div>
+
+		</div>
+		<hr />
+		<h5 class = "text-center"> 3. Search based on a range in the results data:</h3>
 		<div class="row">
                         <div class="form-group col-md-1 col-lg-1">
                                	<input class="form-check-input" type="checkbox" value="y" id="redQ4" name="redQ4" checked>
@@ -185,7 +204,7 @@
 
 		</div>
                 <hr />
-		<h5 class="text-center"> 3. Search based on a range in the results of the blood test (IgE): </h3>
+		<h5 class="text-center"> 4. Search based on a range in the results of the blood test (IgE): </h3>
 
 		<div class="row">
 			<div class="form-group col-md-1 col-lg-1">

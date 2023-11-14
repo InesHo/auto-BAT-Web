@@ -11,14 +11,19 @@
               </div>
               <div class="container">
                 <br></br>
-		<h3 class="text-danger">You are about to delete all results and analyze everything again!</h3>
-		<br></br>
-		<h3 class="text-danger">Make sure to backup the old data before you continue:</h3>
-		<h4>Export results to CSV file <a href="results_to_CSV">FROM HERE..!</a> </h4>
-		<h4>Export Thresholds to CSV file <a href="thresholds_to_CSV">FROM HERE..!</a> </h4>
+		<form method="POST" enctype="multipart/form-data" class="post-form" action="re_analysis_all" >
+			                {% csrf_token %}
 
-		<br></br>
-               </div>
+			<h3 >Choose analysis type:</h3>
+			<input type="radio" id="analysis_type" name="analysis_type" value=""> 
+			<label for=""></label><br>
+			<input type="radio" id="analysis_type" name="analysis_type" value="AutoBat">
+                        <label for="AutoBat">AutoBat</label><br>
+			<input type="radio" id="analysis_type" name="analysis_type" value="AutoGrat">
+			<label for="AutoGrat">AutoGrat</label><br>
+			<br></br>
+              
+	      </div>
               <div class="modal-footer"></div>
 	      <div class="container">
 		<div class="row justify-content-md-center">
@@ -29,8 +34,8 @@
     			    <div class="col-6">
     				</div>
 			<div class="col-sm">
-      		               <a class="btn btn-danger" href="run_re_analysis_all">Next</a>
-
+		 	<button type="submit" class="btn btn-primary">Re-Analyze</button>
+		 </form>
 			</div>
 		</div>
 		</div>
