@@ -13,6 +13,7 @@
 	<th>BAT_ID</th>
 	<th>Donor</th>
 	<th>Panel</th>
+	<th>Analysis Type</th>
 	<th>Version</th>
 	<th>Z1</th>
 	<th>Y1</th>
@@ -21,7 +22,7 @@
 	<th>X Threshold</th>
 	<th>Y Threshold</th>
         <th>Z2_1 Threshold</th>
-	<th>Z2_1 Threshold</th>
+	<th>Z2_2 Threshold</th>
      </thead>
      <tbody>
       {% for t in analysisThresholds %}
@@ -29,6 +30,7 @@
         <td >{{ t.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
         <td >{{ t.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
         <td >{{ t.analysisMarker_id__analysis_id__panel_id__panel_name}}</td>
+	<td >{{ t.analysisMarker_id__analysis_type}}</td>
 	<td >{{ t.analysisMarker_id__analysis_type_version}}</td>
 	<td >{{ t.analysisMarker_id__chosen_z1 }}</td>
         <td >{{ t.analysisMarker_id__chosen_y1 }}</td>

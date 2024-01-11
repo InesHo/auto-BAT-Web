@@ -13,6 +13,7 @@
 	<th>BAT_ID</th>
 	<th>Donor</th>
 	<th>Panel</th>
+	<th>Condition</th>
 	<th>Type</th>
 	<th>Version</th>
 	<th>File Name</th>
@@ -29,6 +30,7 @@
 	<th>Z1_minQ4</th>
 	<th>Z1_maxQ4</th>
 	<th>msi_YQ4</th>
+	<th>cellQ3</th>
         <th>cellQ4</th>
         <th>cellTotal</th>
 	<th>debrisPerc</th>
@@ -42,6 +44,7 @@
         <td >{{ r.analysisMarker_id__analysis_id__bat_id__bat_name }}</td>
         <td >{{ r.analysisMarker_id__analysis_id__donor_id__donor_abbr }}</td>
 	<td > <a href="show_channels/{{r.analysisMarker_id__analysis_id}}">{{r.analysisMarker_id__analysis_id__panel_id__panel_name}}</a></td>
+	<td >{{ r.analysisMarker_id__analysis_id__condition }}</td>
 	<td >{{ r.analysisMarker_id__analysis_type}}</td>
 	<td >{{ r.analysisMarker_id__analysis_type_version}}</td>
 	<td >{{ r.file_id__file_name }}</td>
@@ -58,7 +61,8 @@
         <td >{{ r.Z1_minQ4|floatformat:2 }}</td>
         <td >{{ r.Z1_maxQ4|floatformat:2 }}</td>
         <td >{{ r.msi_YQ4|floatformat:2 }}</td>
-        <td >{{ r.cellQ4|floatformat:2 }}</td>
+        <td >{{ r.cellQ3|floatformat:2 }}</td>
+	<td >{{ r.cellQ4|floatformat:2 }}</td>
 	<td >{{ r.cellTotal }}</td>
 	<td >{{ r.debrisPerc|floatformat:2 }}</td>
         <td >{{ r.firstDoubPerc|floatformat:2 }}</td>

@@ -79,15 +79,17 @@ class ExperimentFilesForm(forms.ModelForm):
     bat_id = forms.ModelChoiceField(queryset=models.Experiment.objects.all().order_by('bat_id'))
     donor_id = forms.ModelChoiceField(queryset=models.Donor.objects.all().order_by('donor_abbr'))
     panel_id = forms.ModelChoiceField(queryset=models.Panels.objects.all())
+    condition = forms.CharField()
     class Meta:
         model = models.ExperimentFiles
-        fields = ('file',)
+        fields = ('file', )
         
         widgets = {
             'file_id' : forms.Select(attrs={'class':'form-control'}),
             'bat_id' : forms.Select(attrs={'class':'form-control'} ),
             'donor_id' : forms.Select(attrs={'class':'form-control'}),
             'panel_id' : forms.Select(attrs={'class':'form-control'}),
+            'condition' : forms.TextInput(attrs={'size':'40'}),
             'file': forms.ClearableFileInput(attrs={'multiple': True}),
             }
 

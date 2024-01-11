@@ -1,7 +1,7 @@
 from background_task import background
 from logging import getLogger
 from . import models
-from .functions import image_grid, Berlin_time
+from .functions import pdf_grid, image_grid, Berlin_time
 import os
 import sys
 from PIL import Image
@@ -22,10 +22,18 @@ logger = getLogger(__name__)
 
        
 #@background(queue='autoBat-queue-save', schedule=10)
-def save_pdf(pdf_path, img_list, analysisMarker_id, analysis_type=None):
-    img_list.reverse()
-    image_grid(img_list, pdf_path, analysis_type)
+def save_pdf(pdf_path, pdf_list, analysisMarker_id, analysis_type=None):
+    pdf_list.reverse()
+    
+    if analysis_type == "autograt":
+        new_pdf_list = pdf_list
+    else:
+        new_pdf_list = []
+        new_pdf_list.append(pdf_list) #the function pdf_grid is expecting a list of lists
 
+    #image_grid(pdf_list, pdf_path, analysis_type)
+    pdf_grid(new_pdf_list, pdf_path, analysis_type)
+    
     # Save pdf plot to database
     PDFresults_instance = models.AnalysisFiles(file_path=pdf_path, file_type="PDF")
     PDFresults_instance.analysisMarker_id_id = int(analysisMarker_id)
@@ -69,7 +77,10 @@ def proccess_files(analysis_id):
         raw_fcs_val = content.to_dict()
         for label in pnnLabels:
             labels = f"{label}_mean"
-            values = math.ceil((sum(raw_fcs_val[label].values())) / len(raw_fcs_val[label]) * 100) / 100
+            try:
+                values = math.ceil((sum(raw_fcs_val[label].values())) / len(raw_fcs_val[label]) * 100) / 100
+            except:
+                values=0
             mean_obj = models.MeanRawData(
                                     labels = labels,
                                     values = values,
@@ -100,7 +111,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
     posTwoFileName= ''
     chosen_x = ""
     chosen_x_label = ""
-    chosen_z2_lable = ""
+    chosen_z2_lable = "CD32"
     quality_messages = []
     #info_messages = ""
     i = 0
@@ -191,15 +202,15 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             reports[i].setZ1Min(df.loc[reports[i].getId().lower(),"Z1_min"])
             reports[i].setZ1max(df.loc[reports[i].getId().lower(),"Z1_max"])
             reports[i].setMsiY(df.loc[reports[i].getId().lower(),"msi_Y"])
+            reports[i].cellQ3 = df.loc[reports[i].getId().lower(),"cellQ3"]
             reports[i].cellQ4 = df.loc[reports[i].getId().lower(),"cellQ4"]
-
+            reports[i].setResult(df.loc[reports[i].getId().lower(),"result"])
+            reports[i].setResponder(df.loc[reports[i].getId().lower(),"responder"])
             if reports[i].cellQ4  < 350:
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
                 info_cellQ4 = "The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."
 
-            reports[i].setResult(df.loc[reports[i].getId().lower(),"result"])
-            reports[i].setResponder(df.loc[reports[i].getId().lower(),"responder"])
-            #reports[i].setQualityMessages(info[i])
+
 
         ###==========================================================================================================================###
         # filling the quality messages column with the file specific error messages and
@@ -225,8 +236,26 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 else:
                     reports[i].setResponder("fMLP Non-Responder")
             reports[i].setQualityMessages(info[i])
-        ###==========================================================================================================================###
+            """
+            if "us" in reports[i].getId().lower():               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
+                reports[i].setQualityMessages(info[0] + info_bg + info_cellQ4)
+                reports[i].setYThreshold(FCR)
+                reports[i].setZ1Threshold(CD63)
 
+            if "aige" in reports[i].getId().lower():
+                reports[i].setQualityMessages(info[2] + info_cellQ4)
+                if reports[i].red >= 5.0:
+                    reports[i].setResponder("aIgE Responder")
+                else:
+                    reports[i].setResponder("aIgE Non-Responder")
+
+            if "fmlp" in reports[i].getId().lower():
+                reports[i].setQualityMessages(info[1] + info_cellQ4)
+                if reports[i].red >= 5.0:
+                    reports[i].setResponder("fMLP Responder")
+                else:
+                    reports[i].setResponder("fMLP Non-Responder")
+            """
         finalReport = Reporting(reports)
         finalReport = finalReport.constructReport()
 
@@ -234,21 +263,6 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         print(finalReport)
 
         ### save report to .xls
-        """
-        df = results[0]
-        for row in df.index:
-            df['responder'][row] = 'NA'
-            if "aige" in df['filename'][row]:
-                if df['redQ4'][row] >= 5.0:
-                    df['responder'][row] = "aIgE Responder"
-                elif df['redQ4'][row] < 5.0:
-                    df['responder'][row] = "aIgE None_Responder"
-            elif "fmlp" in df['filename'][row]:
-                if df['redQ4'][row] >= 5.0:
-                    df['responder'][row] = "fMLP Responder"
-                elif df['redQ4'][row] < 5.0:
-                    df['responder'][row] = "fMLP None_Responder"
-        """
         excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
         df_excel = finalReport
         df_excel['Version'] = analysis_type_version
@@ -299,6 +313,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             Z1_minQ4 = row['Z1_minQ4']
             Z1_maxQ4 = row['Z1_maxQ4']
             msi_YQ4 = row['msi_YQ4']
+            cellQ3 = row['cellQ3']
             cellQ4 = row['cellQ4']
             responder = row['responder']
             cellTotal = row['cellTotal']
@@ -322,6 +337,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                                         Z1_minQ4 = Z1_minQ4,
                                         Z1_maxQ4 = Z1_maxQ4,
                                         msi_YQ4 = msi_YQ4,
+                                        cellQ3 = cellQ3,
                                         cellQ4 = cellQ4,
                                         cellTotal = cellTotal,
                                         qualityMessages = qualityMessages,
@@ -335,17 +351,17 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         quality_messages = ', '.join(str(v) for v in quality_messages)
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages = quality_messages)
         # Save plots to database
-        img_list = []
+        pdf_list = []
         for file in sample_obj:
             file_id = file[0]
             plot_name = file[2].lower()
-            plot_name = f'{plot_name[:-4]}.png'
+            plot_name = f'{plot_name[:-4]}.pdf'
             plot_path=os.path.join(pathToOutput, plot_name)
-            PNGresults_instance = models.FilesPlots(plot_path=plot_path)
-            PNGresults_instance.analysisMarker_id_id = int(analysisMarker_id)
-            PNGresults_instance.file_id_id = int(file_id)
-            PNGresults_instance.save()
-            img_list.append(plot_path)
+            PDFresults_instance = models.FilesPlots(plot_path=plot_path)
+            PDFresults_instance.analysisMarker_id_id = int(analysisMarker_id)
+            PDFresults_instance.file_id_id = int(file_id)
+            PDFresults_instance.save()
+            pdf_list.append(plot_path)
     
         # Save Excel File's path to the Database
         EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
@@ -356,7 +372,8 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         # Create PDF File:
         pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
-        save_pdf(pdf_path, img_list, analysisMarker_id)
+        
+        save_pdf(pdf_path, pdf_list, analysisMarker_id, 'autobat')
     except Exception:
         e = traceback.format_exc()
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)
@@ -449,7 +466,6 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
 
         #results = autoworkflow.runAutoGRAT()
         df, Siglec, CD66, threshold_df = autoworkflow.runAutoGRAT()
-
         #df = results[0]
         """
         for row in df.index:
@@ -493,6 +509,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         writer.save()
 
         # Save Thresholds to the Database
+        
         try:
             Z2_1_Threshold = float(threshold_df.loc[threshold_df['Channel'] == chosen_z2_1, 'Value'])
         except:
@@ -509,6 +526,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             Z2_4_Threshold = float(threshold_df.loc[threshold_df['Channel'] == chosen_z2_4, 'Value'])
         except:
             Z2_4_Threshold = None
+        
         thresholds_instance = models.AnalysisThresholds(
                                         X_Threshold = float(Siglec),
                                         Y_Threshold = float(CD66),
@@ -535,6 +553,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             Z1_minQ4 = row['Z1_min']
             Z1_maxQ4 = row['Z1_max']
             msi_YQ4 = row['msi_Y']
+            cellQ3 = row['cellQ3']
             cellQ4 = row['cellQ4']
             responder = row['responder']
 
@@ -549,6 +568,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                                         Z1_minQ4 = Z1_minQ4,
                                         Z1_maxQ4 = Z1_maxQ4,
                                         msi_YQ4 = msi_YQ4,
+                                        cellQ3 = cellQ3,
                                         cellQ4 = cellQ4,
                                         responder = responder,
             )
@@ -560,7 +580,8 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         # save the  info messages
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages = info_messages)
         # Save plots to database
-        img_list = []
+        pdf_list_1 = []
+        pdf_list_2 = []
         #chosen_z2.extend(('FSC-A', 'SSC-A'))
         for file in sample_obj:
             file_id = file[0]
@@ -568,14 +589,19 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             control = file[4]
             for marker in chosen_z2:
                 if marker:
-                    plot_name = f'{file_name[:-4]}_{marker}.png'
+                    if control == "Unstained":
+                        plot_name = f'{file_name[:-4]}_histogram.pdf'
+                    else:
+                        plot_name = f'{file_name[:-4]}_{marker}.pdf'
                     plot_path=os.path.join(pathToOutput, plot_name)
-                    PNGresults_instance = models.FilesPlots(plot_path=plot_path)
-                    PNGresults_instance.file_id_id = int(file_id)
-                    PNGresults_instance.analysisMarker_id_id = int(analysisMarker_id)
-                    PNGresults_instance.save()
-                    if control != "Unstained":
-                        img_list.append(plot_path)
+                    PDFresults_instance = models.FilesPlots(plot_path=plot_path)
+                    PDFresults_instance.file_id_id = int(file_id)
+                    PDFresults_instance.analysisMarker_id_id = int(analysisMarker_id)
+                    PDFresults_instance.save()
+                    if control == "Unstained":
+                        pdf_list_2.append(plot_path)
+                    else:
+                        pdf_list_1.append(plot_path)
     
         # Save Excel File's path to the Database
         EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
@@ -584,9 +610,12 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
 
 
         # Create PDF File:
+        pdf_list = []
+        pdf_list.append(pdf_list_1)
+        pdf_list.append(pdf_list_2)
         pdf = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
-        save_pdf(pdf_path, img_list, analysisMarker_id, 'autograt')
+        save_pdf(pdf_path, pdf_list, analysisMarker_id, 'autograt')
     except Exception:
         e = traceback.format_exc()
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)

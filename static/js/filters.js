@@ -11,6 +11,7 @@ $(document).ready(function () {
     // AJAX call into variert select options
     getPanel_names();
     getFile_controls();
+    getFile_controls_compare();
     getClinical_classes();
     getResponders();
     getOFC_classes();
@@ -437,11 +438,15 @@ function resetFilters() {
     $("#donor_names").val("");
     $("#panel_names").val("all");
     $("#analysis_type").val("all");
+    
+    $("#OFC_classesExercise").val("all");
     $("#marker_names").val("");
     $("#date_min").val("");
     $("#date_max").val("");
     $("#allergens").val("");
+    $("#compare_allergen").val("");
     $("#file_controls").val("all");
+    $("#compare_file_controls").val("all");
     $("#OFC_classes").val("all");
     $("#clinical_classes").val("all");
     $("#analysis_results").val("all");
@@ -509,6 +514,8 @@ function resetFilters() {
     send_data['date_min'] = '';
     send_data['date_max'] = '';
     send_data['allergens'] = '';
+    send_data['compare_allergen'] = '';
+    send_data['compare_file_controls'] = '';
     send_data['file_controls'] = '';
     send_data['OFC_classes'] = '';
     send_data['clinical_classes'] = '';
@@ -711,6 +718,7 @@ function getPanel_names() {
   });
 }
 
+
 function getFile_controls() {
     let url = $("#file_controls").attr("url");
     $.ajax({
@@ -729,6 +737,28 @@ function getFile_controls() {
         }
   });
 }
+
+
+function getFile_controls_compare() {
+    let url = $("#compare_file_controls").attr("url");
+    $.ajax({
+        method: 'GET',
+        url: url,
+        data: {},
+        success: function (result) {
+                fileControls_options = "<option value='all' selected>File Controls</option>";
+                $.each(result["file_control"], function (a, b) {
+                        fileControls_options += "<option>" + b + "</option>"
+                });
+                $("#compare_file_controls").html(fileControls_options)
+        },
+        error: function(response){
+                        console.log(response)
+        }
+  });
+}
+
+
 
 function getClinical_classes() {
     let url = $("#clinical_classes").attr("url");

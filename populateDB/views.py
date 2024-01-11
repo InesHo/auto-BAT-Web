@@ -14,7 +14,7 @@ import config
 sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from django.conf import settings
 from Data import Data
-from .functions import create_path, image_grid
+from .functions import create_path, image_grid, pdf_grid
 from .tasks import run_analysis_autobat_task, run_analysis_autograt_task, proccess_files
 from djqscsv import render_to_csv_response
 from .serializers import ResultsSerializers
@@ -26,9 +26,12 @@ import time
 import shutil
 from django.db.models import F
 import re
+import csv
 
-bat_version='1.0.2'
-grat_version='1.0.1'
+bat_version='1.0.3'
+#'1.0.2'
+grat_version='1.0.3'
+#'1.0.1'
 
 @login_required
 def home(request):
@@ -251,11 +254,16 @@ class experimentfile(View):
                 bat_id = form.cleaned_data['bat_id']
                 donor_id = form.cleaned_data['donor_id']
                 panel_id = form.cleaned_data['panel_id']
-                analysis_instance = models.Analysis(bat_id=bat_id, donor_id=donor_id, panel_id=panel_id)
+                condition = form.cleaned_data['condition']
+                condition = condition.replace(" ", "_")
+                analysis_instance = models.Analysis(bat_id=bat_id, donor_id=donor_id, panel_id=panel_id, condition=condition)
                 analysis_instance.user_id = request.user.id
                 analysis_instance.save()
                 analysis_id = analysis_instance.analysis_id
-                files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}")
+                if condition:
+                    files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}/{condition}")
+                else:
+                    files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}")
                 create_path(files_dir)
                 file_list = []
                 us_file_path = ""
@@ -464,6 +472,8 @@ def run_analysis_autobat(request, analysis_id):
         bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
         donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
         panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+        
+        condition = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('condition', flat=True))
 
         bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
         donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
@@ -543,6 +553,8 @@ def run_analysis_autograt(request, analysis_id):
         bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
         donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
         panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+        
+        condition = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('condition', flat=True))
 
         bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
         donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
@@ -651,6 +663,8 @@ def results_to_CSV(request):
     analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'analysisMarker_id__analysis_type',
+                                                            'analysisMarker_id__analysis_id__condition',
                                                             'analysisMarker_id__analysis_type_version',
                                                             'file_id__file_name', 
                                                             #"analysisMarker_id__analysis_error", 
@@ -661,7 +675,8 @@ def results_to_CSV(request):
 @login_required
 def thresholds_to_CSV(request):
     thresholds = models.AnalysisThresholds.objects.values('analysisMarker_id__analysis_id__bat_id__bat_name','analysisMarker_id__analysis_id__donor_id__donor_abbr',
-                                                            'analysisMarker_id__analysis_id__panel_id__panel_name','analysisMarker_id__analysis_type_version', 
+                                                            'analysisMarker_id__analysis_id__panel_id__panel_name', 'analysisMarker_id__analysis_id__condition',
+                                                            'analysisMarker_id__analysis_type','analysisMarker_id__analysis_type_version', 
                                                             'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold',
                                                             #"analysisMarker_id__analysis_error",
                                                             "analysisMarker_id__analysis_info_messages"
@@ -691,6 +706,8 @@ def re_analysis_all(request):
                 bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
                 donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
                 panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+
+                condition = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('condition', flat=True))
 
                 chosen_z1 = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('chosen_z1', flat=True))
                 chosen_y1 = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('chosen_y1', flat=True))
@@ -899,25 +916,29 @@ def re_analysis_all(request):
 @login_required()
 def show_analysis(request):
     user_is_superuser = request.user.is_superuser
-    analysis = models.Analysis.objects.values_list('analysis_id', 'bat_id','donor_id', 'panel_id').order_by('bat_id').reverse()
+    analysis = models.Analysis.objects.values_list('analysis_id', 'bat_id','donor_id', 'panel_id', 'condition').order_by('bat_id').reverse()
     analysisList = []
     for i in analysis:
         analysis_id = i[0]
         bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=i[1]).values_list('bat_name', flat=True))
         donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=i[2]).values_list('donor_abbr', flat=True))
         panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=i[3]).values_list('panel_name', flat=True))       
-        analysismarkers = models.AnalysisMarkers.objects.values_list('analysisMarker_id','chosen_z1', 'chosen_y1','chosen_z2', 'chosen_z2_2', 'analysis_date',
+        condition = i[4]
+        analysismarkers = models.AnalysisMarkers.objects.values_list('analysisMarker_id', 
+                                                    'chosen_z1', 'chosen_y1','chosen_z2', 'chosen_z2_2', 'analysis_date',
                                                     'analysis_start_time', 'analysis_end_time','analysis_status', 'analysis_type', 'analysis_type_version',
                                                     'analysis_manualThresholds', 'analysis_info_messages'
                                                     ).filter(analysis_id = analysis_id).order_by('analysisMarker_id').reverse()
     
+
+
         if not analysismarkers:
             analysis_dict = {}
             analysis_dict['analysis_id'] = analysis_id
             analysis_dict['bat_name'] = bat_name
             analysis_dict['donor_name'] = donor_name
             analysis_dict['panel_name'] = panel_name
-
+            analysis_dict['condition'] = condition
             analysis_dict['analysisMarker_id'] = None
             analysis_dict['chosen_z1'] = None
             analysis_dict['chosen_y1'] = None
@@ -938,6 +959,7 @@ def show_analysis(request):
                 analysis_dict['bat_name'] = bat_name
                 analysis_dict['donor_name'] = donor_name
                 analysis_dict['panel_name'] = panel_name
+                analysis_dict['condition'] = condition
                 analysis_dict['analysisMarker_id'] = j[0]
                 analysis_dict['analysis_info_messages'] = j[11]
                 if j[11] == '[]' or j[11] == '' or j[11] == None:
@@ -1050,12 +1072,13 @@ def analysis_report(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'analysisMarker_id__analysis_id__condition',
                                                             'analysisMarker_id__analysis_type',
                                                             'analysisMarker_id__analysis_type_version',
                                                             'file_id__file_name', 'file_id__allergen','file_id__control',
                                                             'zMarker', 'debrisPerc', 'firstDoubPerc', 'secDoubPerc', 'redQ4', 'result',
                                                             'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
-                                                            'msi_YQ4', 'cellQ4', 'responder', 'cellTotal', 'qualityMessages'
+                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal', 'qualityMessages'
                                                             ).annotate(
                                                                 Analysis_Type=F('analysisMarker_id__analysis_type'),
                                                                 Analysis_Version=F('analysisMarker_id__analysis_type_version')
@@ -1064,7 +1087,6 @@ def analysis_report(request):
                                                                                             When(Analysis_Type='AutoGrat', then=Value(grat_version))
                                                                                             )
                                                                     )
-
 
     return render(request,"analysis/analysis_report.html",{'analysis_results':analysisResults})
 
@@ -1077,7 +1099,10 @@ def thresholds_report(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'analysisMarker_id__analysis_id__condition',
                                                             'analysisMarker_id__analysis_type_version',
+                                                            'analysisMarker_id__analysis_type',
+
                                                             'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold', 'analysisMarker_id__chosen_z1'
                                                             ,'analysisMarker_id__chosen_y1', 'analysisMarker_id__chosen_z2')
 
@@ -1140,13 +1165,14 @@ def is_valid_queryparam(param):
     return param != '' and param is not None
 def research_results(request):
     
-    queryList = models.AnalysisResults.objects.values(  'id',
+    queryList = models.AnalysisResults.objects.values(      'id', 
                                                             'analysisMarker_id',
                                                             'analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id',
                                                             'analysisMarker_id__analysis_id__panel_id__panel_name',
+                                                            'analysisMarker_id__analysis_id__condition',
                                                             'analysisMarker_id__analysis_id__bat_id__date_of_measurement',
                                                             'analysisMarker_id__analysis_type',
                                                             'analysisMarker_id__analysis_type_version',
@@ -1158,7 +1184,13 @@ def research_results(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donortestofc_exercise__gram_limit_ofc_exercise',
 
                                                             'zMarker', 'redQ4', 'result','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
-                                                            'msi_YQ4', 'cellQ4', 'responder', 'cellTotal',
+                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal',
+                                                            
+                                                            'analysisMarker_id__analysisthresholds__X_Threshold',
+                                                            'analysisMarker_id__analysisthresholds__Y_Threshold',
+                                                            'analysisMarker_id__analysisthresholds__Z2_1_Threshold',
+                                                            'analysisMarker_id__analysisthresholds__Z2_2_Threshold',
+
                                                             'analysisMarker_id__analysis_id__donor_id__donortestblood__gIgE',
                                                             'analysisMarker_id__analysis_id__donor_id__donortestblood__wheat_flour',
                                                             'analysisMarker_id__analysis_id__donor_id__donortestblood__gluten',
@@ -1177,15 +1209,22 @@ def research_results(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donortest_spt__cat',                         
 
                                                             ).annotate(
+                                                                Analysis_id=F('analysisMarker_id__analysis_id'),
                                                                 BAT_ID=F('analysisMarker_id__analysis_id__bat_id__bat_name'),
                                                                 Donor=F('analysisMarker_id__analysis_id__donor_id__donor_abbr'),
                                                                 Panel=F('analysisMarker_id__analysis_id__panel_id__panel_name'),
+                                                                Condition=F('analysisMarker_id__analysis_id__condition'),
                                                                 Date=F('analysisMarker_id__analysis_id__bat_id__date_of_measurement'),
                                                                 Analysis_Type=F('analysisMarker_id__analysis_type'),
                                                                 Analysis_Version = F('analysisMarker_id__analysis_type_version'),
                                                                 File_Name = F('file_id__file_name'),
+                                                                File_id = F('file_id'),
                                                                 Allergen = F('file_id__allergen'),
                                                                 Control = F('file_id__control'),
+                                                                X_Threshold = F('analysisMarker_id__analysisthresholds__X_Threshold'),
+                                                                Y_Threshold = F('analysisMarker_id__analysisthresholds__Y_Threshold'),
+                                                                Z2_1_Threshold = F('analysisMarker_id__analysisthresholds__Z2_1_Threshold'),
+                                                                Z2_2_Threshold = F('analysisMarker_id__analysisthresholds__Z2_2_Threshold'),
                                                                 Clinical_class=F('analysisMarker_id__analysis_id__donor_id__donorclinicalclass__clinicalClass_id__clinicalClass_name'),
                                                                 OFC_classesExercise = F('analysisMarker_id__analysis_id__donor_id__donortestofc_exercise__donor_ofc_exercise'),
                                                                 gramLimit_OFC = F('analysisMarker_id__analysis_id__donor_id__donortestofc__gram_limit_ofc'),
@@ -1207,79 +1246,7 @@ def research_results(request):
                                                                 SPT_timothy = F('analysisMarker_id__analysis_id__donor_id__donortest_spt__timothy'), 
                                                                 SPT_house_dust_mite = F('analysisMarker_id__analysis_id__donor_id__donortest_spt__house_dust_mite'), 
                                                                 SPT_cat = F('analysisMarker_id__analysis_id__donor_id__donortest_spt__cat')).order_by('BAT_ID', 'Donor', 'Panel')
-    """
-    queryList = models.AnalysisMarkers.objects.values(  'analysisMarker_id__AnalysisResults__id',
-                                                    'analysis_id',
-                                                    'analysis_id__bat_id__bat_name',
-                                                    'analysis_id__donor_id__donor_abbr',
-                                                    'analysis_id__panel_id',
-                                                    'analysis_id__panel_id__panel_name',
-                                                    'analysis_id__bat_id__date_of_measurement',
-                                                    'analysis_type',
-                                                    'analysis_type_version',
-                                                    'analysisMarker_id__AnalysisResults__file_id','analysisMarker_id__AnalysisResults__file_id__file_name',
-                                                    'analysisMarker_id__AnalysisResults__file_id__allergen','analysisMarker_id__AnalysisResults__file_id__control',
-                                                    'analysis_id__donor_id__donorclinicalclass__clinicalClass_id__clinicalClass_name',
-                                                    'analysis_id__donor_id__donortestofc__donor_ofc',
-                                                    'analysis_id__donor_id__donortestofc__gram_limit_ofc',
-                                                    'analysis_id__donor_id__donortestofc_exercise__donor_ofc_exercise',
-                                                    'analysis_id__donor_id__donortestofc_exercise__gram_limit_ofc_exercise',
-
-                                                    'analysisMarker_id__AnalysisResults__zMarker', 'analysisMarker_id__AnalysisResults__redQ4',
-                                                    'analysisMarker_id__AnalysisResults__result','analysisMarker_id__AnalysisResults__blackQ2',
-                                                    'analysisMarker_id__AnalysisResults__blackQ3', 'analysisMarker_id__AnalysisResults__blackQ4',
-                                                    'analysisMarker_id__AnalysisResults__zmeanQ4', 'analysisMarker_id__AnalysisResults__Z1_minQ4',
-                                                    'analysisMarker_id__AnalysisResults__Z1_maxQ4', 'analysisMarker_id__AnalysisResults__msi_YQ4',
-                                                    'analysisMarker_id__AnalysisResults__cellQ4', 'analysisMarker_id__AnalysisResults__responder',
-                                                    'analysisMarker_id__AnalysisResults__cellTotal',
-                                                    'analysis_id__donor_id__donortestblood__gIgE',
-                                                    'analysis_id__donor_id__donortestblood__wheat_flour',
-                                                    'analysis_id__donor_id__donortestblood__gluten',
-                                                    'analysis_id__donor_id__donortestblood__gliadin',
-                                                    'analysis_id__donor_id__donortestblood__Tri_a_19',
-                                                    'analysis_id__donor_id__donortestblood__Tri_a_14',
-                                                    'analysis_id__donor_id__donortestblood__Tryptase',
-                                                    'analysis_id__donor_id__donortest_spt__Histamine',
-                                                    'analysis_id__donor_id__donortest_spt__NaCl',
-                                                    'analysis_id__donor_id__donortest_spt__wheat_flour',
-                                                    'analysis_id__donor_id__donortest_spt__wheat_gluten',
-                                                    'analysis_id__donor_id__donortest_spt__birch',
-                                                    'analysis_id__donor_id__donortest_spt__mugworth',
-                                                    'analysis_id__donor_id__donortest_spt__timothy',
-                                                    'analysis_id__donor_id__donortest_spt__house_dust_mite',
-                                                    'analysis_id__donor_id__donortest_spt__cat',).annotate(
-                                                        BAT_ID=F('analysis_id__bat_id__bat_name'),
-                                                        Donor=F('analysis_id__donor_id__donor_abbr'),
-                                                        Panel=F('analysis_id__panel_id__panel_name'),
-                                                        Date=F('analysis_id__bat_id__date_of_measurement'),
-                                                        Analysis_Type=F('analysis_type'),
-                                                        Analysis_Version = F('analysis_type_version'),
-                                                        File_Name = F('analysisMarker_id__AnalysisResults__file_id__file_name'),
-                                                        Allergen = F('analysisMarker_id__AnalysisResults__file_id__allergen'),
-                                                        Control = F('analysisMarker_id__AnalysisResults__file_id__control'),
-                                                        Clinical_class=F('analysis_id__donor_id__donorclinicalclass__clinicalClass_id__clinicalClass_name'),
-                                                        OFC_classesExercise = F('analysis_id__donor_id__donortestofc_exercise__donor_ofc_exercise'),
-                                                        gramLimit_OFC = F('analysis_id__donor_id__donortestofc__gram_limit_ofc'),
-                                                        OFC_class = F('analysis_id__donor_id__donortestofc__donor_ofc'),
-                                                        gramLimit_OFC_exercise = F('analysis_id__donor_id__donortestofc_exercise__gram_limit_ofc_exercise'),
-                                                        gIgE = F('analysis_id__donor_id__donortestblood__gIgE'),
-                                                        IgE_wheat_flour = F('analysis_id__donor_id__donortestblood__wheat_flour'),
-                                                        IgE_gluten = F('analysis_id__donor_id__donortestblood__gluten'),
-                                                        IgE_gliadin = F('analysis_id__donor_id__donortestblood__gliadin'),
-                                                        IgE_Tri_a_19 = F('analysis_id__donor_id__donortestblood__Tri_a_19'),
-                                                        IgE_Tri_a_14 = F('analysis_id__donor_id__donortestblood__Tri_a_14'),
-                                                        IgE_Tryptase = F('analysis_id__donor_id__donortestblood__Tryptase'),
-                                                        SPT_Histamine = F('analysis_id__donor_id__donortest_spt__Histamine'),
-                                                        SPT_NaCl = F('analysis_id__donor_id__donortest_spt__NaCl'),
-                                                        SPT_wheat_flour = F('analysis_id__donor_id__donortest_spt__wheat_flour'),
-                                                        SPT_wheat_gluten = F('analysis_id__donor_id__donortest_spt__wheat_gluten'),
-                                                        SPT_birch = F('analysis_id__donor_id__donortest_spt__birch'),
-                                                        SPT_mugworth = F('analysis_id__donor_id__donortest_spt__mugworth'),
-                                                        SPT_timothy = F('analysis_id__donor_id__donortest_spt__timothy'),
-                                                        SPT_house_dust_mite = F('analysis_id__donor_id__donortest_spt__house_dust_mite'),
-                                                        SPT_cat = F('analysis_id__donor_id__donortest_spt__cat'))
-    """
-
+    
     bat_name = request.GET.get('bat_name')
     donor_name = request.GET.get('donor_names')
     panel_name = request.GET.get('panel_names')
@@ -1346,6 +1313,10 @@ def research_results(request):
     house_dust_mite_max = request.GET.get('house_dust_mite_max')
     cat_min = request.GET.get('cat_min')
     cat_max = request.GET.get('cat_max')
+    
+    compare_file_controls = request.GET.get('compare_file_controls')
+    compare_allergen = request.GET.get('compare_allergen')
+
     AVG = request.GET.get('AVG')
     #AVG_donor = request.GET.get('AVG_donor')
     redQ4 = request.GET.get('redQ4')
@@ -1353,7 +1324,9 @@ def research_results(request):
     queryList = queryList.filter(Analysis_Version=Case(
                                                         When(Analysis_Type='AutoBat', then=Value(bat_version)),
                                                         When(Analysis_Type='AutoGrat', then=Value(grat_version))
-                                                        )
+    #bat_version
+    #grat_version
+                                                    )
                                 )
     if bat_name != "all":
         queryList = queryList.filter(BAT_ID = bat_name)
@@ -1364,12 +1337,14 @@ def research_results(request):
     elif is_valid_queryparam(marker_name):
         markers = list(models.Channels.objects.filter(pns__icontains=marker_name).values_list('analysis_id', flat=True))
         queryList = queryList.filter(analysisMarker_id__analysis_id__in=markers)
-    if is_valid_queryparam(allergen_name):
-        queryList = queryList.filter(Allergen__icontains=allergen_name)
     if analysis_type != "all":
-        queryList = queryList.filter(Analysis_Type=analysis_type)
+        queryList = queryList.filter(Analysis_Type=analysis_type)    
     if file_controls !="all":
         queryList = queryList.filter(Control=file_controls)
+    if is_valid_queryparam(allergen_name):
+        queryList = queryList.filter(Allergen__icontains=allergen_name)
+    if compare_file_controls !="all" and is_valid_queryparam(compare_allergen):
+        queryList = queryList.filter(Q(Allergen__icontains=compare_allergen) |  Q(Control=compare_file_controls))
     if is_valid_queryparam(date_min):
         queryList = queryList.filter(Date__gte=date_min)
     if is_valid_queryparam(date_max):
@@ -1512,63 +1487,75 @@ def research_results(request):
         create_path(path)
         excel_path = os.path.join(path, excel_name)
         writer = pd.ExcelWriter(excel_path, engine='xlsxwriter')
-        df = pd.DataFrame.from_records(queryList.values('BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'Analysis_Version', 'File_Name', 'Allergen', 'Control', 
+        df = pd.DataFrame.from_records(queryList.values('BAT_ID', 'Donor', 'Panel', 'Condition', 'Date', 'Analysis_Type', 'Analysis_Version', 'File_Name', 'Allergen', 'Control', 
                                                     'Clinical_class', 'OFC_classesExercise', 'gramLimit_OFC', 'OFC_class', 'gramLimit_OFC_exercise',
                                                     'gIgE', 'IgE_wheat_flour', 'IgE_gluten', 'IgE_gliadin', 'IgE_Tri_a_19',
                                                     'IgE_Tri_a_14', 'IgE_Tryptase', 'SPT_Histamine', 'SPT_NaCl', 'SPT_wheat_flour', 'SPT_wheat_gluten', 'SPT_birch',
                                                     'SPT_mugworth', 'SPT_timothy', 'SPT_house_dust_mite', 'SPT_cat', 'result','zMarker', 'redQ4','blackQ2',
-                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder', 'cellTotal'))
-        
-
-        """"""
+                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ3', 'cellQ4', 
+                                                    'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold', 'responder', 'cellTotal',
+                                                    'File_id', 'analysisMarker_id', 'Analysis_id'
+                                                    ))
         row = 0
-        first = True
-
+        first_row = True
+        files_ids_list = []     
         for donor, donor_data in df.groupby(['BAT_ID','Donor','Panel','Analysis_Type', 'Analysis_Version']):  
             condition = donor_data['Control'] == 'Negative control'
             selected_row = donor_data[condition]
             new_df = pd.concat([selected_row, donor_data[~condition]])
             new_df = new_df.reset_index(drop=True)
+            files_ids = []
             
-            if first:
-                new_df.to_excel(writer, sheet_name='Sheet1', columns=['BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'Analysis_Version', 'File_Name', 'Allergen', 'Control',
+            for index, r in new_df.iterrows():
+                file_id = r['File_id']
+                analysisMarker_id = r['analysisMarker_id']
+                if r['Control'] != 'Unstained':
+                    if r['Analysis_Type'] == 'AutoGrat':
+                        zmarker_name = get_object_or_404(models.Channels.objects.filter(analysis_id=r['Analysis_id'], pns=r['zMarker']).values_list('pnn', flat=True))
+                        plot_id = get_object_or_404(models.FilesPlots.objects.filter(file_id=file_id, 
+                                                                                    analysisMarker_id=analysisMarker_id, plot_path__icontains=zmarker_name).values_list('plot_id', flat=True))
+                    else:
+                        plot_id = get_object_or_404(models.FilesPlots.objects.filter(file_id=file_id, analysisMarker_id=analysisMarker_id).values_list('plot_id', flat=True))
+                    files_ids.append(plot_id)
+            
+            files_ids_list.append(files_ids)
+            
+            if first_row:
+                new_df.to_excel(writer, sheet_name='Sheet1', columns=['BAT_ID', 'Donor', 'Panel', 'Condition', 'Date', 'Analysis_Type', 'Analysis_Version', 'File_Name', 'Allergen', 'Control',
                                                     'Clinical_class', 'OFC_classesExercise', 'gramLimit_OFC', 'OFC_class', 'gramLimit_OFC_exercise',
                                                     'gIgE', 'IgE_wheat_flour', 'IgE_gluten', 'IgE_gliadin', 'IgE_Tri_a_19',
                                                     'IgE_Tri_a_14', 'IgE_Tryptase', 'SPT_Histamine', 'SPT_NaCl', 'SPT_wheat_flour', 'SPT_wheat_gluten', 'SPT_birch',
                                                     'SPT_mugworth', 'SPT_timothy', 'SPT_house_dust_mite', 'SPT_cat', 'result','zMarker', 'redQ4','blackQ2',
-                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder', 'cellTotal'], startrow=row , startcol=0)
+                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ3', 'cellQ4',
+                                                    'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold',
+                                                    'responder', 'cellTotal'], startrow=row , startcol=0)
                 row = row + 1
-            elif not first:
-                new_df.to_excel(writer,sheet_name='Sheet1',columns=['BAT_ID', 'Donor', 'Panel', 'Date', 'Analysis_Type', 'Analysis_Version', 'File_Name', 'Allergen', 'Control',
+            elif not first_row:
+                new_df.to_excel(writer,sheet_name='Sheet1',columns=['BAT_ID', 'Donor', 'Panel', 'Condition', 'Date', 'Analysis_Type', 'Analysis_Version', 'File_Name', 'Allergen', 'Control',
                                                     'Clinical_class', 'OFC_classesExercise', 'gramLimit_OFC', 'OFC_class', 'gramLimit_OFC_exercise',
                                                     'gIgE', 'IgE_wheat_flour', 'IgE_gluten', 'IgE_gliadin', 'IgE_Tri_a_19',
                                                     'IgE_Tri_a_14', 'IgE_Tryptase', 'SPT_Histamine', 'SPT_NaCl', 'SPT_wheat_flour', 'SPT_wheat_gluten', 'SPT_birch',
                                                     'SPT_mugworth', 'SPT_timothy', 'SPT_house_dust_mite', 'SPT_cat', 'result','zMarker', 'redQ4','blackQ2',
-                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder', 'cellTotal'], startrow=row , startcol=0, header=False)
+                                                    'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ3', 'cellQ4', 
+                                                    'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold',
+                                                    'responder', 'cellTotal'], startrow=row , startcol=0, header=False)
 
 
             row = row + len(new_df.index) + 2
-            first = False
-        #worksheet = writer.sheets['Sheet1']
-        #worksheet.autofit()
+            first_row = False
         writer.save()
-        """"""
-    files_ids = []
-    for i in queryList:
-        file_id = i['file_id']
-        analysisMarker_id = i['analysisMarker_id']
-        if i['analysisMarker_id__analysis_type'] == 'AutoGrat':
-            zmarker_name = get_object_or_404(models.Channels.objects.filter(analysis_id=i['analysisMarker_id__analysis_id'], pns=i['zMarker']).values_list('pnn', flat=True))
-            plot_id = get_object_or_404(models.FilesPlots.objects.filter(file_id=file_id, analysisMarker_id=analysisMarker_id, plot_path__icontains=zmarker_name).values_list('plot_id', flat=True)) 
-        else:
-            plot_id = get_object_or_404(models.FilesPlots.objects.filter(file_id=file_id, analysisMarker_id=analysisMarker_id).values_list('plot_id', flat=True))
-        files_ids.append(plot_id)
-    #files_ids = None
-    #if len(queryList) <= 15 and len(queryList) > 0:
-        #files_ids = [file_id['file_id'] for file_id in queryList]
-       #files_ids = [1, 2, 3]
+        
     rows_count = len(queryList)
-    return render(request,"analysis/research_results.html",{'analysis_results':queryList, 'excel_name':str(excel_name), 'files_ids':files_ids, 'rows_count':rows_count})
+    
+    if rows_count < 500:
+        files_ids_name = str(request.user.last_name) + str(time_stamp) + ".csv"
+        with open(os.path.join(settings.MEDIA_ROOT, "user-data", files_ids_name), "w") as f:
+            wr = csv.writer(f)
+            wr.writerows(files_ids_list)
+    else:
+        files_ids_name = None
+    
+    return render(request,"analysis/research_results.html",{'analysis_results':queryList, 'excel_name':str(excel_name), 'files_ids':files_ids_name, 'rows_count':rows_count})
 
 def getBat_names(request):
     # get Results from the database 
@@ -1617,24 +1604,33 @@ def getResponders(request):
 
 @login_required
 def downloadResults_pdf(request, files_ids):
-    files_ids = files_ids.replace('[', '')
-    files_ids = files_ids.replace(']', '')
-    files_ids = files_ids.split(',')
-    files_ids = [ int(x) for x in files_ids ]
+    with open(os.path.join(settings.MEDIA_ROOT, "user-data", files_ids), newline='') as f:
+        reader = csv.reader(f)
+        files_lists = list(reader)
+    #files_ids = files_ids.replace('[', '')
+    #files_ids = files_ids.replace(']', '')
+    #files_ids = files_ids.split(',')
+    #files_ids = [ int(x) for x in files_ids ]
     time_stamp = time.time()
     file_path = str(request.user.last_name) + str(time_stamp) + ".pdf"
     file_path = os.path.join(settings.MEDIA_ROOT, "user-data", file_path)
-    paths = models.FilesPlots.objects.values_list('plot_path','file_id').filter(plot_id__in=files_ids)
-    img_list = []
-    for i in paths:
-        img_list.append(str(i[0]))
+    final_list = []
+    for l in files_lists:
+        paths = models.FilesPlots.objects.values_list('plot_path','file_id').filter(plot_id__in=l)
+        img_list = []
+        for i in paths:
+            img_list.append(str(i[0]))
+        final_list.append(img_list)
     #file_path = '/home/abusr/autoBatWeb/auto-BAT-Web/media/user-data/cd69.pdf'
     if request.method == "POST":
         file_name = request.POST.get('file_name')
         if len(file_name) > 0:
             file_path = str(file_name) + ".pdf"
             file_path = os.path.join(settings.MEDIA_ROOT, "user-data", file_path)
-        image_grid(img_list, file_path, 'autobat')
+        #image_grid(img_list, file_path, 'autobat')
+        #new_pdf_list = []
+        #new_pdf_list.append(img_list) #the function pdf_grid is expecting a list of lists
+        pdf_grid(final_list, file_path, 'autobat')
         if os.path.exists(str(file_path)):
             with open(file_path, 'rb') as fh:
                 response = HttpResponse(fh.read(), content_type="application/vnd.pdf")

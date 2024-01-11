@@ -26,7 +26,7 @@
 				{% if files_ids != None %}
 				data-bs-target="#pdf"
 				 {% endif %}
-				>Download PDF</button>
+				>Download Triplots</button>
 	      </div>
        </div>
     <br></br>
@@ -42,7 +42,8 @@
         <th >BAT_ID</th>
         <th>Donor</th>
         <th>Panel</th>
-        <th>Type</th>
+        <th>Condition</th>
+	<th>Type</th>
 	<th>Version</th>
 	<th> Date </th>
         <th>File Name</th>
@@ -82,7 +83,12 @@
         <th>Z1_minQ4</th>
         <th>Z1_maxQ4</th>
         <th>msi_YQ4</th>
+	<th>cellQ3</th>
         <th>cellQ4</th>
+	<th>X_Threshold</th>
+	<th>Y_Threshold</th>
+	<th>Z2_1_Threshold</th>
+	<th>Z2_2_Threshold</th>
         <th>cellTotal</th>
      </thead>
      <tbody>
@@ -91,7 +97,8 @@
         <td >{{ r.BAT_ID }}</td>
         <td >{{ r.Donor }}</td>
         <td > <a href="show_channels/{{r.analysisMarker_id__analysis_id}}">{{r.Panel}}</a></td>
-        <td >{{ r.Analysis_Type}}</td>
+        <td >{{ r.Condition }}</td>
+	<td >{{ r.Analysis_Type}}</td>
 	<td >{{ r.Analysis_Version }}</td>
         <td >{{ r.Date}}</td>
         <td >{{ r.File_Name }}</td>
@@ -132,8 +139,13 @@
         <td >{{ r.Z1_minQ4|floatformat:2 }}</td>
         <td >{{ r.Z1_maxQ4|floatformat:2 }}</td>
         <td >{{ r.msi_YQ4|floatformat:2 }}</td>
-        <td >{{ r.cellQ4|floatformat:2 }}</td>
-        <td >{{ r.cellTotal }}</td>
+        <td >{{ r.cellQ3|floatformat:2 }}</td>
+	<td >{{ r.cellQ4|floatformat:2 }}</td>
+	<td >{{ r.X_Threshold }}</td>
+	<td >{{ r.Y_Threshold }}</td>
+	<td >{{ r.Z2_1_Threshold }}</td>
+	<td >{{ r.Z2_2_Threshold }}</td>
+	<td >{{ r.cellTotal }}</td>
       {% empty %}
       <tr>
         <td colspan="7" class="text-center bg-warning">No Data</td>

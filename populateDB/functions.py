@@ -5,6 +5,10 @@ import math
 from datetime import datetime
 from django.conf import settings
 
+# make sure you have the version of PyPDF2==1.26.0
+
+from PyPDF2 import PdfFileReader, PdfFileWriter
+
 
 def Berlin_time():
     tz = pytz.timezone('Europe/Berlin')
@@ -17,7 +21,7 @@ def create_path(path):
 def image_grid(img_list, pdf_path, analysis_type):
     temp_path = create_path(os.path.join(settings.MEDIA_ROOT,'temp'))
     width = 600
-    hight = 640
+    hight = 630
 
     total_images = len(img_list)
     if analysis_type == 'autograt':
@@ -85,3 +89,77 @@ def image_grid(img_list, pdf_path, analysis_type):
     image_1 = Image.open(os.path.join(settings.MEDIA_ROOT,'temp',f'temp_1.png'))
     image_1.save(pdf_path, "PDF", append_images=page_list[1:], save_all=True,resolution=250.0) 
     return page_list
+
+
+
+def pdf_grid(pdf_list, export_path, analysis_type):
+    pdf_writer = PdfFileWriter()
+    # creating a list to specify the position of the 15 plots on the page
+    # for AutoBat 3 rows and 5 columns
+    autoBat_grid = [(0, 500),(240, 500),(480, 500),(720, 500),(960, 500),
+                    (0, 250),(240, 250),(480, 250),(720, 250),(960, 250),
+                    (0, 0),(240, 0),(480, 0),(720, 0),(960, 0)]
+
+    # for Autograt 3 rows and 4 columns
+    autoGat_grid = [(0, 500),(240, 500),(480, 500),(720, 500),
+                    (0, 250),(240, 250),(480, 250),(720, 250),
+                    (0, 0),(240, 0),(480, 0),(720, 0)]
+    pages = 0
+    last_position = 200
+    """
+    if analysis_type == 'comparison':
+        start = 0
+        end = 14
+        total_plots = 0
+        for i in range(0, len(pdf_list)):
+            total_plots = total_plots + len(i)
+
+        pdf_writer.addBlankPage(width=1224, height=799)
+        page.scaleBy(0.70)
+        if 0 <= last_position <= 4:
+            j+=5
+        elif 5 <= last_position <= 9:
+            j+=10
+        x, y = autoBat_grid[j]
+    last_position = j
+    """
+    for i in range(0, len(pdf_list)):
+        if analysis_type == 'autograt':
+            start = 0
+            end = 11
+            total_pages = math.ceil(len(pdf_list[i]) / 12)
+        else:
+            start= 0
+            end = 14
+            total_pages = math.ceil(len(pdf_list[i]) / 15)
+        total = total_pages + pages
+        for indx in range(pages, total):
+            #create a new page
+            if analysis_type == 'autograt':
+                pdf_writer.addBlankPage(width=979, height=799)
+            else:
+                pdf_writer.addBlankPage(width=1224, height=799)
+            # specify the plots that will be printed in each page
+            files = pdf_list[i][start:end+1]
+            for j, file in enumerate(files):
+                pdf_reader = PdfFileReader(file)
+                page = pdf_reader.getPage(0)
+                if "histogram" in file:
+                    x, y = autoGat_grid[9]
+                else:
+                    page.scaleBy(0.70)
+                    if analysis_type == 'autograt':
+                        x, y = autoGat_grid[j]
+                    else:
+                        x, y = autoBat_grid[j]
+                pdf_writer.getPage(indx).mergeTranslatedPage(page, x, y)
+            if analysis_type == 'autograt':
+                start += 12
+                end +=12
+            else:
+                start += 15
+                end +=15
+        pages+=total_pages
+    with open(export_path, 'wb') as export_path:
+        pdf_writer.write(export_path)
+    return export_path

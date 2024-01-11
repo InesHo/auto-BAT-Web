@@ -100,6 +100,7 @@ class Analysis(models.Model):
     bat_id = models.ForeignKey(Experiment, to_field=('bat_id'), blank = True, null=True,  on_delete = models.CASCADE)
     donor_id = models.ForeignKey(Donor, to_field=('donor_id'), blank = True, null=True,  on_delete = models.CASCADE)
     panel_id = models.ForeignKey(Panels, to_field=('panel_id'), blank = True, null=True,  on_delete = models.CASCADE)
+    condition = models.CharField(max_length=200, blank = True, null = True) 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 
 class AnalysisMarkers(models.Model):
@@ -198,6 +199,7 @@ class AnalysisResults(models.Model):
     Z1_minQ4 = models.FloatField(blank = True, null = True)
     Z1_maxQ4 = models.FloatField(blank = True, null = True)
     msi_YQ4 = models.FloatField(blank = True, null = True)
+    cellQ3 = models.FloatField(blank = True, null = True)
     cellQ4 = models.FloatField(blank = True, null = True)
     responder = models.CharField(choices=RESPONDER_TYPES,max_length=120, blank = True, null=True)
     cellTotal = models.FloatField(blank = True, null = True)
