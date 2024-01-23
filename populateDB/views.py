@@ -529,11 +529,17 @@ def run_analysis_autobat(request, analysis_id):
             device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
             device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
             
-            outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.png"
-            pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
-            pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoBat/")       
+            if condition:
+                outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoBat/")       
+                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autobat/{analysis_type_version}/")
+            else:
+                outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoBat/")       
+                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/{analysis_type_version}/")           
             create_path(pathToExports)
-            pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/{analysis_type_version}/")
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
@@ -641,13 +647,19 @@ def run_analysis_autograt(request, analysis_id):
                 
                 device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
                 device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
-            
-                outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_x}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.png"
-                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
-                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoGrat/")       
+                if condition:
+                    outputPDFname = f"Autograt_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                    pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoGrat/")       
+                    pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autograt/{analysis_type_version}/")
+                else:
+                    outputPDFname = f"Autograt_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+                    pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoGrat/")       
+                    pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/{analysis_type_version}/")           
                 create_path(pathToExports)
-                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/{analysis_type_version}/")
                 create_path(pathToOutput)
+
                 pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
                 rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
                 run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1, chosen_z1_lable,
@@ -718,7 +730,6 @@ def re_analysis_all(request):
 
                 device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
                 device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
-                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/")
                 pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
                 rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
                 manualThresholds = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_manualThresholds', flat=True))
@@ -733,10 +744,18 @@ def re_analysis_all(request):
                 
                 analysis_type_version = bat_version
                 chosen_z2_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z2).values_list('pns', flat=True))
-                outputPDFname = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{bat_version}.png"
-                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoBat/")
+                
+                if condition:
+                    outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                    pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoBat/")       
+                    pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autobat/{analysis_type_version}/")
+                else:
+                    outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+                    pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoBat/")       
+                    pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/{analysis_type_version}/")           
                 create_path(pathToExports)
-                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/{bat_version}/")
                 create_path(pathToOutput)
 
                 if current_version == bat_version:
@@ -804,7 +823,6 @@ def re_analysis_all(request):
 
                 device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
                 device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
-                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/")
                 pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
                 rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
                 manualThresholds = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_manualThresholds', flat=True))
@@ -863,12 +881,18 @@ def re_analysis_all(request):
                 chosen_z2_lable_list.append(chosen_z2_3_lable)
                 chosen_z2_lable_list.append(chosen_z2_4_lable)
 
-                
 
-                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoGrat/")
+                if condition:
+                    outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                    pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoGrat/")       
+                    pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autograt/{analysis_type_version}/")
+                else:
+                    outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+                    pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoGrat/")       
+                    pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/{analysis_type_version}/")           
                 create_path(pathToExports)
-                outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{grat_version}.png"
-                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/{grat_version}/")
                 create_path(pathToOutput)
             
                 if current_version == grat_version:
