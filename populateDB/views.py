@@ -543,7 +543,7 @@ def run_analysis_autobat(request, analysis_id):
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-            run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
+            run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
                                 pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold, analysis_type_version, user_id
                                 )
@@ -662,7 +662,7 @@ def run_analysis_autograt(request, analysis_id):
 
                 pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
                 rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-                run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1, chosen_z1_lable,
+                run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1, chosen_z1_lable,
                                 chosen_z2, chosen_z2_lable, device, outputPDFname, pathToData, pathToExports, pathToOutput, pathToGatingFunctions, rPath, analysis_type_version, user_id
                                 )
                 return render(request, 'analysis/analysis_ready.html')
@@ -766,7 +766,7 @@ def re_analysis_all(request):
                     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Waiting")
                     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_error="")
                     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages="")
-                    run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
+                    run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_lable, chosen_y1,
                                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
                                                 pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold, analysis_type_version, user_id
                                         )
@@ -794,7 +794,7 @@ def re_analysis_all(request):
                         analysismarkers_instance.user_id = user_id
                         analysismarkers_instance.save()
                         analysisMarker_id = analysismarkers_instance.analysisMarker_id
-                        run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_z1, chosen_z1_lable, chosen_y1,
+                        run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
                                 pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold, analysis_type_version, user_id
                                 )
@@ -903,7 +903,7 @@ def re_analysis_all(request):
                     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Waiting")
                     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_error="")
                     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages="")
-                    run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1, 
+                    run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1, 
                                                 chosen_z1_lable, chosen_z2_list, chosen_z2_lable_list, device, outputPDFname, pathToData, pathToExports, pathToOutput, 
                                                 pathToGatingFunctions, rPath, analysis_type_version, user_id )
                 else:
@@ -930,7 +930,7 @@ def re_analysis_all(request):
                         analysismarkers_instance.save()
                         analysisMarker_id = analysismarkers_instance.analysisMarker_id
             
-                        run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1,
+                        run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1,
                                                     chosen_z1_lable, chosen_z2_list, chosen_z2_lable_list, device, outputPDFname, pathToData, pathToExports, pathToOutput, 
                                                     pathToGatingFunctions, rPath, analysis_type_version, user_id)
             return render(request, 'analysis/analysis_ready.html')
