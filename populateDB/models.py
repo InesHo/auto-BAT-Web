@@ -204,6 +204,7 @@ class AnalysisResults(models.Model):
     responder = models.CharField(choices=RESPONDER_TYPES,max_length=120, blank = True, null=True)
     cellTotal = models.FloatField(blank = True, null = True)
     qualityMessages = models.TextField(max_length=250, blank=True, validators=[MaxLengthValidator(250)])
+    plot_symbol = models.CharField(max_length=12, blank = True, null=True)
     analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 

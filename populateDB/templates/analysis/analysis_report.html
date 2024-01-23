@@ -20,6 +20,7 @@
 	<th>File Allergen</th>
 	<th>File Control</th>
 	<th>responder</th>
+	<th>plot symbol</th>
 	<th>result</th>
 	<th>zMarker</th>
 	<th>redQ4</th>
@@ -50,7 +51,8 @@
 	<td >{{ r.file_id__file_name }}</td>
         <td >{{ r.file_id__allergen }}</td>
 	<td >{{ r.file_id__control }}</td>
-        <td >{{ r.responder }}</td>
+	<td >{{ r.responder }}</td>
+	<td >{{ r.plot_symbol }}</td>
         <td >{{ r.result }}</td>
 	<td>{{r.zMarker}}</td>
 	<td >{{ r.redQ4|floatformat:2 }}</td>

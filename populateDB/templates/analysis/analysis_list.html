@@ -26,7 +26,6 @@
       <th>Thresholds</th>
       <th>Settings</th>
       <th>Files</th>
-
       <th>
              {% if user_is_superuser == True %}
 	      <a class="btn btn-warning" href="re_analysis_alert">Run All</a>
@@ -90,7 +89,6 @@
 
 	</td>
 
-
 	<td>
                 <a class="btn btn-info" href="show_channels/{{a.analysis_id}}">
                         <span class="fa fa-eye"></span>
@@ -102,7 +100,7 @@
                 </a>
         </td>
 
-        <td>
+	<td>
                 <a class="btn btn-warning" href="{% url 'populateDB:add_experimentfile' %}update_files/add_channels/analysis_type/{{a.analysis_id}}">Analyze</a>
         </td>
         <td>

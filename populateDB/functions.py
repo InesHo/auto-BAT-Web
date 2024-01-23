@@ -163,3 +163,18 @@ def pdf_grid(pdf_list, export_path, analysis_type):
     with open(export_path, 'wb') as export_path:
         pdf_writer.write(export_path)
     return export_path
+
+def add_symbol(content_pdf, symbol_pdf,pdf_result):
+    reader = PdfFileReader(symbol_pdf)
+    image_page = reader.pages[0]
+    image_page.scaleBy(0.15)
+
+    writer = PdfFileWriter()
+
+    reader = PdfFileReader(content_pdf)
+    content_page = reader.pages[0]
+    writer.addPage(content_page)
+    writer.getPage(0).mergeTranslatedPage(image_page, 20, 350)
+
+    with open(pdf_result, "wb") as fp:
+        writer.write(fp)

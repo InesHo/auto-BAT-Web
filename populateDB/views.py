@@ -1078,7 +1078,7 @@ def analysis_report(request):
                                                             'file_id__file_name', 'file_id__allergen','file_id__control',
                                                             'zMarker', 'debrisPerc', 'firstDoubPerc', 'secDoubPerc', 'redQ4', 'result',
                                                             'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
-                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal', 'qualityMessages'
+                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal', 'qualityMessages', 'plot_symbol'
                                                             ).annotate(
                                                                 Analysis_Type=F('analysisMarker_id__analysis_type'),
                                                                 Analysis_Version=F('analysisMarker_id__analysis_type_version')
