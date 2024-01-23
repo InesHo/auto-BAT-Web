@@ -501,7 +501,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         info_cellQ4 = []
         for i in range(len(reports)):
             #reports[i].setFileName(df.loc[reports[i].getId(),"filename"])
-            reports[i].setzMarker(df.loc[reports[i].getId().lower(),"zMarker"])
+            #reports[i].setzMarker(df.loc[reports[i].getId().lower(),"zMarker"])
             reports[i].setRed(df.loc[reports[i].getId().lower(),"redQ4"])
             reports[i].setBlack(df.loc[reports[i].getId().lower(),"blackQ2"])
             reports[i].setBlackQ3(df.loc[reports[i].getId().lower(),"blackQ3"])
@@ -528,13 +528,12 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         # filling the quality messages column with the file specific error messages and
         # also applying the thresholds for responder/nonresponder in the controls
 
-            
             if reports[i].getId() == "us":               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
-                info[i].extend((info_bg, info_cellQ4))
+                info[i].extend((info[0], info_cellQ4))
                 #reports[i].setQualityMessages(info[i])
             else:
                 info[i].append(info_cellQ4)
-            
+
             if "aIgE" in reports[i].getId():
                 #reports[i].setQualityMessages(info[i])
                 if reports[i].red >= 5.0:
@@ -548,9 +547,12 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                     reports[i].setResponder("fMLP Responder")
                 else:
                     reports[i].setResponder("fMLP Non-Responder")
+
             reports[i].setQualityMessages(info[i])
+            
         finalReport = Reporting(reports)
         finalReport = finalReport.constructReport()
+
         print("\n -- This is the final report: \n")
         print(finalReport)
 
@@ -616,7 +618,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             file_name = index
             file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
             file_name = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_name', flat=True))
-            Marker = row['Marker']
+            zMarker = row['Marker']
             debrisPerc = row['debrisPerc']
             firstDoubPerc = row['firstDoubPerc']
             secDoubPerc = row['secDoubPerc']
@@ -664,7 +666,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                                         Z1_maxQ4 = Z1_maxQ4,
                                         msi_YQ4 = msi_YQ4,
                                         cellQ3 = cellQ3,
-                                        #cellQ4 = cellQ4,
+                                        cellQ4 = cellQ4,
                                         cellTotal = cellTotal,
                                         qualityMessages = qualityMessages,
                                         plot_symbol=plot_symbol,
