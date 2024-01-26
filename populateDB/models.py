@@ -115,8 +115,8 @@ class AnalysisMarkers(models.Model):
         (u"Error", u'Error'),
     )
     analysisMarker_id = models.AutoField(primary_key=True)
-    chosen_z1 = models.CharField(max_length=20, blank = True, null = True)
-    chosen_y1 = models.CharField(max_length=20, blank = True, null = True)
+    chosen_z1 = models.CharField(max_length=100, blank = True, null = True)
+    chosen_y1 = models.CharField(max_length=100, blank = True, null = True)
     chosen_z2 = models.CharField(max_length=100, blank = True, null = True)
     chosen_z2_2 = models.CharField(max_length=200, blank = True, null = True)
     analysis_date = models.DateField(blank = True, null=True)

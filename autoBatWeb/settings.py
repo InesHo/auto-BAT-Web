@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_cleanup.apps.CleanupConfig',
     'populateDB',
     'background_task',
     'mod_wsgi.server',

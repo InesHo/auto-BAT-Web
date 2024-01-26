@@ -28,7 +28,7 @@ from django.db.models import F
 import re
 import csv
 
-bat_version='1.0.3'
+bat_version='2.0.0'
 #'1.0.2'
 grat_version='1.0.3'
 #'1.0.1'
@@ -1346,7 +1346,7 @@ def research_results(request):
     redQ4 = request.GET.get('redQ4')
     
     queryList = queryList.filter(Analysis_Version=Case(
-                                                        When(Analysis_Type='AutoBat', then=Value(bat_version)),
+                                                        When(Analysis_Type='AutoBat', then=Value('2.0.0')),#bat_version)),
                                                         When(Analysis_Type='AutoGrat', then=Value(grat_version))
     #bat_version
     #grat_version

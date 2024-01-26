@@ -134,11 +134,17 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 usName = file_name
         
             if panel_name in ['full-panel', 'grat-panel']:
-                pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
+                if condition:
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/')
+                else:
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
                 files_list.append(pathToExports + file_name)
 
                 reports[i] = Report(id = file_name.lower())
-                total_cells = get_object_or_404(models.MetaData.objects.filter(file_id=file_id, labels='tot').values_list('values', flat=True))
+                try:
+                    total_cells = get_object_or_404(models.MetaData.objects.filter(file_id=file_id, labels='tot').values_list('values', flat=True))
+                except:
+                    total_cells = 0
                 reports[i].setCellTotal(total_cells)
                 reports[i].setDebrisPerc(0) 
                 reports[i].setFirstDoubPerc(0)
@@ -181,11 +187,14 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                                     rPath,
                                     webapp="Yes")
     
+        """
         if manualThresholds:
             df, SSCA, FCR, CD63, info_bg = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
             symbol_pdf = 'green'
         else:
             df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32thresholding()
+        """
+        df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32Bat()
         quality_messages.append(info_bg)
         print("\n -- This is the dataframe from first part of reporting: \n")
         print(df)
@@ -450,10 +459,18 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                 unstainedFileName = file_name
 
             if panel_name in ['full-panel', 'grat-panel']:
-                pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
+                if condition:
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/')
+                else:
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
                 files_list.append(pathToExports + file_name)
+
+                try:
+                    total_cells = get_object_or_404(models.MetaData.objects.filter(file_id=file_id, labels='tot').values_list('values', flat=True))
+                except:
+                    total_cells = 0
+
                 reports[i] = Report(id = file_name.lower())
-                total_cells = get_object_or_404(models.MetaData.objects.filter(file_id=file_id, labels='tot').values_list('values', flat=True))
                 reports[i].setCellTotal(total_cells)
                 reports[i].setDebrisPerc(0)
                 reports[i].setFirstDoubPerc(0)
