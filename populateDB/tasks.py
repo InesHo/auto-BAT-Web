@@ -187,22 +187,19 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                                     rPath,
                                     webapp="Yes")
     
-        """
+        
         if manualThresholds:
             df, SSCA, FCR, CD63, info_bg = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
             symbol_pdf = 'green'
         else:
             df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32thresholding()
-        """
-        df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32Bat()
+        
+        #df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32Bat()
         quality_messages.append(info_bg)
         print("\n -- This is the dataframe from first part of reporting: \n")
         print(df)
         #results = autoworkflow.runCD32thresholding()
         # check out folder set as output folder for results
-        df = df.set_index('filename')
-        info_cellQ4 = []
-
         for i in range(len(reports)):
             #reports[i].setFileName(df.loc[reports[i].getId(),"filename"])
             reports[i].setRed(df.loc[reports[i].getId().lower(),"redQ4"])
@@ -225,9 +222,6 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
                 info_cellQ4 = "The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."
-            
-
-
         ###==========================================================================================================================###
         # filling the quality messages column with the file specific error messages and
         # also applying the thresholds for responder/nonresponder in the controls
@@ -253,6 +247,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                     reports[i].setResponder("fMLP Non-Responder")
             reports[i].setQualityMessages(info[i])
             """
+            """
             if "us" in reports[i].getId().lower():               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
                 reports[i].setQualityMessages(info[0] + info_bg + info_cellQ4)
                 reports[i].setYThreshold(FCR)
@@ -271,7 +266,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                     reports[i].setResponder("fMLP Responder")
                 else:
                     reports[i].setResponder("fMLP Non-Responder")
-            """
+        
         finalReport = Reporting(reports)
         finalReport = finalReport.constructReport()
 
@@ -489,11 +484,16 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                 files_list.append(pathToExports + file_name)
                 #info_messages = str(reports[i][1])
                 i += 1
-        print(usName)
-        print(pathToExports)
-        print(pathToOutput)
-        print(files_list)
-        print(pathToData)
+        #print(usName)
+        #print(pathToExports)
+        #print(pathToOutput)
+        #print(files_list)
+        #print(pathToData)
+        print(chosen_z2)
+        #l = [i for i in chosen_z2 if i is not None]
+        #print(l)
+        #print(len(l))
+        
         autoworkflow = AutoBatWorkflow(files_list,
                                     pathToData,
                                     pathToExports,
@@ -521,11 +521,24 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         #df = results[0]
         ###################################################################
         # check out folder set as output folder for results
-        algList.insert(0, 'NA')
-        df.insert(0, 'ID', algList, True) # I somehow needed this row
-        df = df.set_index('ID')
-
-        for i in range(len(reports)):
+        #algList.insert(0, 'NA')
+        #print(algList)
+        #df.insert(0, 'ID', algList, True) # I somehow needed this row
+        #print(df)
+        #df = df.set_index('ID')
+        print('##################################################')
+        finalReport = Reporting(reports)
+        finalReport = finalReport.constructReport()
+        print(finalReport)
+        print('##################################################')
+        print(algList)
+        #df = df.drop(['zMarker'], axis=1)
+        #df = df.set_index('filename')
+        print(df)
+        
+        """
+        for i in reports:
+            
             reports[i].setRed(df.loc[reports[i].getId(),"redQ4"])
             reports[i].setBlack(df.loc[reports[i].getId(),"blackQ2"])
             reports[i].setBlackQ3(df.loc[reports[i].getId(),"blackQ3"])
@@ -576,6 +589,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         print("\n -- This is the final report: \n")
         print(finalReport)
         ###################################################################
+        """
         """
         chosen_z2_1 = str(chosen_z2[0]) 
         chosen_z2_2 = str(chosen_z2[1])
@@ -724,7 +738,6 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         pdf_path = os.path.join(pathToOutput, pdf)
         save_pdf(pdf_path, pdf_list, analysisMarker_id, 'autograt')
         """
-        models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Ready", analysis_error=e)
     except Exception:
         e = traceback.format_exc()
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)

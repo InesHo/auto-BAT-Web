@@ -14,7 +14,7 @@ import config
 sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from django.conf import settings
 from Data import Data
-from .functions import create_path, image_grid, pdf_grid
+from .functions import change_FCS_data, create_path, image_grid, pdf_grid
 from .tasks import run_analysis_autobat_task, run_analysis_autograt_task, proccess_files
 from djqscsv import render_to_csv_response
 from .serializers import ResultsSerializers
@@ -28,7 +28,7 @@ from django.db.models import F
 import re
 import csv
 
-bat_version='2.0.0'
+bat_version='1.0.3'
 #'1.0.2'
 grat_version='1.0.3'
 #'1.0.1'
@@ -269,8 +269,8 @@ class experimentfile(View):
                 us_file_path = ""
                 for f in files:
                     fs = FileSystemStorage(files_dir)           
-                    file_path = fs.save(f.name, f)  
-                    file_path = os.path.join(files_dir, str(file_path))
+                    file_name = fs.save(f.name, f)  
+                    file_path = os.path.join(files_dir, str(file_name))
                     dataO = Data(filetype="FCS", filename = file_path)
                     data = dataO.getData()
                     meta = data.get_metadata()
@@ -287,7 +287,8 @@ class experimentfile(View):
                     file_instance.save()
                     
                     us_file_path = file_path
-
+                    #change_FCS_data(str(file_name), files_dir, files_dir)
+                
                 dataO = Data(filetype="FCS", filename = us_file_path)
                 data = dataO.getData()
                 channels = data.channels

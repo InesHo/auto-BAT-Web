@@ -1,4 +1,6 @@
 import os
+import re
+import flowkit as fk
 from PIL import Image
 import pytz
 import math
@@ -17,6 +19,51 @@ def Berlin_time():
 def create_path(path):
     if not os.path.exists(path):
         os.makedirs(path)
+
+
+def change_FCS_data(file_name, old_fcs_path, new_fcs_path):
+    sample = fk.Sample(os.path.join(old_fcs_path, file_name))
+    # 1 - change meta data:
+    for key, value in sample.metadata.items():
+        x = re.findall("p[0-9]+n", key)
+        if x:
+            if " " in value:
+                new_value = value.replace(" ", "-")
+                sample.metadata[key] = new_value
+                
+    # 2- change flowjo_pnn_labels:
+    for idx, value in enumerate(sample._flowjo_pnn_labels):
+        if " " in value:
+            new_value = value.replace(" ", "-")
+            sample._flowjo_pnn_labels[idx] = new_value
+
+    # 3 - change channels
+    channels = sample.channels
+    for idx in range(1, len(channels) + 1):
+        channel = channels[str(idx)]
+        if len(channel) == 2:
+            pnn_value = channel['PnN']
+            if " " in pnn_value:
+                new_pnn_value = pnn_value.replace(" ", "-")
+                sample.channels[str(idx)]['PnN'] = new_pnn_value
+            pns_value = channel['PnS']
+            if " " in pns_value:
+                new_pns_value = pns_value.replace(" ", "-")
+                sample.channels[str(idx)]['PnS']= new_pns_value
+
+    # 4 change pnn_labels
+    for idx, value in enumerate(sample.pnn_labels):
+        if " " in value:
+            new_value = value.replace(" ", "-")
+            sample.pnn_labels[idx] = new_value
+            
+    # 5 change pns_labels
+    for idx, value in enumerate(sample.pns_labels):
+        if " " in value:
+            new_value = value.replace(" ", "-")
+            sample.pns_labels[idx] = new_value
+    sample.export(filename = file_name, source = 'orig', directory = new_fcs_path)
+
 
 def image_grid(img_list, pdf_path, analysis_type):
     temp_path = create_path(os.path.join(settings.MEDIA_ROOT,'temp'))
