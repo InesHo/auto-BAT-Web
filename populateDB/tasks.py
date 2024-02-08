@@ -435,6 +435,10 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
     #chosen_z1 = "FSC-A"
     #chosen_z1_lable = "FSC_A"
 
+    chosen_z2_filtered = [i for i in chosen_z2 if i is not None]
+    chosen_z2_label_filtered = [i for i in chosen_z2_lable if i is not None]
+    nr_zMarkers = len(chosen_z2_filtered)
+
     i = 0
     quality_messages = []
     #info_messages = ""
@@ -469,35 +473,77 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                     total_cells = get_object_or_404(models.MetaData.objects.filter(file_id=file_id, labels='tot').values_list('values', flat=True))
                 except:
                     total_cells = 0
-
-                reports[i] = Report(id = file_name.lower())
+                
+                reports[i] = Report(id = i) 
+                reports[i].setZMarker("NA") # what if only one z_marker?       
+                reports[i].setFilename(file_name)              
                 reports[i].setCellTotal(total_cells)
-                reports[i].setDebrisPerc(0)
-                reports[i].setFirstDoubPerc(0)
+
+            # percentages for distinct gating steps as measure for control - here all set to zero since no pregating is done               
+                reports[i].setDebrisPerc(0)     
+                reports[i].setFirstDoubPerc(0)               
                 reports[i].setSecDoubPerc(0)
+
+                print(reports[i].getId())
+                print(reports[i].getReport())
+                
                 info[i]= ["For this panel no automatic pregating is done"]
                 i += 1
+            
             else:
-                baumgrassgater = BaumgrassGating(chosen_x,
-                                file_path,
-                                pathToGatingFunctions,
-                                device,
-                                pathToExports)
+                baumgrassgater = BaumgrassGating(               
+                                     chosen_z1,
+                                     file_path,            
+                                     pathToGatingFunctions, 
+                                     device, 
+                                     pathToExports)
+        
+        
+                reports[i], info[i] = baumgrassgater.runbaumgrassgating(report_id = i)
+                
+                print(reports[i].getId())
+                print(reports[i].getReport())
+                files_list.append(pathToExports + file_name) # build filelist for triplots
 
-                #reports[i] = baumgrassgater.runbaumgrassgating()
-                reports[i], info[i] = baumgrassgater.runbaumgrassgating()
-                files_list.append(pathToExports + file_name)
-                #info_messages = str(reports[i][1])
                 i += 1
-        #print(usName)
-        #print(pathToExports)
-        #print(pathToOutput)
-        #print(files_list)
-        #print(pathToData)
-        print(chosen_z2)
-        #l = [i for i in chosen_z2 if i is not None]
-        #print(l)
-        #print(len(l))
+            print(algList)
+            print(info)
+        
+        # report STEP 2: Based on Reports per File create reports for each file AND each marker
+        if nr_zMarkers > 1:
+
+        # new variables to reflect needed number of reports, etc
+            grat_reports = [None]*(len(files_list)*nr_zMarkers)
+            grat_info = [None]*(len(files_list)*nr_zMarkers)
+            grat_algList = [None]*(len(files_list)*nr_zMarkers)
+            
+            count = 0
+            
+            for i in range(len(files_list)):
+                for j in range(nr_zMarkers):
+                    print("Creating reports for more than 1 z-Marker")
+                    
+                    print( "Counter: ", count)
+                    grat_reports[count] = Report(id = count) 
+                    grat_reports[count].setFilename(reports[i].filename) 
+                    grat_reports[count].setZMarker(chosen_z2_label_filtered[j])
+                    grat_reports[count].setCellTotal(reports[i].cellTotal)
+                    grat_reports[count].setDebrisPerc(reports[i].debrisperc)            
+                    grat_reports[count].setFirstDoubPerc(reports[i].firstdoubperc)
+                    grat_reports[count].setSecDoubPerc(reports[i].secdoubperc)
+
+                    grat_algList[count] = algList[i]
+                    grat_info[count] = info[i]
+                    
+                    print(grat_reports[count].getId())
+                    print(grat_reports[count].getReport())
+                    
+                    count = count + 1 
+
+            reports = grat_reports
+            info = grat_info
+            algList = grat_algList
+            
         
         autoworkflow = AutoBatWorkflow(files_list,
                                     pathToData,
@@ -541,20 +587,24 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         #df = df.set_index('filename')
         print(df)
         
-        """
-        for i in reports:
-            
-            reports[i].setRed(df.loc[reports[i].getId(),"redQ4"])
-            reports[i].setBlack(df.loc[reports[i].getId(),"blackQ2"])
-            reports[i].setBlackQ3(df.loc[reports[i].getId(),"blackQ3"])
-            reports[i].setBlackQ4(df.loc[reports[i].getId(),"blackQ4"])
-            reports[i].setZmean(df.loc[reports[i].getId(),"zmeanQ4"])
-            reports[i].setZ1Min(df.loc[reports[i].getId(),"Z1_min"])
-            reports[i].setZ1max(df.loc[reports[i].getId(),"Z1_max"])
-            reports[i].setMsiY(df.loc[reports[i].getId(),"msi_Y"])
-            reports[i].cellQ4 = df.loc[reports[i].getId(),"cellQ4"]    
-            reports[i].setResult(df.loc[reports[i].getId(),"result"])
-            reports[i].setResponder(df.loc[reports[i].getId(),"responder"])
+        for j in range(len(reports)):               
+            reports[j].setRed(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["redQ4"]))                
+            reports[j].setBlack(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ2"]))        
+            reports[j].setBlackQ3(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ3"]))        
+            reports[j].setBlackQ4(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ4"]))        
+            reports[j].setZmean(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["zmeanQ4"]))
+            reports[j].setZ1Min(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["Z1_min"]))
+            reports[j].setZ1max(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["Z1_max"]))
+            reports[j].setMsiY(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["msi_Y"]))                                                                
+            reports[j].cellQ3 = float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["cellQ3"])                                 
+            reports[j].cellQ4 = float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["cellQ4"]) 
+            reports[j].setResult(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["result"].values[0]) 
+            reports[j].setResponder(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["responder"].values[0]) 
+            reports[i].setPlotSympol('green')
+            if int(reports[i].cellTotal) < 100000:
+                reports[i].setPlotSympol('red')
+            if reports[i].cellQ4  < 350:
+                reports[i].setPlotSympol('red')
             
             if reports[i].cellQ4  < 350:
                 reports[i].setPlotSympol('red')
@@ -658,27 +708,47 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         # Save DF to the Database
         
         
-        print(df)
-        for index, row in df.iterrows():
-            file_name = row['filename']
+        # Save DF to the Database
+        for index, row in finalReport.iterrows():
+            file_name = index
             file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
-            print(file_id)
-            zMarker = row['zMarker']
+            file_name = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_name', flat=True))
+            debrisPerc = row['debrisPerc']
+            firstDoubPerc = row['firstDoubPerc']
+            secDoubPerc = row['secDoubPerc']
             redQ4 = float(row['redQ4'])
             result = row['result']
             blackQ2 = row['blackQ2']
             blackQ3 = row['blackQ3']
             blackQ4 = row['blackQ4']
             zmeanQ4 = row['zmeanQ4']
-            Z1_minQ4 = row['Z1_min']
-            Z1_maxQ4 = row['Z1_max']
-            msi_YQ4 = row['msi_Y']
+            Z1_minQ4 = row['Z1_minQ4']
+            Z1_maxQ4 = row['Z1_maxQ4']
+            msi_YQ4 = row['msi_YQ4']
             cellQ3 = row['cellQ3']
             cellQ4 = row['cellQ4']
             responder = row['responder']
+            cellTotal = row['cellTotal']
+            qualityMessages = row['qualityMessages']
+            plot_symbol = row['plot_symbol']
+            plot_name = f'{file_name[:-4].lower()}.pdf'
+            plot_path=os.path.join(pathToOutput, plot_name)
+            if plot_symbol == 'red':
+                symbol_pdf = os.path.join(settings.MEDIA_ROOT,'symbols','red.pdf')
+                add_symbol(plot_path, symbol_pdf,plot_path)
+            if plot_symbol == 'yellow':
+                symbol_pdf = os.path.join(settings.MEDIA_ROOT,'symbols','yellow.pdf')
+                add_symbol(plot_path, symbol_pdf,plot_path)
+            if ', []' in str(qualityMessages):
+                qualityMessages = str(qualityMessages).replace(', []','')
+
+            if qualityMessages != 'empty':
+                quality_messages.append(qualityMessages)
 
             results_instance = models.AnalysisResults(
-                                        zMarker = zMarker,
+                                        debrisPerc = debrisPerc,
+                                        firstDoubPerc = firstDoubPerc,
+                                        secDoubPerc = secDoubPerc,
                                         redQ4 = redQ4,
                                         result = result,
                                         blackQ2 = blackQ2,
@@ -690,16 +760,17 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                                         msi_YQ4 = msi_YQ4,
                                         cellQ3 = cellQ3,
                                         cellQ4 = cellQ4,
+                                        cellTotal = cellTotal,
+                                        qualityMessages = qualityMessages,
+                                        plot_symbol=plot_symbol,
                                         responder = responder,
             )
             results_instance.file_id_id = int(file_id)
             results_instance.analysisMarker_id_id = int(analysisMarker_id)
             results_instance.user_id = user_id
             results_instance.save()
-        
         # save the  info messages
         #models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages = info_messages)
-        
         quality_messages = ', '.join(str(v) for v in quality_messages)
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages = quality_messages)
         # Save plots to database
@@ -742,7 +813,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             pdf = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
         save_pdf(pdf_path, pdf_list, analysisMarker_id, 'autograt')
-        """
+
     except Exception:
         e = traceback.format_exc()
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)
