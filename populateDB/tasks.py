@@ -200,6 +200,11 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         print(df)
         #results = autoworkflow.runCD32thresholding()
         # check out folder set as output folder for results
+        # check out folder set as output folder for results
+        algList.insert(0, 'NA')
+        df.insert(0, 'ID', algList, True) # I somehow needed this row
+        df = df.set_index('filename') 
+        info_cellQ4 = [] 
         for i in range(len(reports)):
             #reports[i].setFileName(df.loc[reports[i].getId(),"filename"])
             reports[i].setRed(df.loc[reports[i].getId().lower(),"redQ4"])

@@ -287,18 +287,17 @@ class experimentfile(View):
                     file_instance.save()
                     
                     us_file_path = file_path
-                    #change_FCS_data(str(file_name), files_dir, files_dir)
+                    change_FCS_data(str(file_name), files_dir, files_dir)
                 
                 dataO = Data(filetype="FCS", filename = us_file_path)
                 data = dataO.getData()
                 channels = data.channels
-                for i in range(1, len(channels) + 1):
-                    c = channels[str(i)]
-                    pnn = c['PnN']
-                    if len(c) == 1:
-                        c['PnS'] = pnn
+                for i in range(1, len(channels)):
+                    pnn = channels.pnn[i]
+                    #if len(c) == 1:
+                       # c['PnS'] = pnn
 
-                    pns = c['PnS']
+                    pns = channels.pns[i]
                     channel_obj = models.Channels(
                                                 pnn = pnn,
                                                 pns = pns,
