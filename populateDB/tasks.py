@@ -733,7 +733,8 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             cellTotal = row['cellTotal']
             qualityMessages = row['qualityMessages']
             plot_symbol = row['plot_symbol']
-            plot_name = f'{file_name[:-4].lower()}.pdf'
+            z = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pns=zMarker).values_list('pnn', flat=True))
+            plot_name = f'{file_name[:-4].lower()}_{z}.pdf'
             plot_path=os.path.join(pathToOutput, plot_name)
             if plot_symbol == 'unclear':
                 add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
