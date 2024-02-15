@@ -153,11 +153,12 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 i += 1
             
             else:
-                baumgrassgater = BaumgrassGating(chosen_z1,
+                baumgrassgater = BaumgrassGating(
                                 file_path,            
                                 pathToGatingFunctions, 
                                 device, 
-                                pathToExports)
+                                pathToExports,
+                                report_Id = i)
 
                 #reports[i] = baumgrassgater.runbaumgrassgating()
                 reports[i], info[i] = baumgrassgater.runbaumgrassgating()
@@ -204,24 +205,27 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         #results = autoworkflow.runCD32thresholding()
         # check out folder set as output folder for results
         # check out folder set as output folder for results
+        
+        # check out folder set as output folder for results
         algList.insert(0, 'NA')
         df.insert(0, 'ID', algList, True) # I somehow needed this row
-        df = df.set_index('filename') 
-        info_cellQ4 = [] 
-        for i in range(len(reports)):
-            #reports[i].setFileName(df.loc[reports[i].getId(),"filename"])
-            reports[i].setRed(df.loc[reports[i].getId().lower(),"redQ4"])
-            reports[i].setBlack(df.loc[reports[i].getId().lower(),"blackQ2"])
-            reports[i].setBlackQ3(df.loc[reports[i].getId().lower(),"blackQ3"])
-            reports[i].setBlackQ4(df.loc[reports[i].getId().lower(),"blackQ4"])
-            reports[i].setZmean(df.loc[reports[i].getId().lower(),"zmeanQ4"])
-            reports[i].setZ1Min(df.loc[reports[i].getId().lower(),"Z1_min"])
-            reports[i].setZ1max(df.loc[reports[i].getId().lower(),"Z1_max"])
-            reports[i].setMsiY(df.loc[reports[i].getId().lower(),"msi_Y"])
-            reports[i].cellQ3 = df.loc[reports[i].getId().lower(),"cellQ3"]
-            reports[i].cellQ4 = df.loc[reports[i].getId().lower(),"cellQ4"]
-            reports[i].setResult(df.loc[reports[i].getId().lower(),"result"])
-            reports[i].setResponder(df.loc[reports[i].getId().lower(),"responder"])
+
+        info_cellQ4 = []
+
+        for i in range(len(reports)):       
+            reports[i].setZMarker('NA')
+            reports[i].setRed(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["redQ4"]))
+            reports[i].setBlack(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["blackQ2"]))
+            reports[i].setBlackQ3(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["blackQ3"]))
+            reports[i].setBlackQ4(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["blackQ4"]))
+            reports[i].setZmean(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["zmeanQ4"]))
+            reports[i].setZ1Min(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["Z1_min"]))
+            reports[i].setZ1max(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["Z1_max"]))
+            reports[i].setMsiY(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["msi_Y"]))
+            reports[i].cellQ3 = float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["cellQ3"])
+            reports[i].cellQ4 = float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["cellQ4"])
+            reports[i].setResult(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["result"].values[0])
+            reports[i].setResponder(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["responder"].values[0])
             reports[i].setPlotSympol(plot_symbol)
             if int(reports[i].cellTotal) < 100000:
                 reports[i].setPlotSympol('unclear')
@@ -229,51 +233,41 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 reports[i].setPlotSympol('unclear')
 
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
-                info_cellQ4 = "The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."
+                info_cellQ4 = ["The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."]
         ###==========================================================================================================================###
         # filling the quality messages column with the file specific error messages and
         # also applying the thresholds for responder/nonresponder in the controls
 
-            if reports[i].getId() == "us":               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
-                info[i].extend((info_bg, info_cellQ4))
-                #reports[i].setQualityMessages(info[i])
-            else:
-                info[i].append(info_cellQ4)
+        if "us" in reports[i].filename.lower():               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
+            try:
+                us_info = info[0]
+            except:
+                us_info = []
+            reports[i].setQualityMessages(us_info + info_bg + info_cellQ4) 
+            reports[i].setYThreshold(FCR)  
+            reports[i].setZ1Threshold(CD63)  
+            
+        if "aige" in reports[i].filename.lower(): 
+            try:
+                aige_info = info[2]
+            except:
+                aige_info = []
+            reports[i].setQualityMessages(aige_info] + info_cellQ4) 
+            if reports[i].red >= 5.0: 
+                reports[i].setResponder("aIgE Responder") 
+            else: 
+                reports[i].setResponder("aIgE Non-Responder")
 
-            if "aIgE" in reports[i].getId():
-                #reports[i].setQualityMessages(info[i])
-                if reports[i].red >= 5.0:
-                    reports[i].setResponder("aIgE Responder")
-                else:
-                    reports[i].setResponder("aIgE Non-Responder")
-
-            if "fMLP" in reports[i].getId():
-                #reports[i].setQualityMessages(info[i])
-                if reports[i].red >= 5.0:
-                    reports[i].setResponder("fMLP Responder")
-                else:
-                    reports[i].setResponder("fMLP Non-Responder")
-            reports[i].setQualityMessages(info[i])
-            """
-            """
-            if "us" in reports[i].getId().lower():               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
-                reports[i].setQualityMessages(info[0] + info_bg + info_cellQ4)
-                reports[i].setYThreshold(FCR)
-                reports[i].setZ1Threshold(CD63)
-
-            if "aige" in reports[i].getId().lower():
-                reports[i].setQualityMessages(info[2] + info_cellQ4)
-                if reports[i].red >= 5.0:
-                    reports[i].setResponder("aIgE Responder")
-                else:
-                    reports[i].setResponder("aIgE Non-Responder")
-
-            if "fmlp" in reports[i].getId().lower():
-                reports[i].setQualityMessages(info[1] + info_cellQ4)
-                if reports[i].red >= 5.0:
-                    reports[i].setResponder("fMLP Responder")
-                else:
-                    reports[i].setResponder("fMLP Non-Responder")
+        if "fmlp" in reports[i].filename.lower():
+            try:
+                fmpl_info = info[1]
+            except:
+                fmpl_info = []
+            reports[i].setQualityMessages(fmpl_info + info_cellQ4) 
+            if reports[i].red >= 5.0: 
+                reports[i].setResponder("fMLP Responder") 
+            else: 
+                reports[i].setResponder("fMLP Non-Responder")
         
         finalReport = Reporting(reports)
         finalReport = finalReport.constructReport()
@@ -296,19 +290,6 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         # Convert the dataframe to an XlsxWriter Excel object.
         df_excel.to_excel(writer, sheet_name='Sheet1')
 
-        """
-        # Get the xlsxwriter workbook and worksheet objects.
-        workbook  = writer.book
-        worksheet = writer.sheets['Sheet1']
-
-        cell_format = workbook.add_format({'bg_color': 'yellow'})
-
-        for r in range(0,len(df_excel.index)):
-            if df_excel.iat[r,2] == "positiv":
-                worksheet.set_row(r+1, None, cell_format) 
-
-        worksheet.autofit()
-        """
         writer.save()
         
         # Save Thresholds to the Database
@@ -467,7 +448,23 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             elif control == 'Unstained':
                 unstainedFileName = file_name
 
-            if panel_name in ['full-panel', 'grat-panel']:
+            if panel_name in ["bat-panel", "reduced-panel"]:
+                baumgrassgater = BaumgrassGating(               
+                                     
+                                     file_path,            
+                                     pathToGatingFunctions, 
+                                     device, 
+                                     pathToExports,
+                                     report_Id = i)
+                
+                reports[i], info[i] = baumgrassgater.runbaumgrassgating()
+                
+                print(reports[i].getId())
+                print(reports[i].getReport())
+                files_list.append(pathToExports + file_name) # build filelist for triplots
+
+                i += 1
+            else:
                 if condition:
                     pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/')
                 else:
@@ -494,27 +491,13 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                 
                 info[i]= ["For this panel no automatic pregating is done"]
                 i += 1
-            
-            else:
-                baumgrassgater = BaumgrassGating(               
-                                     chosen_z1,
-                                     file_path,            
-                                     pathToGatingFunctions, 
-                                     device, 
-                                     pathToExports)
-        
-        
-                reports[i], info[i] = baumgrassgater.runbaumgrassgating(report_id = i)
-                
-                print(reports[i].getId())
-                print(reports[i].getReport())
-                files_list.append(pathToExports + file_name) # build filelist for triplots
-
-                i += 1
             print(algList)
             print(info)
         
         # report STEP 2: Based on Reports per File create reports for each file AND each marker
+        if nr_zMarkers == 1:
+            reports[i].setZMarker(chosen_z2_label_filtered)
+        
         if nr_zMarkers > 1:
 
         # new variables to reflect needed number of reports, etc
@@ -593,28 +576,28 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         print(df)
         
         for j in range(len(reports)):               
-            reports[j].setRed(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["redQ4"]))                
-            reports[j].setBlack(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ2"]))        
-            reports[j].setBlackQ3(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ3"]))        
-            reports[j].setBlackQ4(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ4"]))        
-            reports[j].setZmean(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["zmeanQ4"]))
-            reports[j].setZ1Min(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["Z1_min"]))
-            reports[j].setZ1max(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["Z1_max"]))
-            reports[j].setMsiY(float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["msi_Y"]))                                                                
-            reports[j].cellQ3 = float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["cellQ3"])                                 
-            reports[j].cellQ4 = float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["cellQ4"]) 
-            reports[j].setResult(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["result"].values[0]) 
-            reports[j].setResponder(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["responder"].values[0]) 
-            reports[i].setPlotSympol(None)
-            if int(reports[i].cellTotal) < 100000:
-                reports[i].setPlotSympol('unclear')           
-            if reports[i].cellQ4  < 350:
-                reports[i].setPlotSympol('unclear')
+            reports[j].setRed(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["redQ4"]))                
+            reports[j].setBlack(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ2"]))        
+            reports[j].setBlackQ3(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ3"]))        
+            reports[j].setBlackQ4(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ4"]))        
+            reports[j].setZmean(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["zmeanQ4"]))
+            reports[j].setZ1Min(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["Z1_min"]))
+            reports[j].setZ1max(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["Z1_max"]))
+            reports[j].setMsiY(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["msi_Y"]))                                                                
+            reports[j].cellQ3 = float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["cellQ3"])                                 
+            reports[j].cellQ4 = float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["cellQ4"]) 
+            reports[j].setResult(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["result"].values[0]) 
+            reports[j].setResponder(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["responder"].values[0]) 
+            reports[j].setPlotSympol(None)
+            if int(reports[j].cellTotal) < 100000:
+                reports[j].setPlotSympol('unclear')           
+            if reports[j].cellQ4 < 350:
+                reports[j].setPlotSympol('unclear')
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
                 info_cellQ4 = "The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."
             
             info[i].append(info_cellQ4)
-            reports[i].setQualityMessages(info[i])
+            reports[j].setQualityMessages(info[i])
         ###==========================================================================================================================###
         # filling the quality messages column with the file specific error messages and
         # also applying the thresholds for responder/nonresponder in the controls
@@ -622,23 +605,20 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             #if reports[i].getId() == "us":               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
                 #reports[i].setQualityMessages(info[0])
                 
-            if reports[i].getId() == "aIgE":
-                reports[i].setQualityMessages(info[2]) 
-                if reports[i].red >= 5.0: 
-                    reports[i].setResponder("aIgE Responder") 
+                
+            if "aige" in reports[j].filename.lower(): 
+                if reports[j].red >= 5.0: 
+                    reports[j].setResponder("aIgE Responder") 
                 else: 
-                    reports[i].setResponder("aIgE Non-Responder")
+                    reports[j].setResponder("aIgE Non-Responder")
 
-            if reports[i].getId() == "fMLP":
-                reports[i].setQualityMessages(info[1]) 
-                if reports[i].red >= 5.0: 
-                    reports[i].setResponder("fMLP Responder") 
+            if "fmlp" in reports[i].filename.lower():
+                if reports[j].red >= 5.0: 
+                    reports[j].setResponder("fMLP Responder") 
                 else: 
-                    reports[i].setResponder("fMLP Non-Responder")
+                    reports[j].setResponder("fMLP Non-Responder")
         ###==========================================================================================================================###
-            
-            reportdata = reports[i].getReport()
-            print(reportdata)
+
         print(df)
         finalReport = Reporting(reports)
         finalReport = finalReport.constructReport()
@@ -718,6 +698,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             debrisPerc = row['debrisPerc']
             firstDoubPerc = row['firstDoubPerc']
             secDoubPerc = row['secDoubPerc']
+            zMarker = row['zMarker']
             redQ4 = float(row['redQ4'])
             result = row['result']
             blackQ2 = row['blackQ2']
@@ -748,6 +729,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                                         debrisPerc = debrisPerc,
                                         firstDoubPerc = firstDoubPerc,
                                         secDoubPerc = secDoubPerc,
+                                        zMarker = zMarker
                                         redQ4 = redQ4,
                                         result = result,
                                         blackQ2 = blackQ2,
