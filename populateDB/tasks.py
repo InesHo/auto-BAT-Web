@@ -132,8 +132,19 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
 
             elif control == 'Negative control':
                 usName = file_name
-        
-            if panel_name in ['full-panel', 'grat-panel']:
+            if panel_name in ["bat-panel", "reduced-panel"]:
+                baumgrassgater = BaumgrassGating(
+                        file_path,
+                        pathToGatingFunctions,
+                        device,
+                        pathToExports,
+                        report_Id = i)
+                reports[i], info[i] = baumgrassgater.runbaumgrassgating()
+                files_list.append(pathToExports + file_name)
+                i += 1
+
+
+            else:
                 if condition:
                     pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/')
                 else:
@@ -145,6 +156,8 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                     total_cells = get_object_or_404(models.MetaData.objects.filter(file_id=file_id, labels='tot').values_list('values', flat=True))
                 except:
                     total_cells = 0
+                reports[i] = Report(id = i)
+                reports[i].setFilename(file_name)
                 reports[i].setCellTotal(total_cells)
                 reports[i].setDebrisPerc(0) 
                 reports[i].setFirstDoubPerc(0)
@@ -152,20 +165,6 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 info[i]= ["For this panel no automatic pregating is done"]
                 i += 1
             
-            else:
-                baumgrassgater = BaumgrassGating(
-                                file_path,            
-                                pathToGatingFunctions, 
-                                device, 
-                                pathToExports,
-                                report_Id = i)
-
-                #reports[i] = baumgrassgater.runbaumgrassgating()
-                reports[i], info[i] = baumgrassgater.runbaumgrassgating()
-                files_list.append(pathToExports + file_name)
-                #info_messages = str(reports[i][1])
-                i += 1
-         
         autoworkflow = AutoBatWorkflow(files_list,
                                     pathToData,
                                     pathToExports,
@@ -190,11 +189,10 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
     
         
         if manualThresholds:
-            df, SSCA, FCR, CD63, info_bg = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
-            manual_check = True
+            df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
             plot_symbol = 'ok'
         else:
-            df, SSCA, FCR, CD63, info_bg = autoworkflow.runCD32thresholding()
+            df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32thresholding()
             plot_symbol = None
 
         
@@ -212,8 +210,8 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
 
         info_cellQ4 = []
 
-        for i in range(len(reports)):       
-            reports[i].setZMarker('NA')
+        for i in range(len(reports)):
+            reports[i].setZMarker("NA")
             reports[i].setRed(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["redQ4"]))
             reports[i].setBlack(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["blackQ2"]))
             reports[i].setBlackQ3(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["blackQ3"]))
@@ -252,7 +250,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 aige_info = info[2]
             except:
                 aige_info = []
-            reports[i].setQualityMessages(aige_info] + info_cellQ4) 
+            reports[i].setQualityMessages(aige_info + info_cellQ4) 
             if reports[i].red >= 5.0: 
                 reports[i].setResponder("aIgE Responder") 
             else: 
@@ -302,9 +300,8 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         thresholds_instance.save()
         # Save DF to the Database
         for index, row in finalReport.iterrows():
-            file_name = index
+            file_name = row['filename']
             file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
-            file_name = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_name', flat=True))
             debrisPerc = row['debrisPerc']
             firstDoubPerc = row['firstDoubPerc']
             secDoubPerc = row['secDoubPerc']
@@ -327,7 +324,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             plot_path=os.path.join(pathToOutput, plot_name)
             if plot_symbol == 'unclear':
                 add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
-            if manual_check:
+            if manualThresholds:
                 if plot_symbol == 'ok':
                     add_symbol(plot_path, plot_path, error=True, checked = True, solved=True)
                 else:
@@ -461,6 +458,8 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                 
                 print(reports[i].getId())
                 print(reports[i].getReport())
+                if nr_zMarkers == 1:
+                    reports[i].setZMarker(chosen_z2_label_filtered[0])
                 files_list.append(pathToExports + file_name) # build filelist for triplots
 
                 i += 1
@@ -477,7 +476,10 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                     total_cells = 0
                 
                 reports[i] = Report(id = i) 
-                reports[i].setZMarker("NA") # what if only one z_marker?       
+                if nr_zMarkers == 1:
+                    reports[i].setZMarker(chosen_z2_label_filtered[0])
+                else:
+                    reports[i].setZMarker("NA")        
                 reports[i].setFilename(file_name)              
                 reports[i].setCellTotal(total_cells)
 
@@ -491,12 +493,11 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                 
                 info[i]= ["For this panel no automatic pregating is done"]
                 i += 1
+
             print(algList)
             print(info)
         
         # report STEP 2: Based on Reports per File create reports for each file AND each marker
-        if nr_zMarkers == 1:
-            reports[i].setZMarker(chosen_z2_label_filtered)
         
         if nr_zMarkers > 1:
 
@@ -574,7 +575,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         #df = df.drop(['zMarker'], axis=1)
         #df = df.set_index('filename')
         print(df)
-        
+        info_cellQ4 = []
         for j in range(len(reports)):               
             reports[j].setRed(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["redQ4"]))                
             reports[j].setBlack(float(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["blackQ2"]))        
@@ -594,25 +595,38 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             if reports[j].cellQ4 < 350:
                 reports[j].setPlotSympol('unclear')
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
-                info_cellQ4 = "The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."
+                info_cellQ4 = ["The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."]
             
-            info[i].append(info_cellQ4)
-            reports[j].setQualityMessages(info[i])
         ###==========================================================================================================================###
         # filling the quality messages column with the file specific error messages and
         # also applying the thresholds for responder/nonresponder in the controls
 
             #if reports[i].getId() == "us":               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
                 #reports[i].setQualityMessages(info[0])
+            if "us" in reports[j].filename.lower():
+                try:
+                    us_info = info[0]
+                except:
+                    us_info = []
+                reports[j].setQualityMessages(us_info + info_cellQ4)
                 
-                
-            if "aige" in reports[j].filename.lower(): 
+            if "aige" in reports[j].filename.lower():
+                try:
+                    aige_info = info[2]
+                except:
+                    aige_info = []
+                reports[j].setQualityMessages(aige_info + info_cellQ4)
                 if reports[j].red >= 5.0: 
                     reports[j].setResponder("aIgE Responder") 
                 else: 
                     reports[j].setResponder("aIgE Non-Responder")
 
-            if "fmlp" in reports[i].filename.lower():
+            if "fmlp" in reports[j].filename.lower():
+                try:
+                    fmlp_info = info[1]
+                except:
+                    fmlp_info = []
+                reports[j].setQualityMessages(fmlp_info + info_cellQ4)
                 if reports[j].red >= 5.0: 
                     reports[j].setResponder("fMLP Responder") 
                 else: 
@@ -636,9 +650,9 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             excel_file = os.path.join(pathToOutput, f'AutoGrat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.xlsx')
         else:
             excel_file = os.path.join(pathToOutput, f'AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.xlsx')
-        df_excel = df
+        df_excel = finalReport
         df_excel['Version'] = analysis_type_version
-        df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
+        #df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
 
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
@@ -692,9 +706,9 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         
         # Save DF to the Database
         for index, row in finalReport.iterrows():
-            file_name = index
+            file_name = row['filename']
             file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
-            file_name = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_name', flat=True))
+            #file_name = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_name', flat=True))
             debrisPerc = row['debrisPerc']
             firstDoubPerc = row['firstDoubPerc']
             secDoubPerc = row['secDoubPerc']
@@ -729,7 +743,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                                         debrisPerc = debrisPerc,
                                         firstDoubPerc = firstDoubPerc,
                                         secDoubPerc = secDoubPerc,
-                                        zMarker = zMarker
+                                        zMarker = zMarker,
                                         redQ4 = redQ4,
                                         result = result,
                                         blackQ2 = blackQ2,

@@ -28,9 +28,9 @@ from django.db.models import F
 import re
 import csv
 
-bat_version='1.0.3'
+bat_version='1.0.4'
 #'1.0.2'
-grat_version='1.0.3'
+grat_version='1.0.4'
 #'1.0.1'
 
 @login_required
@@ -1093,7 +1093,7 @@ def download_xlsx(request, analysisMarker_id):
 
 @login_required
 def analysis_report(request):
-    analysisResults = models.AnalysisResults.objects.values('id',
+    analysisResults = models.AnalysisResults.objects.values('result_id',
                                                             'analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
@@ -1195,7 +1195,7 @@ def is_valid_queryparam(param):
 @login_required
 def research_results(request):
     
-    queryList = models.AnalysisResults.objects.values(      'id', 
+    queryList = models.AnalysisResults.objects.values(      'result_id', 
                                                             'analysisMarker_id',
                                                             'analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
@@ -1692,9 +1692,17 @@ def downloadResults_xlsx(request, excel_name):
 
 @login_required
 def view_plots(request, result_id):
-    file_id = get_object_or_404(models.AnalysisMarkers.objects.filter(result_id=result_id).values_list('file_id', flat=True))
-    analysisMarker_id = get_object_or_404(models.AnalysisMarkers.objects.filter(result_id=result_id).values_list('analysisMarker_id', flat=True))
-    plot_path = get_object_or_404(models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id, file_id=file_id).values_list('plot_path', flat=True))
+
+    analysisMarker_id = get_object_or_404(models.AnalysisResults.objects.filter(result_id=result_id).values_list('analysisMarker_id', flat=True))
+    file_id = get_object_or_404(models.AnalysisResults.objects.filter(result_id=result_id).values_list('file_id', flat=True))
+    analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
+    if analysis_type == 'AutoGrat':
+        analysis_id = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_id', flat=True))
+        z_marker = get_object_or_404(models.AnalysisResults.objects.filter(result_id=result_id).values_list('zMarker', flat=True))
+        z_marker = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pns=z_marker).values_list('pnn', flat=True))
+        plot_path = get_object_or_404(models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id, file_id=file_id, plot_path__icontains=z_marker).values_list('plot_path', flat=True))    
+    else:
+        plot_path = get_object_or_404(models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id, file_id=file_id).values_list('plot_path', flat=True))
     return render(request, 'analysis/view_plot.html', {'plot_path':plot_path})
 
 @login_required
