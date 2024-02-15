@@ -223,13 +223,13 @@ def add_symbol(in_pdf, out_pdf, error = False, checked = False, solved = False):
             symbol_solved = os.path.join(settings.MEDIA_ROOT,'symbols','solved.pdf')
             reader_solved = PdfFileReader(symbol_solved)
             image_solved = reader_solved.pages[0]
-            image_solved.scaleBy(0.10)
+            image_solved.scaleBy(0.55)
         
         else:
             symbol_notsolved = os.path.join(settings.MEDIA_ROOT,'symbols','not_solved.pdf')
             reader_notsolved = PdfFileReader(symbol_notsolved)
             image_notsolved = reader_notsolved.pages[0]
-            image_notsolved.scaleBy(0.10)
+            image_solved.scaleBy(0.55)
 
     writer = PdfFileWriter()
     reader = PdfFileReader(in_pdf)
@@ -237,14 +237,14 @@ def add_symbol(in_pdf, out_pdf, error = False, checked = False, solved = False):
     writer.addPage(content_page)
     
     if error:
-        writer.getPage(0).mergeTranslatedPage(image_page_error, 10, 350)
+        writer.getPage(0).mergeTranslatedPage(image_page_error, 4, 350)
 
     if checked:
         if solved:
-            writer.getPage(0).mergeTranslatedPage(image_solved, 35, 350)
+            writer.getPage(0).mergeTranslatedPage(image_solved, 28, 350)
         
         else:
-            writer.getPage(0).mergeTranslatedPage(image_notsolved, 35, 350)
+            writer.getPage(0).mergeTranslatedPage(image_notsolved, 28, 350)
 
     with open(out_pdf, "wb") as fp:
         writer.write(fp)
