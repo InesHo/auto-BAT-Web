@@ -71,7 +71,7 @@ def image_grid(img_list, pdf_path, analysis_type):
     hight = 630
 
     total_images = len(img_list)
-    if analysis_type == 'autograt':
+    if analysis_type == 'AutoGrat':
         total_pages = math.ceil(total_images / 12)
         width = 600
         hight = 600
@@ -85,7 +85,7 @@ def image_grid(img_list, pdf_path, analysis_type):
         img_to = 15
     page_list=[]
     for page in range(1, total_pages+1):
-        if analysis_type == 'autograt':
+        if analysis_type == 'AutoGrat':
             new_image =  Image.new(mode="RGB", size=(2400,1958), color='white')
         else:
             new_image =  Image.new(mode="RGB", size=(3000,1958), color='white')
@@ -99,7 +99,7 @@ def image_grid(img_list, pdf_path, analysis_type):
             img_to_paste = Image.open(imgs[i])
             newsize = (width, hight)
             img_to_paste = img_to_paste.resize(newsize)
-            if analysis_type == 'autograt':
+            if analysis_type == 'AutoGrat':
                 if i < 4:
                     new_image.paste(img_to_paste, (i*width, 100))
                 if i >= 4 and i < 8:
@@ -125,7 +125,7 @@ def image_grid(img_list, pdf_path, analysis_type):
         page_path = Image.open(page_path)
         page_path = page_path.convert('RGB')
         page_list.append(page_path)
-        if analysis_type == 'autograt':
+        if analysis_type == 'AutoGrat':
             img_from+=12
             img_to+=12
         else:
@@ -147,7 +147,7 @@ def pdf_grid(pdf_list, export_path, analysis_type):
                     (0, 250),(240, 250),(480, 250),(720, 250),(960, 250),
                     (0, 0),(240, 0),(480, 0),(720, 0),(960, 0)]
 
-    # for Autograt 3 rows and 4 columns
+    # for AutoGrat 3 rows and 4 columns
     autoGat_grid = [(0, 500),(240, 500),(480, 500),(720, 500),
                     (0, 250),(240, 250),(480, 250),(720, 250),
                     (0, 0),(240, 0),(480, 0),(720, 0)]
@@ -171,7 +171,7 @@ def pdf_grid(pdf_list, export_path, analysis_type):
     last_position = j
     """
     for i in range(0, len(pdf_list)):
-        if analysis_type == 'autograt':
+        if analysis_type == 'AutoGrat':
             start = 0
             end = 11
             total_pages = math.ceil(len(pdf_list[i]) / 12)
@@ -182,7 +182,7 @@ def pdf_grid(pdf_list, export_path, analysis_type):
         total = total_pages + pages
         for indx in range(pages, total):
             #create a new page
-            if analysis_type == 'autograt':
+            if analysis_type == 'AutoGrat':
                 pdf_writer.addBlankPage(width=979, height=799)
             else:
                 pdf_writer.addBlankPage(width=1224, height=799)
@@ -195,12 +195,12 @@ def pdf_grid(pdf_list, export_path, analysis_type):
                     x, y = autoGat_grid[9]
                 else:
                     page.scaleBy(0.70)
-                    if analysis_type == 'autograt':
+                    if analysis_type == 'AutoGrat':
                         x, y = autoGat_grid[j]
                     else:
                         x, y = autoBat_grid[j]
                 pdf_writer.getPage(indx).mergeTranslatedPage(page, x, y)
-            if analysis_type == 'autograt':
+            if analysis_type == 'AutoGrat':
                 start += 12
                 end +=12
             else:
@@ -211,17 +211,40 @@ def pdf_grid(pdf_list, export_path, analysis_type):
         pdf_writer.write(export_path)
     return export_path
 
-def add_symbol(content_pdf, symbol_pdf,pdf_result):
-    reader = PdfFileReader(symbol_pdf)
-    image_page = reader.pages[0]
-    image_page.scaleBy(0.15)
+def add_symbol(in_pdf, out_pdf, error = False, checked = False, solved = False):
+    
+    if error:
+        symbol_error = os.path.join(settings.MEDIA_ROOT,'symbols','error.pdf')
+        reader_error = PdfFileReader(symbol_error)
+        image_page_error = reader_error.pages[0]
+        image_page_error.scaleBy(0.10)
+    if checked:
+        if solved:
+            symbol_solved = os.path.join(settings.MEDIA_ROOT,'symbols','solved.pdf')
+            reader_solved = PdfFileReader(symbol_solved)
+            image_solved = reader_solved.pages[0]
+            image_solved.scaleBy(0.10)
+        
+        else:
+            symbol_notsolved = os.path.join(settings.MEDIA_ROOT,'symbols','not_solved.pdf')
+            reader_notsolved = PdfFileReader(symbol_notsolved)
+            image_notsolved = reader_notsolved.pages[0]
+            image_notsolved.scaleBy(0.10)
 
     writer = PdfFileWriter()
-
-    reader = PdfFileReader(content_pdf)
+    reader = PdfFileReader(in_pdf)
     content_page = reader.pages[0]
     writer.addPage(content_page)
-    writer.getPage(0).mergeTranslatedPage(image_page, 20, 350)
+    
+    if error:
+        writer.getPage(0).mergeTranslatedPage(image_page_error, 10, 350)
 
-    with open(pdf_result, "wb") as fp:
+    if checked:
+        if solved:
+            writer.getPage(0).mergeTranslatedPage(image_solved, 35, 350)
+        
+        else:
+            writer.getPage(0).mergeTranslatedPage(image_notsolved, 35, 350)
+
+    with open(out_pdf, "wb") as fp:
         writer.write(fp)

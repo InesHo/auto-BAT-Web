@@ -184,7 +184,7 @@ class AnalysisResults(models.Model):
         (u"fMLP None_Responder", u'fMLP None_Responder'),
     )
 
-    id = models.AutoField(primary_key=True)
+    result_id = models.AutoField(primary_key=True)
     file_id = models.ForeignKey(ExperimentFiles, related_name='analysis_results', blank = True, null=True,  on_delete = models.CASCADE)
     zMarker = models.CharField(max_length=100, blank = True, null = True)
     debrisPerc = models.FloatField(blank = True, null = True)
@@ -207,7 +207,6 @@ class AnalysisResults(models.Model):
     plot_symbol = models.CharField(max_length=12, blank = True, null=True)
     analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
-
 
 class FilesPlots(models.Model):
     plot_id = models.AutoField(primary_key=True)

@@ -14,8 +14,8 @@ import config
 sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from django.conf import settings
 from Data import Data
-from .functions import change_FCS_data, create_path, image_grid, pdf_grid
-from .tasks import run_analysis_autobat_task, run_analysis_autograt_task, proccess_files
+from .functions import change_FCS_data, create_path, image_grid, pdf_grid, add_symbol
+from .tasks import run_analysis_autobat_task, run_analysis_autograt_task, proccess_files, save_pdf
 from djqscsv import render_to_csv_response
 from .serializers import ResultsSerializers
 from .pagination import StandardResultsSetPagination
@@ -1091,7 +1091,8 @@ def download_xlsx(request, analysisMarker_id):
 
 @login_required
 def analysis_report(request):
-    analysisResults = models.AnalysisResults.objects.values('analysisMarker_id__analysis_id',
+    analysisResults = models.AnalysisResults.objects.values('id',
+                                                            'analysisMarker_id__analysis_id',
                                                             'analysisMarker_id__analysis_id__bat_id__bat_name',
                                                             'analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                             'analysisMarker_id__analysis_id__panel_id',
@@ -1102,7 +1103,8 @@ def analysis_report(request):
                                                             'file_id__file_name', 'file_id__allergen','file_id__control',
                                                             'zMarker', 'debrisPerc', 'firstDoubPerc', 'secDoubPerc', 'redQ4', 'result',
                                                             'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
-                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal', 'qualityMessages', 'plot_symbol'
+                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal', 'qualityMessages', 'plot_symbol',
+                                                            'analysisMarker_id__analysis_id'
                                                             ).annotate(
                                                                 Analysis_Type=F('analysisMarker_id__analysis_type'),
                                                                 Analysis_Version=F('analysisMarker_id__analysis_type_version')
@@ -1180,13 +1182,15 @@ def ofc_tests(request):
                                                         'donor_id__donortestofc_exercise__donor_ofc_exercise',
                                                         'donor_id__donorclinicalclass__clinicalClass_id__clinicalClass_name')
     return render(request, "clinical_tests/ofc_test.html", {"test_results": test_results})
-######################################################################
-#@login_required(login_url='/login/') #redirect when user is not logged in
+
+@login_required
 def research_questions(request):
     return render(request, "analysis/research_questions.html")
 
 def is_valid_queryparam(param):
     return param != '' and param is not None
+
+@login_required
 def research_results(request):
     
     queryList = models.AnalysisResults.objects.values(      'id', 
@@ -1654,7 +1658,7 @@ def downloadResults_pdf(request, files_ids):
         #image_grid(img_list, file_path, 'autobat')
         #new_pdf_list = []
         #new_pdf_list.append(img_list) #the function pdf_grid is expecting a list of lists
-        pdf_grid(final_list, file_path, 'autobat')
+        pdf_grid(final_list, file_path, 'AutoBat')
         if os.path.exists(str(file_path)):
             with open(file_path, 'rb') as fh:
                 response = HttpResponse(fh.read(), content_type="application/vnd.pdf")
@@ -1681,8 +1685,56 @@ def downloadResults_xlsx(request, excel_name):
                 response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
                 response['Content-Disposition'] = 'inline; filename=' + os.path.basename(path)
                 return response
-        raise Http404
+        raise Http404file_id
         #return render(request, 'analysis/choose_analysis_type.html')
+
+@login_required
+def view_plots(request, result_id):
+    file_id = get_object_or_404(models.AnalysisMarkers.objects.filter(result_id=result_id).values_list('file_id', flat=True))
+    analysisMarker_id = get_object_or_404(models.AnalysisMarkers.objects.filter(result_id=result_id).values_list('analysisMarker_id', flat=True))
+    plot_path = get_object_or_404(models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id, file_id=file_id).values_list('plot_path', flat=True))
+    return render(request, 'analysis/view_plot.html', {'plot_path':plot_path})
+
+@login_required
+def update_plots_symbol(request, result_id):
+    checked = request.POST.get('checked')
+
+    if checked == 'ok':
+        solved = True
+    else:
+        checked = False
+
+    file_id = get_object_or_404(models.AnalysisMarkers.objects.filter(result_id=result_id).values_list('file_id', flat=True))
+    analysisMarker_id = get_object_or_404(models.AnalysisMarkers.objects.filter(result_id=result_id).values_list('analysisMarker_id', flat=True))
+    plot_id = get_object_or_404(models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id, file_id=file_id).values_list('plot_id', flat=True))
+    content_pdf = get_object_or_404(models.FilesPlots.objects.filter(plot_id=plot_id).values_list('plot_path', flat=True))
+   
+    add_symbol(content_pdf, content_pdf, error=False, checked = True, solved=solved)   
+    models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).update(plot_symbol=checked)
+
+    # Update the full pdf of the experiment
+    analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
+    full_file_path = get_object_or_404(models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id, file_type = 'PDF').values_list('file_path', flat=True))
+    
+    plot_path_obj = models.FilesPlots.objects.values_list('plot_id', 'plot_path').filter(analysisMarker_id=analysisMarker_id)
+    
+    pdf_list_1 = []
+    pdf_list_2 = []
+    for path in plot_path_obj:
+        pdf_path = path[1]
+        if '_histogram' in pdf_path:
+            pdf_list_2.append(pdf_path)
+        else:
+            pdf_list_1.append(pdf_path)
+
+    pdf_list = []
+    pdf_list.append(pdf_list_1)
+    pdf_list.append(pdf_list_2)
+    pdf_list.reverse()
+    
+    pdf_grid(pdf_list, full_file_path, analysis_type)
+    return render(request, 'analysis/update_plot_symbol.html')
+
 @login_required
 def files_data_CSV(request):
     

@@ -1,0 +1,36 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+<div class="container-fluid vh-100">
+     <div class="" style="margin-top:50px">
+         <div class="rounded d-flex justify-content-center">
+             <div class="col-md-5 col-sm-12 shadow-lg p-5 bg-light">
+                 <div class="text-center">
+                     <div class="modal-footer"></div>  
+                 </div>
+                 <div class="container">
+                    <embed src={{plot_path}} width="520px" height="600px" />
+                    </div>
+                 <div class="modal-footer"></div>
+                 <form method="POST" enctype="multipart/form-data" class="post-form" action="update_plots_symbol/{{result_id}}" > 
+                    {% csrf_token %}
+                    <div class="col-sm">
+                        <input type="radio" id="checked" name="checked" value="ok">
+                        <label for="ok">OK</label><br>
+		            </div>
+                    <div class="col-sm">
+                        <input type="radio" id="checked" name="checked" value="not_ok">
+                        <label for="not_ok">Not OK</label><br>
+		            </div>
+                    <div class="col-sm"></div>
+                        <button class="btn btn-primary" onclick="history.back()">Go Back</button>
+                    </div>
+                    <div class="col-sm"></div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form> 
+                 <a href="{% url 'populateDB:show_analysis' %}" class="btn btn-primary">Go to the Analysis list</a>
+             </div>
+         </div>
+     </div>
+   </div>

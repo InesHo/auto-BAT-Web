@@ -26,7 +26,7 @@ logger = getLogger(__name__)
 def save_pdf(pdf_path, pdf_list, analysisMarker_id, analysis_type=None):
     pdf_list.reverse()
     
-    if analysis_type == "autograt":
+    if analysis_type == "AutoGrat":
         new_pdf_list = pdf_list
     else:
         new_pdf_list = []
@@ -190,9 +190,12 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         
         if manualThresholds:
             df, SSCA, FCR, CD63, info_bg = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
-            symbol_pdf = 'green'
+            manual_check = True
+            plot_symbol = 'ok'
         else:
-            df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32thresholding()
+            df, SSCA, FCR, CD63, info_bg = autoworkflow.runCD32thresholding()
+            plot_symbol = None
+
         
         #df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32Bat()
         quality_messages.append(info_bg)
@@ -219,12 +222,12 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             reports[i].cellQ4 = df.loc[reports[i].getId().lower(),"cellQ4"]
             reports[i].setResult(df.loc[reports[i].getId().lower(),"result"])
             reports[i].setResponder(df.loc[reports[i].getId().lower(),"responder"])
-            reports[i].setPlotSympol('green')
+            reports[i].setPlotSympol(plot_symbol)
             if int(reports[i].cellTotal) < 100000:
-                reports[i].setPlotSympol('red')
+                reports[i].setPlotSympol('unclear')
             if reports[i].cellQ4  < 350:
-                reports[i].setPlotSympol('red')
-                
+                reports[i].setPlotSympol('unclear')
+
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
                 info_cellQ4 = "The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."
         ###==========================================================================================================================###
@@ -341,12 +344,14 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             plot_symbol = row['plot_symbol']
             plot_name = f'{file_name[:-4].lower()}.pdf'
             plot_path=os.path.join(pathToOutput, plot_name)
-            if plot_symbol == 'red':
-                symbol_pdf = os.path.join(settings.MEDIA_ROOT,'symbols','red.pdf')
-                add_symbol(plot_path, symbol_pdf,plot_path)
-            if plot_symbol == 'yellow':
-                symbol_pdf = os.path.join(settings.MEDIA_ROOT,'symbols','yellow.pdf')
-                add_symbol(plot_path, symbol_pdf,plot_path)
+            if plot_symbol == 'unclear':
+                add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
+            if manual_check:
+                if plot_symbol == 'ok':
+                    add_symbol(plot_path, plot_path, error=True, checked = True, solved=True)
+                else:
+                    add_symbol(plot_path, plot_path, error=True, checked = True, solved=False)
+           
             if ', []' in str(qualityMessages):
                 qualityMessages = str(qualityMessages).replace(', []','')
 
@@ -405,7 +410,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         else:
             pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
-        save_pdf(pdf_path, pdf_list, analysisMarker_id, 'autobat')
+        save_pdf(pdf_path, pdf_list, analysisMarker_id, 'AutoBat')
     except Exception:
         e = traceback.format_exc()
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)
@@ -600,14 +605,11 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             reports[j].cellQ4 = float(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["cellQ4"]) 
             reports[j].setResult(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["result"].values[0]) 
             reports[j].setResponder(df[df['filename'].str.contains(reports[j].filename.lower()) & df['zMarker'].str.contains(reports[j].zMarker)]["responder"].values[0]) 
-            reports[i].setPlotSympol('green')
+            reports[i].setPlotSympol(None)
             if int(reports[i].cellTotal) < 100000:
-                reports[i].setPlotSympol('red')
+                reports[i].setPlotSympol('unclear')           
             if reports[i].cellQ4  < 350:
-                reports[i].setPlotSympol('red')
-            
-            if reports[i].cellQ4  < 350:
-                reports[i].setPlotSympol('red')
+                reports[i].setPlotSympol('unclear')
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
                 info_cellQ4 = "The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."
             
@@ -733,12 +735,8 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             plot_symbol = row['plot_symbol']
             plot_name = f'{file_name[:-4].lower()}.pdf'
             plot_path=os.path.join(pathToOutput, plot_name)
-            if plot_symbol == 'red':
-                symbol_pdf = os.path.join(settings.MEDIA_ROOT,'symbols','red.pdf')
-                add_symbol(plot_path, symbol_pdf,plot_path)
-            if plot_symbol == 'yellow':
-                symbol_pdf = os.path.join(settings.MEDIA_ROOT,'symbols','yellow.pdf')
-                add_symbol(plot_path, symbol_pdf,plot_path)
+            if plot_symbol == 'unclear':
+                add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
             if ', []' in str(qualityMessages):
                 qualityMessages = str(qualityMessages).replace(', []','')
 
@@ -812,7 +810,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         else:
             pdf = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
-        save_pdf(pdf_path, pdf_list, analysisMarker_id, 'autograt')
+        save_pdf(pdf_path, pdf_list, analysisMarker_id, 'AutoGrat')
 
     except Exception:
         e = traceback.format_exc()
