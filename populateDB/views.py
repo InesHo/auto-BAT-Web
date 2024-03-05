@@ -679,9 +679,9 @@ def results_to_CSV(request):
                                                             'analysisMarker_id__analysis_id__condition',
                                                             'analysisMarker_id__analysis_type_version',
                                                             'file_id__file_name', 
-                                                            #"analysisMarker_id__analysis_error", 
                                                             "analysisMarker_id__analysis_info_messages",
-                                                            'redQ4', 'result', 'blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ4', 'responder')
+                                                            'zMarker', 'redQ4', 'result','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
+                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal')
     return render_to_csv_response(analysisResults)
 
 @login_required
@@ -1743,66 +1743,12 @@ def update_plots_symbol(request, analysisMarker_id):
                     pdf_list_1.append(pdf_path)
 
             pdf_list = []
-            pdf_list_1.reverse()
-            pdf_list.append(pdf_list_1)
+            pdf_list_1.sort()
             pdf_list.append(pdf_list_2)
-            pdf_list.reverse()
+            pdf_list.append(pdf_list_1)
     
             pdf_grid(pdf_list, full_file_path, analysis_type)
         return render(request, 'analysis/update_plot_symbol.html')
-
-def update_donors(old_donor_name, new_donor_name):
-
-    donors_obj = models.Donor.objects.values_list('donor_id', 'donor_abbr')
-    files_obj = models.ExperimentFiles.objects.values_list('file_id', 'file')
-    fcs_files_path = '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_files'
-
-    for donor in donors_obj:
-        donor_id = donor[0]
-        donor_name = donor[1]
-        if donor_name == old_donor_name:
-            try:
-                new_donor_id = get_object_or_404(models.Donor.objects.filter(donor_abbr=new_donor_name).values_list('donor_id', flat=True))
-            except:
-                new_donor_id = False
-            if new_donor_id:
-                try:
-                    models.Analysis.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
-                    models.DonorTestBlood.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
-                    models.DonorTest_SPT.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
-                    models.DonorTestOFC_exercise.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
-                    models.DonorClinicalclass.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
-                except:
-                    pass
-                models.Donor.objects.filter(donor_id=new_donor_id).delete()
-                models.Donor.objects.filter(donor_id=donor_id).update(donor_abbr=new_donor_name)
-            else:
-                models.Donor.objects.filter(donor_id=donor_id).update(donor_abbr=new_donor_name)
-
-    for file in files_obj:
-        file_id = file[0]
-        file_path = file[1]
-        if f'/{old_donor_name}/' in file_path:
-            new_file_path = file_path.replace(f'/{old_donor_name}/', f"/{new_donor_name}/")
-            models.ExperimentFiles.objects.filter(file_id=file_id).update(file=new_file_path)
-
-    for dir, subdirs, files in os.walk(fcs_files_path):
-        if old_donor_name in dir:
-            new_dir = os.path.join(os.path.dirname(dir), new_donor_name)
-            if os.path.exists(new_dir):
-                os.system(f'mv {dir}/* {new_dir}')
-                os.system(f'rm -d {dir}')
-            else:
-                os.system(f'mv {dir} {new_dir}')
-
-def update_donors_view(request):
-    old_donor_name = ''
-    new_donor_name = ''
-    try:
-        #update_donors(old_donor_name, new_donor_name)
-        return HttpResponse("All operations completed successfully")
-    except Exception as e:
-        return HttpResponse(e)
 
 
 @login_required

@@ -24,7 +24,6 @@ logger = getLogger(__name__)
        
 #@background(queue='autoBat-queue-save', schedule=10)
 def save_pdf(pdf_path, pdf_list, analysisMarker_id, analysis_type=None):
-    pdf_list.reverse()
     
     if analysis_type == "AutoGrat":
         new_pdf_list = pdf_list
@@ -274,9 +273,9 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
 
         ### save report to .xls
         if condition:
-            excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
+            excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.xlsx')
         else:
-            excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.xlsx')
+            excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.xlsx')
         df_excel = finalReport
         df_excel['Version'] = analysis_type_version
         #df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
@@ -367,12 +366,16 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         for file in sample_obj:
             file_id = file[0]
             plot_name = file[2].lower()
+            control = sample[4]
             plot_name = f'{plot_name[:-4]}.pdf'
             plot_path=os.path.join(pathToOutput, plot_name)
             PDFresults_instance = models.FilesPlots(plot_path=plot_path)
             PDFresults_instance.analysisMarker_id_id = int(analysisMarker_id)
             PDFresults_instance.file_id_id = int(file_id)
             PDFresults_instance.save()
+            #if control == "Negative control":
+                #pdf_list.insert(0, plot_path)
+            #else:
             pdf_list.append(plot_path)
     
         # Save Excel File's path to the Database
@@ -380,12 +383,12 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         EXCELresults_instance.analysisMarker_id_id = int(analysisMarker_id)
         EXCELresults_instance.save()
 
-
+        pdf_list.sort()
         # Create PDF File:
         if condition:
-            pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}.pdf"
+            pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
         else:
-            pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}.pdf"
+            pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
         save_pdf(pdf_path, pdf_list, analysisMarker_id, 'AutoBat')
     except Exception:
@@ -643,9 +646,9 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
         chosen_z2_3 = str(chosen_z2[2])
         chosen_z2_4 = str(chosen_z2[3])
         if condition:
-            excel_file = os.path.join(pathToOutput, f'AutoGrat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.xlsx')
+            excel_file = os.path.join(pathToOutput, f'AutoGrat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}_{analysis_type_version}.xlsx')
         else:
-            excel_file = os.path.join(pathToOutput, f'AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.xlsx')
+            excel_file = os.path.join(pathToOutput, f'AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}_{analysis_type_version}.xlsx')
         df_excel = finalReport
         df_excel['Version'] = analysis_type_version
         #df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
@@ -787,21 +790,23 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                         pdf_list_2.append(plot_path)
                     else:
                         pdf_list_1.append(plot_path)
+
     
         # Save Excel File's path to the Database
         EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
         EXCELresults_instance.analysisMarker_id_id = int(analysisMarker_id)
         EXCELresults_instance.save()
-
+        
+        pdf_list_1.sort()
 
         # Create PDF File:
         pdf_list = []
-        pdf_list.append(pdf_list_1)
         pdf_list.append(pdf_list_2)
+        pdf_list.append(pdf_list_1)
         if condition:
-            pdf = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.pdf"
+            pdf = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}_{analysis_type_version}.pdf"
         else:
-            pdf = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}.pdf"
+            pdf = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2_1}_{chosen_z2_2}_{analysis_type_version}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
         save_pdf(pdf_path, pdf_list, analysisMarker_id, 'AutoGrat')
 
