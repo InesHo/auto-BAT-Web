@@ -55,7 +55,7 @@ urlpatterns = [
     path('analysis_report/', views.analysis_report, name='analysis_report'),
     path('analysis_report/show_channels/<analysis_id>', views.show_channels, name='show_channels'),
     path('analysis_report/view_plots/<result_id>', views.view_plots, name='view_plots'),
-    path('analysis_report/view_plots/update_plots_symbol/<result_id>', views.update_plots_symbol, name='update_plots_symbol'),
+    path('analysis_report/view_plots/update_plots_symbol/<analysisMarker_id>', views.update_plots_symbol, name='update_plots_symbol'),
     path('analysis/re_analysis_alert', views.re_analysis_alert, name='re_analysis_alert'),
     path('analysis/run_re_analysis_all', views.run_re_analysis_all, name='run_re_analysis_all'),
 

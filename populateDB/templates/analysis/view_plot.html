@@ -9,16 +9,12 @@
                      <div class="modal-footer"></div>  
                  </div>
                  <div class="container">
-			<center>
-				<object data={{path_plot}} 
-					width="300"
-					height="350"> 
-			        </object>
+			 <center>
+				 <canvas id="pdf-viewer"></canvas>
 			</center> 
 		 </div>
-		 <button class="btn btn-primary" onclick="history.back()">Go Back</button>
 		 <div class="modal-footer"></div>
-                 <form method="POST" enctype="multipart/form-data" class="post-form" action="update_plots_symbol/{{result_id}}" > 
+		 <form method="POST" enctype="multipart/form-data" class="post-form" action="update_plots_symbol/{{analysisMarker_id}}" > 
                     {% csrf_token %}
                     <div class="col-sm">
                         <input type="radio" id="checked" name="checked" value="ok">
@@ -27,10 +23,33 @@
                     <div class="col-sm">
                         <input type="radio" id="checked" name="checked" value="not_ok">
                         <label for="not_ok">Not OK</label><br>
-		            </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+		    	<br>      
+		    </div>
+                        <div class="modal-footer"></div>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</div>
                 </form> 
              </div>
          </div>
      </div>
    </div>
+
+<script>
+    // PDF.js script to load and render the PDF file
+    // Replace 'example.pdf' with the path to your PDF file
+    const pdfPath = '{{ plot_path }}';
+    const canvas = document.getElementById('pdf-viewer');
+    pdfjsLib.getDocument(pdfPath).promise.then(pdf => {
+        pdf.getPage(1).then(page => {
+            const viewport = page.getViewport({ scale: 1.5 });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            const renderContext = {
+                canvasContext: canvas.getContext('2d'),
+                viewport: viewport
+            };
+            page.render(renderContext);
+        });
+    });
+    
+</script>

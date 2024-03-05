@@ -261,9 +261,9 @@ class experimentfile(View):
                 analysis_instance.save()
                 analysis_id = analysis_instance.analysis_id
                 if condition:
-                    files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}/{condition}")
+                    files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_id}/{donor_id}/{panel_id}/{condition}")
                 else:
-                    files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_id}/{donor_id}/{panel_id}")
+                    files_dir = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_id}/{donor_id}/{panel_id}")
                 create_path(files_dir)
                 file_list = []
                 us_file_path = ""
@@ -531,12 +531,12 @@ def run_analysis_autobat(request, analysis_id):
             
             if condition:
                 outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
-                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
                 pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoBat/")       
                 pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autobat/{analysis_type_version}/")
             else:
                 outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
-                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/") 
                 pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoBat/")       
                 pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/{analysis_type_version}/")           
             create_path(pathToExports)
@@ -649,12 +649,12 @@ def run_analysis_autograt(request, analysis_id):
                 device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
                 if condition:
                     outputPDFname = f"Autograt_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
-                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
                     pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoGrat/")       
                     pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autograt/{analysis_type_version}/")
                 else:
                     outputPDFname = f"Autograt_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
-                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/") 
                     pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoGrat/")       
                     pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/{analysis_type_version}/")           
                 create_path(pathToExports)
@@ -747,12 +747,12 @@ def re_analysis_all(request):
                 
                 if condition:
                     outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
-                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
                     pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoBat/")       
                     pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autobat/{analysis_type_version}/")
                 else:
                     outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
-                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/") 
                     pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoBat/")       
                     pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/{analysis_type_version}/")           
                 create_path(pathToExports)
@@ -886,12 +886,12 @@ def re_analysis_all(request):
 
                 if condition:
                     outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
-                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
                     pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoGrat/")       
                     pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autograt/{analysis_type_version}/")
                 else:
                     outputPDFname = f"AutoGrat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
-                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_fiels/{bat_name}/{donor_name}/{panel_name}/") 
+                    pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/") 
                     pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoGrat/")       
                     pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autograt/{analysis_type_version}/")           
                 create_path(pathToExports)
@@ -1114,7 +1114,9 @@ def analysis_report(request):
                                                                                             When(Analysis_Type='AutoBat', then=Value(bat_version)),
                                                                                             When(Analysis_Type='AutoGrat', then=Value(grat_version))
                                                                                             )
-                                                                    )
+                                                            )
+
+
 
     return render(request,"analysis/analysis_report.html",{'analysis_results':analysisResults})
 
@@ -1352,7 +1354,7 @@ def research_results(request):
     redQ4 = request.GET.get('redQ4')
     
     queryList = queryList.filter(Analysis_Version=Case(
-                                                        When(Analysis_Type='AutoBat', then=Value('2.0.0')),#bat_version)),
+                                                        When(Analysis_Type='AutoBat', then=Value(bat_version)),
                                                         When(Analysis_Type='AutoGrat', then=Value(grat_version))
     #bat_version
     #grat_version
@@ -1703,58 +1705,111 @@ def view_plots(request, result_id):
         plot_path = get_object_or_404(models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id, file_id=file_id, plot_path__icontains=z_marker).values_list('plot_path', flat=True))    
     else:
         plot_path = get_object_or_404(models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id, file_id=file_id).values_list('plot_path', flat=True))
-    return render(request, 'analysis/view_plot.html', {'plot_path':plot_path})
+    plot_id = get_object_or_404(models.FilesPlots.objects.filter(plot_path=plot_path).values_list('plot_id', flat=True))
+    prefix_to_remove = '/home/abusr/autoBatWeb/auto-BAT-Web'
+    plot_path = plot_path.replace(prefix_to_remove, '')
+    return render(request, 'analysis/view_plot.html', {'plot_path':plot_path, 'analysisMarker_id':analysisMarker_id})
 
 @login_required
-def update_plots_symbol(request, result_id):
-    checked = request.POST.get('checked')
+def update_plots_symbol(request, analysisMarker_id):
+    if request.method == "POST":
+        checked = request.POST.get('checked')
+        
+        if checked:
+            if checked == 'ok':
+                solved = True
+            else:
+                solved = False
+            
+            plots_obj = models.FilesPlots.objects.values_list('plot_id', 'plot_path').filter(analysisMarker_id=analysisMarker_id)
+            
+            for plot in plots_obj:
+                plot_path = plot[1]
+                add_symbol(plot_path, plot_path, error=False, checked = True, solved=solved)
+            
+            models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).update(plot_symbol=checked)
 
-    if checked == 'ok':
-        solved = True
-    else:
-        checked = False
+            # Update the full pdf of the experiment
+            analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
+            full_file_path = get_object_or_404(models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id, file_type = 'PDF').values_list('file_path', flat=True))
+        
+            pdf_list_1 = []
+            pdf_list_2 = []
+            for path in plots_obj:
+                pdf_path = path[1]
+                if '_histogram' in pdf_path:
+                    pdf_list_2.append(pdf_path)
+                else:
+                    pdf_list_1.append(pdf_path)
 
-    file_id = get_object_or_404(models.AnalysisMarkers.objects.filter(result_id=result_id).values_list('file_id', flat=True))
-    analysisMarker_id = get_object_or_404(models.AnalysisMarkers.objects.filter(result_id=result_id).values_list('analysisMarker_id', flat=True))
-    plot_id = get_object_or_404(models.FilesPlots.objects.filter(analysisMarker_id=analysisMarker_id, file_id=file_id).values_list('plot_id', flat=True))
-    content_pdf = get_object_or_404(models.FilesPlots.objects.filter(plot_id=plot_id).values_list('plot_path', flat=True))
-   
-    add_symbol(content_pdf, content_pdf, error=False, checked = True, solved=solved)   
-    models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).update(plot_symbol=checked)
-
-    # Update the full pdf of the experiment
-    analysis_type = get_object_or_404(models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).values_list('analysis_type', flat=True))
-    full_file_path = get_object_or_404(models.AnalysisFiles.objects.filter(analysisMarker_id=analysisMarker_id, file_type = 'PDF').values_list('file_path', flat=True))
+            pdf_list = []
+            pdf_list_1.reverse()
+            pdf_list.append(pdf_list_1)
+            pdf_list.append(pdf_list_2)
+            pdf_list.reverse()
     
-    plot_path_obj = models.FilesPlots.objects.values_list('plot_id', 'plot_path').filter(analysisMarker_id=analysisMarker_id)
-    
-    pdf_list_1 = []
-    pdf_list_2 = []
-    for path in plot_path_obj:
-        pdf_path = path[1]
-        if '_histogram' in pdf_path:
-            pdf_list_2.append(pdf_path)
-        else:
-            pdf_list_1.append(pdf_path)
+            pdf_grid(pdf_list, full_file_path, analysis_type)
+        return render(request, 'analysis/update_plot_symbol.html')
 
-    pdf_list = []
-    pdf_list.append(pdf_list_1)
-    pdf_list.append(pdf_list_2)
-    pdf_list.reverse()
-    
-    pdf_grid(pdf_list, full_file_path, analysis_type)
-    return render(request, 'analysis/update_plot_symbol.html')
+def update_donors(old_donor_name, new_donor_name):
+
+    donors_obj = models.Donor.objects.values_list('donor_id', 'donor_abbr')
+    files_obj = models.ExperimentFiles.objects.values_list('file_id', 'file')
+    fcs_files_path = '/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_files'
+
+    for donor in donors_obj:
+        donor_id = donor[0]
+        donor_name = donor[1]
+        if donor_name == old_donor_name:
+            try:
+                new_donor_id = get_object_or_404(models.Donor.objects.filter(donor_abbr=new_donor_name).values_list('donor_id', flat=True))
+            except:
+                new_donor_id = False
+            if new_donor_id:
+                try:
+                    models.Analysis.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
+                    models.DonorTestBlood.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
+                    models.DonorTest_SPT.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
+                    models.DonorTestOFC_exercise.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
+                    models.DonorClinicalclass.objects.filter(donor_id=new_donor_id).update(donor_id=donor_id)
+                except:
+                    pass
+                models.Donor.objects.filter(donor_id=new_donor_id).delete()
+                models.Donor.objects.filter(donor_id=donor_id).update(donor_abbr=new_donor_name)
+            else:
+                models.Donor.objects.filter(donor_id=donor_id).update(donor_abbr=new_donor_name)
+
+    for file in files_obj:
+        file_id = file[0]
+        file_path = file[1]
+        if f'/{old_donor_name}/' in file_path:
+            new_file_path = file_path.replace(f'/{old_donor_name}/', f"/{new_donor_name}/")
+            models.ExperimentFiles.objects.filter(file_id=file_id).update(file=new_file_path)
+
+    for dir, subdirs, files in os.walk(fcs_files_path):
+        if old_donor_name in dir:
+            new_dir = os.path.join(os.path.dirname(dir), new_donor_name)
+            if os.path.exists(new_dir):
+                os.system(f'mv {dir}/* {new_dir}')
+                os.system(f'rm -d {dir}')
+            else:
+                os.system(f'mv {dir} {new_dir}')
+
+def update_donors_view(request):
+    old_donor_name = ''
+    new_donor_name = ''
+    try:
+        #update_donors(old_donor_name, new_donor_name)
+        return HttpResponse("All operations completed successfully")
+    except Exception as e:
+        return HttpResponse(e)
+
 
 @login_required
 def files_data_CSV(request):
     
-    """
     data = models.AnalysisResults.objects.values('file_id__file', 'file_id__allergen','file_id__control','analysisMarker_id__analysis_id__donor_id__donor_abbr',
                                                     'analysisMarker_id__analysis_id__donor_id__donorclass_clinical__donor_clinicalClass_id__clinicalClass_name',
                                                     'analysisMarker_id__analysis_id__donor_id__donorclass_ofc__donor_ofc', 'result')
-    """
-    #data = models.Channels.objects.values('pnn','pns').distinct('pnn')
-    #data = models.Channels.objects.values('pnn', 'pns', 'analysis_id', 'analysis_id__analysismarkers__analysis_type')
-    #data = models.ExperimentFiles.objects.values('allergen').distinct('allergen')
     
-    #return render_to_csv_response(data)
+    return render_to_csv_response(data)

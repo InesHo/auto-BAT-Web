@@ -146,9 +146,9 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
 
             else:
                 if condition:
-                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/')
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/')
                 else:
-                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_files/{bat_name}/{donor_name}/{panel_name}/')
                 files_list.append(pathToExports + file_name)
 
                 reports[i] = Report(id = file_name.lower())
@@ -189,12 +189,14 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
     
         
         if manualThresholds:
-            df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
-            plot_symbol = 'ok'
+            df, SSCA, FCR, CD63, info_bg  = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
+            plot_symbol = "ok"
         else:
             df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32thresholding()
-            plot_symbol = None
-
+            if plot_symbol == "red":
+                plot_symbol = "unclear"           
+            else:
+                plot_symbol = None
         
         #df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32Bat()
         quality_messages.append(info_bg)
@@ -225,11 +227,8 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             reports[i].setResult(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["result"].values[0])
             reports[i].setResponder(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["responder"].values[0])
             reports[i].setPlotSympol(plot_symbol)
-            if int(reports[i].cellTotal) < 100000:
-                reports[i].setPlotSympol('unclear')
+            
             if reports[i].cellQ4  < 350:
-                reports[i].setPlotSympol('unclear')
-
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
                 info_cellQ4 = ["The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."]
         ###==========================================================================================================================###
@@ -325,7 +324,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             if plot_symbol == 'unclear':
                 add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
             if manualThresholds:
-                if plot_symbol == 'ok':
+                if plot_symbol == "ok":
                     add_symbol(plot_path, plot_path, error=True, checked = True, solved=True)
                 else:
                     add_symbol(plot_path, plot_path, error=True, checked = True, solved=False)
@@ -465,9 +464,9 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                 i += 1
             else:
                 if condition:
-                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/{condition}/')
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/')
                 else:
-                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_fiels/{bat_name}/{donor_name}/{panel_name}/')
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_files/{bat_name}/{donor_name}/{panel_name}/')
                 files_list.append(pathToExports + file_name)
 
                 try:
@@ -590,10 +589,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             reports[j].setResult(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["result"].values[0]) 
             reports[j].setResponder(df[df['filename'].str.contains(reports[j].filename.lower(), regex=False) & df['zMarker'].str.contains(reports[j].zMarker)]["responder"].values[0]) 
             reports[j].setPlotSympol(None)
-            if int(reports[j].cellTotal) < 100000:
-                reports[j].setPlotSympol('unclear')           
             if reports[j].cellQ4 < 350:
-                reports[j].setPlotSympol('unclear')
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
                 info_cellQ4 = ["The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."]
             
