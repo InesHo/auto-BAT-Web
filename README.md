@@ -514,11 +514,10 @@ AUTOBAT_PATH = '/home/abusr/autoBatWeb/auto-BAT'
     <li>Pull updates from GitHub</li>
     <li>If the new update requires another parameter, make sure to include it in the view functions run_analysis_autobat, run_analysis_autograt, reanalyze_all, run_analysis_autobat_tasks and run_analysis_autograt_tasks</li>
     <li>If the results are changing, then add the required field in the modal Analysis Results</li>
-    <li>Upload files failed: make sure file names and allergen does not contain unknowen characters</li>
     <li>Restart the web app (see <a href="#getting-started"> Getting Started</a>)</li>
     <li>Restart Background tasks (see <a href="#getting-started"> Getting Started</a>)</li>
   </ul>
-
+  <li>Upload files failed: make sure file names and allergen does not contain unknowen characters</li>
 </ul>
 
 <br>
