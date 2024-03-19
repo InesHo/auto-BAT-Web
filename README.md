@@ -207,7 +207,10 @@ AUTOBAT_PATH = '/home/abusr/autoBatWeb/auto-BAT'
   <li><b><pre><code>cd /etc/apache2/sites-available/</code></pre></b></li>
   <li><b>create new file for autobat config by copying the default config<pre><code>sudo cp 000-default.conf autobat_web.conf</code></pre></b></li>
   <li><b>edit the file<pre><code>sudo vim autobat-web.conf</code></pre></b></li>
-  <li><b>add the following to the end of the file - (make sure to change paths)<pre><code>LoadModule wsgi_module modules/mod_wsgi.so
+  <li><b>add the following to the end of the file - (make sure to change paths)
+  <pre><code>
+
+        LoadModule wsgi_module modules/mod_wsgi.so
         Alias /static /home/abusr/autoBatWeb/auto-BAT-Web/static
         <Directory /home/abusr/autoBatWeb/auto-BAT-Web/static>
                 Require all granted
@@ -225,7 +228,7 @@ AUTOBAT_PATH = '/home/abusr/autoBatWeb/auto-BAT'
         </Directory>
 
         WSGIScriptAlias / /home/abusr/autoBatWeb/auto-BAT-Web/autoBatWeb/wsgi.py
-</code></pre></b></li>
+  </pre></code></b></li>
   <li><b>collectstatic (from Django project directory)<pre><code>python manage.py collectstatic</code></pre></b></li>
   <li><b>run the command in project directory (autoBatWeb)<pre><code>python auto-BAT-Web/manage.py runmodwsgi --setup-only --port=80 --user abusr  --access-log --server-name=autobat.drfz.de --server-root=AutoBat-Webserver-80</code></pre></b></li>
   <li><b>create file to start the app<pre><code>sudo vim /usr/bin/start_autobat </code></pre></b></li>
