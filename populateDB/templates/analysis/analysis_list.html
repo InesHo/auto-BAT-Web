@@ -105,11 +105,9 @@
         </td>
         <td>
                 {% if a.analysis_status == "Ready" or a.analysis_status == "In Progress" or a.analysis_status == "Error" %}
-                	{% if user_is_superuser == True %}
 			<a href="delete_alert/{{a.analysisMarker_id}}" class="btn btn-danger" >
                         	<span class="fa fa-trash"></span>
                 	</a>
-			{% endif %}
                 {% endif %}
         </td>
 

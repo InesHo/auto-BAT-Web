@@ -212,7 +212,7 @@ def pdf_grid(pdf_list, export_path, analysis_type):
         pdf_writer.write(export_path)
     return export_path
 
-def add_symbol(in_pdf, out_pdf, error = False, checked = False, solved = False):
+def add_symbol(in_pdf, out_pdf, error = False, checked = False, solved = False, viewed=False):
     
     if error:
         symbol_error = os.path.join(settings.MEDIA_ROOT,'symbols','error.pdf')
@@ -231,7 +231,11 @@ def add_symbol(in_pdf, out_pdf, error = False, checked = False, solved = False):
             reader_notsolved = PdfFileReader(symbol_notsolved)
             image_notsolved = reader_notsolved.pages[0]
             image_notsolved.scaleBy(0.55)
-
+    if viewed:
+        symbol_viewed = os.path.join(settings.MEDIA_ROOT,'symbols','viewed.pdf')
+        reader_viewed = PdfFileReader(symbol_viewed)
+        image_viewed = reader_viewed.pages[0]
+        image_viewed.scaleBy(0.55)
     
     writer = PdfFileWriter()
     reader = PdfFileReader(in_pdf)
@@ -247,7 +251,8 @@ def add_symbol(in_pdf, out_pdf, error = False, checked = False, solved = False):
         
         else:
             writer.getPage(0).mergeTranslatedPage(image_notsolved, 28, 350)
-
+    if viewed:
+        writer.getPage(0).mergeTranslatedPage(image_viewed, 4, 350)
     with open(out_pdf, "wb") as fp:
         writer.write(fp)
 

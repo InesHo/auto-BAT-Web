@@ -1285,7 +1285,7 @@ def research_results(request):
     marker_name = request.GET.get('marker_names')
     date_min = request.GET.get('date_min')
     date_max = request.GET.get('date_max')
-    allergen_name = request.GET.get('allergens')
+    allergen_name = request.GET.getlist('allergens')
     analysis_type = request.GET.get('analysis_type')
     file_controls = request.GET.get('file_controls')
     OFC_classes = request.GET.get('OFC_classes')
@@ -1313,8 +1313,8 @@ def research_results(request):
     msi_YQ4_max = request.GET.get('msi_YQ4_max')
     cellQ4_min = request.GET.get('cellQ4_min')
     cellQ4_max = request.GET.get('cellQ4_max')
-    gIgEmin = request.GET.get('gIgEmin')
-    gIgEmax = request.GET.get('gIgEmax')
+    gIgEmin = request.GET.get('gIgE_min')
+    gIgEmax = request.GET.get('gIgE_max')
     wheatFlour_min = request.GET.get('wheatFlour_min')
     wheatFlour_max = request.GET.get('wheatFlour_max')
     gluten_min = request.GET.get('gluten_min')
@@ -1347,7 +1347,7 @@ def research_results(request):
     cat_max = request.GET.get('cat_max')
     
     compare_file_controls = request.GET.get('compare_file_controls')
-    compare_allergen = request.GET.get('compare_allergen')
+    compare_allergen = request.GET.getlist('allergens_compare')
 
     AVG = request.GET.get('AVG')
     #AVG_donor = request.GET.get('AVG_donor')
@@ -1373,10 +1373,10 @@ def research_results(request):
         queryList = queryList.filter(Analysis_Type=analysis_type)    
     if file_controls !="all":
         queryList = queryList.filter(Control=file_controls)
-    if is_valid_queryparam(allergen_name):
-        queryList = queryList.filter(Allergen__icontains=allergen_name)
-    if compare_file_controls !="all" and is_valid_queryparam(compare_allergen):
-        queryList = queryList.filter(Q(Allergen__icontains=compare_allergen) |  Q(Control=compare_file_controls))
+    if allergen_name !=["all"]:
+        queryList = queryList.filter(Allergen__in=allergen_name)
+    if compare_file_controls !="all" and compare_allergen !=["all"]:
+        queryList = queryList.filter(Q(Allergen=compare_allergen) |  Q(Control=compare_file_controls))
     if is_valid_queryparam(date_min):
         queryList = queryList.filter(Date__gte=date_min)
     if is_valid_queryparam(date_max):
@@ -1432,7 +1432,7 @@ def research_results(request):
         queryList = queryList.filter(cellQ4__gte=cellQ4_min)
     if is_valid_queryparam(cellQ4_max):
         queryList = queryList.filter(cellQ4__lt=cellQ4_max)
-
+    
     if is_valid_queryparam(gIgEmin):
         queryList = queryList.filter(analysisMarker_id__analysis_id__donor_id__donortestblood__gIgE__gte=gIgEmin)
     if is_valid_queryparam(gIgEmax):
@@ -1513,6 +1513,7 @@ def research_results(request):
     """
     time_stamp = time.time()
     excel_name = "None"
+    files_ids_list = []
     if len(queryList) > 0:
         excel_name = str(request.user.last_name) + str(time_stamp) + ".xlsx"
         path = os.path.join(settings.MEDIA_ROOT, "user-data")
@@ -1530,7 +1531,6 @@ def research_results(request):
                                                     ))
         row = 0
         first_row = True
-        files_ids_list = []     
         for donor, donor_data in df.groupby(['BAT_ID','Donor','Panel','Analysis_Type', 'Analysis_Version']):  
             condition = donor_data['Control'] == 'Negative control'
             selected_row = donor_data[condition]
@@ -1634,6 +1634,14 @@ def getResponders(request):
         responder = [c[0] for c in list(responder)]
         return JsonResponse({"responder": responder,}, status = 200)
 
+def get_allergens(request):
+    # get Results from the database
+    if request.method == "GET" and request.is_ajax():
+        allergen = models.ExperimentFiles.objects.all().values_list('allergen').distinct().order_by('allergen')
+        allergen = [c[0] for c in list(allergen)]
+        return JsonResponse({"allergen": allergen,}, status = 200)
+
+
 @login_required
 def downloadResults_pdf(request, files_ids):
     with open(os.path.join(settings.MEDIA_ROOT, "user-data", files_ids), newline='') as f:
@@ -1714,18 +1722,23 @@ def view_plots(request, result_id):
 def update_plots_symbol(request, analysisMarker_id):
     if request.method == "POST":
         checked = request.POST.get('checked')
-        
+        viewed = False
         if checked:
             if checked == 'ok':
                 solved = True
-            else:
+            elif checked == 'not_ok':
                 solved = False
+            elif checked == 'viewed':
+                viewed = True
             
             plots_obj = models.FilesPlots.objects.values_list('plot_id', 'plot_path').filter(analysisMarker_id=analysisMarker_id)
             
             for plot in plots_obj:
                 plot_path = plot[1]
-                add_symbol(plot_path, plot_path, error=False, checked = True, solved=solved)
+                if viewed:
+                    add_symbol(plot_path, plot_path, error=False, checked = False, solved=False, viewed=True)
+                else:
+                    add_symbol(plot_path, plot_path, error=False, checked = True, solved=solved, viewed=False)
             
             models.AnalysisResults.objects.filter(analysisMarker_id=analysisMarker_id).update(plot_symbol=checked)
 

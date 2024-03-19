@@ -18,6 +18,8 @@ $(document).ready(function () {
     getOFC_classesExercise();
     getAnalysis_results();
     getAnalysis_type();
+    get_allergens();
+    get_allergens_compare()
     // on selecting the bat_name option
     $('#bat_names').on('change', function () {
         // update the selected bat_name
@@ -48,6 +50,7 @@ $(document).ready(function () {
             send_data['panel_name'] = this.value;
         getAPIData();
     });
+
 
     // on on selecting the analysis_type option
     $('#analysis_type').on('change', function () {
@@ -444,7 +447,7 @@ function resetFilters() {
     $("#date_min").val("");
     $("#date_max").val("");
     $("#allergens").val("");
-    $("#compare_allergen").val("");
+    $("#allergens_compare").val("");
     $("#file_controls").val("all");
     $("#compare_file_controls").val("all");
     $("#OFC_classes").val("all");
@@ -514,7 +517,7 @@ function resetFilters() {
     send_data['date_min'] = '';
     send_data['date_max'] = '';
     send_data['allergens'] = '';
-    send_data['compare_allergen'] = '';
+    send_data['allergens_compare'] = '';
     send_data['compare_file_controls'] = '';
     send_data['file_controls'] = '';
     send_data['OFC_classes'] = '';
@@ -718,6 +721,45 @@ function getPanel_names() {
   });
 }
 
+function get_allergens() {
+    let url = $("#allergens").attr("url");
+    $.ajax({
+        method: 'GET',
+        url: url,
+        data: {},
+        success: function (result) {
+                allergen_options = "<option value='all' selected >Allergens</option>";
+                $.each(result["allergen"], function (a, b) {
+                        allergen_options += "<option>" + b + "</option>"
+                });
+                $("#allergens").html(allergen_options)
+        },
+        error: function(response){
+                        console.log(response)
+        }
+  });
+}
+
+
+function get_allergens_compare() {
+    let url = $("#allergens_compare").attr("url");
+    $.ajax({
+        method: 'GET',
+        url: url,
+        data: {},
+        success: function (result) {
+                allergen_compare_options = "<option value='all' selected >Allergens</option>";
+                $.each(result["allergen"], function (a, b) {
+                        allergen_compare_options += "<option>" + b + "</option>"
+                });
+                $("#allergens_compare").html(allergen_compare_options)
+        },
+        error: function(response){
+                        console.log(response)
+        }
+  });
+}
+
 
 function getFile_controls() {
     let url = $("#file_controls").attr("url");
@@ -872,3 +914,4 @@ function getAnalysis_type() {
         }
   });
 }
+

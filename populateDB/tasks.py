@@ -324,9 +324,9 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
             if manualThresholds:
                 if plot_symbol == "ok":
-                    add_symbol(plot_path, plot_path, error=True, checked = True, solved=True)
+                    add_symbol(plot_path, plot_path, error=True, checked = True, solved=True, viewed=False)
                 else:
-                    add_symbol(plot_path, plot_path, error=True, checked = True, solved=False)
+                    add_symbol(plot_path, plot_path, error=True, checked = True, solved=False, viewed=False)
            
             if ', []' in str(qualityMessages):
                 qualityMessages = str(qualityMessages).replace(', []','')
@@ -731,7 +731,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             plot_name = f'{file_name[:-4].lower()}_{z}.pdf'
             plot_path=os.path.join(pathToOutput, plot_name)
             if plot_symbol == 'unclear':
-                add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
+                add_symbol(plot_path, plot_path, error=True, checked = False, solved=False, viewed=False)
             if ', []' in str(qualityMessages):
                 qualityMessages = str(qualityMessages).replace(', []','')
 

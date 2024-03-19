@@ -43,8 +43,10 @@
                         </div>
 		</div>
 		<div class="row">
-                        <div class="col-md-2 col-lg-2">
-                                <input class="form-control" id="allergens" name="allergens" placeholder="Allergen">
+                        <div class="col-md-2 col-lg-4">
+				<select class="js-example-basic-multiple" multiple="multiple" style="width: 580px;" name="allergens" id="allergens" url = "{%url 'populateDB:get_allergens' %}">
+                                        <option value='all' disabled="disabled">Allergens</option>
+                                </select>
                         </div>
 
 			<div class="form-group col-md-2 col-lg-2">
@@ -99,8 +101,11 @@
 			<div class="col-md-1 col-lg-1">
 				<div class="text-center"> VS </div>
                         </div>
-			<div class="col-md-2 col-lg-2">
-                                <input class="form-control" id="compare_allergen" name="compare_allergen" placeholder="Allergen">
+			<div class="col-md-2 col-lg-4">
+                                <select class="js-example-basic-multiple" multiple="multiple" style="width: 580px;" name="allergens_compare" i
+					id="allergens_compare" url = "{%url 'populateDB:get_allergens' %}">
+                                        <option value='all' disabled="disabled">Allergens</option>
+                                </select>
                         </div>
 
 		</div>
@@ -435,6 +440,14 @@
     </form>
     <br />
 {% endblock %}
+
+<script>
+    // Initialize Select2
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
+
 <!--
 <style type="text/css">
     .properties_table{

@@ -73,6 +73,7 @@ urlpatterns = [
     path('ajax/panel_names', views.getPanel_names, name = "getPanel_names"),
     path('ajax/clinical_classes', views.getClinical_classes, name = "getClinical_classes"),
     path('ajax/responders', views.getResponders, name = "getResponders"),
+    path('ajax/allergens', views.get_allergens, name = "get_allergens"),
     path('research_results/downloadResults_pdf/<files_ids>', views.downloadResults_pdf, name='downloadResults_pdf'),
     path('research_results/downloadResults_xlsx/<excel_name>', views.downloadResults_xlsx, name='downloadResults_xlsx'),
     path('research_results/show_channels/<analysis_id>', views.show_channels, name='show_channels'),
