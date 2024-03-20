@@ -565,9 +565,6 @@ AUTOBAT_PATH = '/home/abusr/autoBatWeb/auto-BAT'
 </ol>
 <br>
 <h3 id="case6"> 🔸 Case 6: Change Allergens for all files in an experiment </h3>
-<p align="justify"> 
- This covers how to access the database and update any record by updating allergen as an example:
-</p>
 <ol>
   <li><b> Go to the Analysis page </b></li>
   <li><b> Find the experiment</b></li>
