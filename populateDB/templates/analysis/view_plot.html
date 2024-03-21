@@ -8,11 +8,26 @@
                  <div class="text-center">
                      <div class="modal-footer"></div>  
                  </div>
-                 <div class="container">
-			 <center>
-				 <canvas id="pdf-viewer"></canvas>
-			</center> 
-		 </div>
+            <div>
+		<div class="d-flex justify-content-center">
+                <object
+                  data='{{ plot_path }}'
+                  type="application/pdf"
+                  width="550"
+                  height="600"
+                >
+          
+                  <iframe
+		    src='{{ plot_path }}'
+                    width="550"
+                    height="600"
+                  >
+                  <p>This browser does not support PDF!</p>
+                  </iframe>
+                </object>
+              </div>
+	      </div>
+		<br>
 		 <div class="modal-footer"></div>
 		 <form method="POST" enctype="multipart/form-data" class="post-form" action="update_plots_symbol/{{analysisMarker_id}}" > 
                     {% csrf_token %}
@@ -38,22 +53,3 @@
      </div>
    </div>
 
-<script>
-    // PDF.js script to load and render the PDF file
-    // Replace 'example.pdf' with the path to your PDF file
-    const pdfPath = '{{ plot_path }}';
-    const canvas = document.getElementById('pdf-viewer');
-    pdfjsLib.getDocument(pdfPath).promise.then(pdf => {
-        pdf.getPage(1).then(page => {
-            const viewport = page.getViewport({ scale: 1.5 });
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            const renderContext = {
-                canvasContext: canvas.getContext('2d'),
-                viewport: viewport
-            };
-            page.render(renderContext);
-        });
-    });
-    
-</script>

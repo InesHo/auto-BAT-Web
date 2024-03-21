@@ -148,3 +148,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'populateDB:home'
 LOGIN_URL = 'populateDB:login'
 LOGOUT_URL = 'logout'
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'

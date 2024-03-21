@@ -27,6 +27,8 @@ import shutil
 from django.db.models import F
 import re
 import csv
+from django.views.decorators.clickjacking import xframe_options_deny
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 bat_version='1.0.4'
 #'1.0.2'
@@ -319,13 +321,29 @@ def show_experimentfile(request):
 
 @login_required
 def show_metadata(request, file_id):  
+    analysis_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_id = file_id).values_list('analysis_id', flat=True))
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+    file_name = get_object_or_404(models.ExperimentFiles.objects.filter(file_id = file_id).values_list('file_name', flat=True))
     meta_data = models.MetaData.objects.filter(file_id = file_id)
-    return render(request,"files/show_metadata.html",{'meta_data':meta_data})
+    return render(request,"files/show_metadata.html",{'meta_data':meta_data,'bat_name': bat_name,'donor_name': donor_name,'panel_name': panel_name,'file_name': file_name})
 
 @login_required
-def show_rawMeanData(request, file_id):  
+def show_rawMeanData(request, file_id):
+    analysis_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_id = file_id).values_list('analysis_id', flat=True))
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+    file_name = get_object_or_404(models.ExperimentFiles.objects.filter(file_id = file_id).values_list('file_name', flat=True))
     mean_data = models.MeanRawData.objects.filter(file_id = file_id)
-    return render(request,"files/show_meandata.html",{'mean_data':mean_data})
+    return render(request,"files/show_meandata.html",{'mean_data':mean_data,'bat_name': bat_name,'donor_name': donor_name,'panel_name': panel_name,'file_name': file_name})
 
 @login_required
 def update_files(request, analysis_id):
