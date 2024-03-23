@@ -9,8 +9,10 @@ from django.conf import settings
 from . import models
 
 # make sure you have the version of PyPDF2==1.26.0
-
 from PyPDF2 import PdfFileReader, PdfFileWriter
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 
 def Berlin_time():

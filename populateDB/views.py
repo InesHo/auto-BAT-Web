@@ -1665,20 +1665,19 @@ def downloadResults_pdf(request, files_ids):
     with open(os.path.join(settings.MEDIA_ROOT, "user-data", files_ids), newline='') as f:
         reader = csv.reader(f)
         files_lists = list(reader)
-    #files_ids = files_ids.replace('[', '')
-    #files_ids = files_ids.replace(']', '')
-    #files_ids = files_ids.split(',')
-    #files_ids = [ int(x) for x in files_ids ]
     time_stamp = time.time()
     file_path = str(request.user.last_name) + str(time_stamp) + ".pdf"
     file_path = os.path.join(settings.MEDIA_ROOT, "user-data", file_path)
     final_list = []
+    BAT_IDs = []
     for l in files_lists:
-        paths = models.FilesPlots.objects.values_list('plot_path','file_id').filter(plot_id__in=l)
+        paths = models.FilesPlots.objects.values_list('plot_path','file_id', 'analysisMarker_id__analysis_id__bat_id__bat_name').filter(plot_id__in=l)
+        bat_id = paths[2][0]
         img_list = []
         for i in paths:
             img_list.append(str(i[0]))
         final_list.append(img_list)
+        BAT_IDs.append(bat_id)
     #file_path = '/home/abusr/autoBatWeb/auto-BAT-Web/media/user-data/cd69.pdf'
     if request.method == "POST":
         file_name = request.POST.get('file_name')
@@ -1688,7 +1687,7 @@ def downloadResults_pdf(request, files_ids):
         #image_grid(img_list, file_path, 'autobat')
         #new_pdf_list = []
         #new_pdf_list.append(img_list) #the function pdf_grid is expecting a list of lists
-        pdf_grid(final_list, file_path, 'AutoBat')
+        pdf_grid(final_list, file_path, 'AutoBat', BAT_IDs)
         if os.path.exists(str(file_path)):
             with open(file_path, 'rb') as fh:
                 response = HttpResponse(fh.read(), content_type="application/vnd.pdf")
