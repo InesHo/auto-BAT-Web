@@ -100,7 +100,8 @@ class Analysis(models.Model):
     bat_id = models.ForeignKey(Experiment, to_field=('bat_id'), blank = True, null=True,  on_delete = models.CASCADE)
     donor_id = models.ForeignKey(Donor, to_field=('donor_id'), blank = True, null=True,  on_delete = models.CASCADE)
     panel_id = models.ForeignKey(Panels, to_field=('panel_id'), blank = True, null=True,  on_delete = models.CASCADE)
-    condition = models.CharField(max_length=200, blank = True, null = True) 
+    condition = models.CharField(max_length=200, blank = True, null = True)
+    thresholds_checks = models.CharField(max_length=200, blank = True, null = True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank = True, null = True)
 
 class AnalysisMarkers(models.Model):
