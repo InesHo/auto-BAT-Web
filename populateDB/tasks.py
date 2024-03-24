@@ -189,7 +189,8 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         
         if manualThresholds:
             df, SSCA, FCR, CD63, info_bg  = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
-            last_plot_symbol = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('thresholds_checks', flat=True))
+            auto_plot_symbol = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('thresholds_checks', flat=True))
+            plot_symbol = 'ok'
         else:
             df, SSCA, FCR, CD63, info_bg, plot_symbol = autoworkflow.runCD32thresholding()
             if plot_symbol == "red":
@@ -324,7 +325,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             if plot_symbol == 'unclear':
                 add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
             if manualThresholds:
-                if last_plot_symbol == "unclear":
+                if auto_plot_symbol == "unclear":
                     add_symbol(plot_path, plot_path, error=True, checked = True, solved=True, viewed=False)
                 else:
                     add_symbol(plot_path, plot_path, error=False, checked = True, solved=True, viewed=False)
