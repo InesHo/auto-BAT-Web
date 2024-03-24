@@ -142,7 +142,7 @@ def image_grid(img_list, pdf_path, analysis_type):
 
 
 
-def pdf_grid(pdf_list, export_path, analysis_type):
+def pdf_grid(pdf_list, export_path, analysis_type, BAT_IDs=None):
     pdf_writer = PdfFileWriter()
     # creating a list to specify the position of the 15 plots on the page
     # for AutoBat 3 rows and 5 columns
@@ -156,23 +156,6 @@ def pdf_grid(pdf_list, export_path, analysis_type):
                     (0, 0),(240, 0),(480, 0),(720, 0)]
     pages = 0
     last_position = 200
-    """
-    if analysis_type == 'comparison':
-        start = 0
-        end = 14
-        total_plots = 0
-        for i in range(0, len(pdf_list)):
-            total_plots = total_plots + len(i)
-
-        pdf_writer.addBlankPage(width=1224, height=799)
-        page.scaleBy(0.70)
-        if 0 <= last_position <= 4:
-            j+=5
-        elif 5 <= last_position <= 9:
-            j+=10
-        x, y = autoBat_grid[j]
-    last_position = j
-    """
     for i in range(0, len(pdf_list)):
         if analysis_type == 'AutoGrat':
             start = 0
@@ -203,6 +186,26 @@ def pdf_grid(pdf_list, export_path, analysis_type):
                     else:
                         x, y = autoBat_grid[j]
                 pdf_writer.getPage(indx).mergeTranslatedPage(page, x, y)
+                # Add BAT Name
+                if BAT_IDs:
+                    BAT_ID = BAT_IDs[i]
+                    # Get the first page
+                    page = pdf_writer.getPage(indx)
+            
+                    # Create a canvas object
+                    packet = BytesIO()
+                    c = canvas.Canvas(packet, pagesize=letter)
+                    c.setFontSize(20)
+                    # Draw text on the canvas
+                    c.drawString(520, 780, BAT_ID)
+                    c.save()
+                    # Move to the beginning of the StringIO buffer
+                    packet.seek(0)
+            
+                    # Merge the overlay page with the existing page
+                    overlay = PdfFileReader(packet)
+                    page.mergePage(overlay.getPage(0))
+        
             if analysis_type == 'AutoGrat':
                 start += 12
                 end +=12
