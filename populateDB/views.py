@@ -1672,7 +1672,7 @@ def downloadResults_pdf(request, files_ids):
     BAT_IDs = []
     for l in files_lists:
         paths = models.FilesPlots.objects.values_list('plot_path','file_id', 'analysisMarker_id__analysis_id__bat_id__bat_name').filter(plot_id__in=l)
-        bat_id = paths[2][0]
+        bat_id = paths[0][2]
         img_list = []
         for i in paths:
             img_list.append(str(i[0]))
