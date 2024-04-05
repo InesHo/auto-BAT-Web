@@ -91,7 +91,7 @@ def proccess_files(analysis_id):
 @background(queue='autoBat-queue-analysis', schedule=10)
 def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition,
                         chosen_z1, chosen_z1_lable, chosen_y1, chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
-                        pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold, analysis_type_version, user_id
+                        pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id
                     ):
 
     start_time = Berlin_time()
@@ -188,7 +188,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
     
         
         if manualThresholds:
-            df, SSCA, FCR, CD63, info_bg  = autoworkflow.updateBatResultswithManualThresholds(xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold)
+            df, SSCA, FCR, CD63, info_bg  = autoworkflow.updateBatResultswithManualThresholds(chosen_x, chosen_y1, chosen_z1, xMarkerThreshhold, yMarkerThreshold)
             auto_plot_symbol = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('thresholds_checks', flat=True))
             plot_symbol = 'ok'
         else:

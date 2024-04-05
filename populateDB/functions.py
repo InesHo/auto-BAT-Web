@@ -24,7 +24,7 @@ def create_path(path):
         os.makedirs(path)
 
 def change_FCS_data(file_name, old_fcs_path, new_fcs_path):
-    sample = fk.Sample(os.path.join(old_fcs_path, file_name))
+    sample = fk.Sample(os.path.join(old_fcs_path, file_name), ignore_offset_discrepancy = True)
     # 1 - change meta data:
     for key, value in sample.metadata.items():
         x = re.findall("p[0-9]+n", key)

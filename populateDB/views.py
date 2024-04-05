@@ -500,7 +500,7 @@ def run_analysis_autobat(request, analysis_id):
         # for Manual Thresholds:
         xMarkerThreshhold = request.POST.get('xMarkerThreshhold')
         yMarkerThreshold = request.POST.get('yMarkerThreshold')
-        z1MarkerThreshold = request.POST.get('z1MarkerThreshold')
+       # z1MarkerThreshold = request.POST.get('z1MarkerThreshold')
         manualThresholds = request.POST.get('manualThresholds')
         if manualThresholds == 'Yes':
             manualThresholds = True
@@ -563,7 +563,7 @@ def run_analysis_autobat(request, analysis_id):
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
             run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
-                                pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold, analysis_type_version, user_id
+                                pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id
                                 )
             return render(request, 'analysis/analysis_ready.html')
         else:
@@ -754,11 +754,11 @@ def re_analysis_all(request):
                 if manualThresholds == 'Yes':
                     xMarkerThreshhold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('X_Threshold', flat=True))
                     yMarkerThreshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('Y_Threshold', flat=True))
-                    z1MarkerThreshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('Z2_1_Threshold', flat=True))
+                    #z1MarkerThreshold = get_object_or_404(models.AnalysisThresholds.objects.filter(analysisMarker_id=analysisMarker_id).values_list('Z2_1_Threshold', flat=True))
                 else:
                     xMarkerThreshhold = 0
                     yMarkerThreshold = 0
-                    z1MarkerThreshold = 0
+                    #z1MarkerThreshold = 0
                 
                 analysis_type_version = bat_version
                 chosen_z2_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z2).values_list('pns', flat=True))
@@ -786,7 +786,7 @@ def re_analysis_all(request):
                     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages="")
                     run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_lable, chosen_y1,
                                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
-                                                pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold, analysis_type_version, user_id
+                                                pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id
                                         )
                 else:
                     analysis_date = str(date.today())
@@ -814,7 +814,7 @@ def re_analysis_all(request):
                         analysisMarker_id = analysismarkers_instance.analysisMarker_id
                         run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_lable, chosen_y1,
                                 chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports,
-                                pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, z1MarkerThreshold, analysis_type_version, user_id
+                                pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id
                                 )
             return render(request, 'analysis/analysis_ready.html')
         elif analysis_type == 'AutoGrat':
