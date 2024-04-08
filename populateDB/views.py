@@ -498,7 +498,7 @@ def run_analysis_autobat(request, analysis_id):
         panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
 
         # for Manual Thresholds:
-        xMarkerThreshhold = request.POST.get('xMarkerThreshhold')
+        xMarkerThreshhold = request.POST.get('xMarkerThreshold')
         yMarkerThreshold = request.POST.get('yMarkerThreshold')
        # z1MarkerThreshold = request.POST.get('z1MarkerThreshold')
         manualThresholds = request.POST.get('manualThresholds')

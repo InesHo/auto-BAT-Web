@@ -188,7 +188,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
     
         
         if manualThresholds:
-            df, SSCA, FCR, CD63, info_bg  = autoworkflow.updateBatResultswithManualThresholds(chosen_x, chosen_y1, chosen_z1, xMarkerThreshhold, yMarkerThreshold)
+            df, SSCA, FCR, CD63, info_bg  = autoworkflow.updateBatResultswithManualThresholds("SSC-A", chosen_y1, chosen_z1, xMarkerThreshhold, yMarkerThreshold)
             auto_plot_symbol = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('thresholds_checks', flat=True))
             plot_symbol = 'ok'
         else:
