@@ -1,0 +1,75 @@
+{% include "base.html" %}
+{% include "navbar.html" %}
+
+
+<div class="container-fluid vh-100">
+  <div class="" style="margin-top:50px">
+      <div class="rounded d-flex justify-content-center">
+          <div class="col-md-6 col-sm-12 shadow-lg p-5 bg-light">
+              <div class="text-center">
+                  <h3 class="text-primary">Select markers or manual thresholds for CD32 Auto-BAT</h3>
+                  <div class="modal-footer"></div>
+                </div>
+              <form method="POST" enctype="multipart/form-data" class="post-form" action="run_analysis_CD32autobat/{{analysis_id}}" autocomplete="off">  
+                {% csrf_token %}
+                <div class="container">
+                    <div class="row">
+                      <div class="col-sm">
+			      <h5 >{{ bat_name }}</h5>
+                      </div>
+                      <div class="col-sm">
+			      <h5 >{{ donor_name }}</h5>
+                      </div>
+                      <div class="col-sm">
+			      <h5 > {{ panel_name }}</h5>
+                      </div>
+                    </div>
+		    <br></br>
+		<h4>Please select the needed markers for y and z: </h4>
+                    <div class="row">
+                      <div class="col-sm">
+                        <label for="floatingInput">y-marker: </label>
+                        <select name = "y1" class="form-select" style="width: 200px;">
+                            {% include "analysis/channels.html" %}
+                        </select>
+                      </div>
+                      <div class="col-sm">
+                        <label for="floatingInput">z-marker: </label>
+                        <select name = "z2" class="form-select" style="width: 220px;">
+                            {% include "analysis/channels.html" %}
+                        </select>
+                      </div>
+                    </div>
+                <br>
+                <h4 class="text-danger">Marker assignments for this analysis type need to be:</h4>
+                <h5 class="text-danger">Y: FcR</h5>
+                <h5 class="text-danger">Z: CD32</h5>
+                <br>
+		<hr>
+                    <input class="form-check-input" type="checkbox" value="Yes" name="manualThresholds">
+		    <label class="form-check-label" for="manualThresholds">
+				<h4>Do analysis using manual thresholds: </h4>
+		    </label>
+		    <div class="row">
+                      <div class="col-sm">
+			<label for="floatingInput">x-marker threshold: </label>
+                      	<input class="form-control" name="xMarkerThreshold" type="float">
+		      </div>
+                      <div class="col-sm">
+                        <label for="floatingInput">y-marker threshold: </label>
+                      	<input class="form-control" name="yMarkerThreshold" type="float">
+		      </div>
+                    </div>
+                <br>
+
+                <h4 class="text-danger">Thesholds for the manual reanalysis need to be:</h4>
+                <h5 class="text-danger">x-marker threshold: threshold for SSC-A</h5>
+                <h5 class="text-danger">y-marker threshold: threshold for FcR</h5>
+
+                <div class="modal-footer"></div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>              
+          </div>
+      </div>
+  </div>
+</div>

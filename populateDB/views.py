@@ -446,9 +446,20 @@ def marker_settings_autobat(request, analysis_id):
     donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
     panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
 
-
     channels = models.Channels.objects.filter(pnn__endswith=("A") ,analysis_id = analysis_id).order_by('channel_id')
     return render(request, 'analysis/marker_settings_autobat.html', {'channels': channels, 'analysis_id': analysis_id, 'bat_name':bat_name, 'donor_name':donor_name, 'panel_name':panel_name}) 
+
+def marker_settings_CD32autobat(request, analysis_id):
+    bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+    donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+    panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+
+    bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+    donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+    panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+
+    channels = models.Channels.objects.filter(pnn__endswith=("A") ,analysis_id = analysis_id).order_by('channel_id')
+    return render(request, 'analysis/marker_settings_CD32autobat.html', {'channels': channels, 'analysis_id': analysis_id, 'bat_name':bat_name, 'donor_name':donor_name, 'panel_name':panel_name}) 
 
 
 def marker_settings_autograt(request, analysis_id):
@@ -459,7 +470,6 @@ def marker_settings_autograt(request, analysis_id):
     bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
     donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
     panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
-
 
     channels = models.Channels.objects.filter(pnn__endswith=("A") ,analysis_id = analysis_id).order_by('channel_id')
     return render(request, 'analysis/marker_settings_autograt.html', {'channels': channels, 'analysis_id': analysis_id, 'bat_name':bat_name, 'donor_name':donor_name, 'panel_name':panel_name})
@@ -480,7 +490,98 @@ def analysis_type(request, analysis_id):
             return render(request, 'analysis/marker_settings_autobat.html', {'analysis_id': analysis_id})
         if request.POST.get('analysis_type') == "auto_grat":
             return render(request, 'analysis/marker_settings_autograt.html', {'analysis_id': analysis_id})
+       
+        if request.POST.get('analysis_type') == "CD32auto_bat":
+            return render(request, 'analysis/marker_settings_CD32autobat.html', {'analysis_id': analysis_id})
+        
     return render(request, 'analysis/choose_analysis_type.html', {'analysis_id':analysis_id, 'bat_name':bat_name, 'donor_name':donor_name, 'panel_name':panel_name})
+
+@login_required
+def run_analysis_CD32autobat(request, analysis_id):
+
+    if request.method == "POST":
+
+        bat_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('bat_id', flat=True))
+        donor_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('donor_id', flat=True))
+        panel_id = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('panel_id', flat=True))
+        
+        condition = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('condition', flat=True))
+
+        bat_name = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('bat_name', flat=True))
+        donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
+        panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
+
+        # for Manual Thresholds:
+        xMarkerThreshhold = request.POST.get('xMarkerThreshold')
+        yMarkerThreshold = request.POST.get('yMarkerThreshold')
+       # z1MarkerThreshold = request.POST.get('z1MarkerThreshold')
+        manualThresholds = request.POST.get('manualThresholds')
+        if manualThresholds == 'Yes':
+            manualThresholds = True
+        else:
+            manualThresholds = False
+
+        chosen_z1 = request.POST.get('z1')
+        chosen_z1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z1).values_list('pns', flat=True))
+        chosen_y1 = request.POST.get('y1')
+        chosen_y1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_y1).values_list('pns', flat=True))
+        chosen_z2 = request.POST.get('z2')
+        analysis_date = str(date.today())
+        analysis_status = "Waiting"
+        analysis_type = "CD32AutoBat"
+        analysis_type_version = bat_version
+        user_id = request.user.id
+
+        # Checking if the experiment has already been analyzed with those markers
+        analysismarkers_data = models.AnalysisMarkers.objects.values_list('chosen_z1','chosen_y1','chosen_z2').filter(
+                                                chosen_z1 = chosen_z1,
+                                                chosen_y1=chosen_y1,
+                                                chosen_z2=chosen_z2,
+                                                analysis_type=analysis_type,
+                                                analysis_type_version = analysis_type_version,
+                                                analysis_id = analysis_id)
+        if not analysismarkers_data:
+
+            analysismarkers_instance = models.AnalysisMarkers(chosen_z1=chosen_z1,
+                                                        chosen_y1=chosen_y1,
+                                                        chosen_z2=chosen_z2,
+                                                        analysis_date=analysis_date,
+                                                        analysis_status=analysis_status,
+                                                        analysis_type=analysis_type,
+                                                        analysis_type_version = analysis_type_version,
+                                                        analysis_manualThresholds=manualThresholds,
+                                                        )
+            analysismarkers_instance.analysis_id_id = int(analysis_id)
+            analysismarkers_instance.user_id = user_id
+            analysismarkers_instance.save()
+            
+            analysisMarker_id = analysismarkers_instance.analysisMarker_id
+
+
+            device_id = get_object_or_404(models.Experiment.objects.filter(bat_id=bat_id).values_list('device_id', flat=True))
+            device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
+            
+            if condition:
+                outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
+                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoBat/")       
+                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autobat/{analysis_type_version}/")
+            else:
+                outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/") 
+                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoBat/")       
+                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/{analysis_type_version}/")           
+            create_path(pathToExports)
+            create_path(pathToOutput)
+            pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
+            rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
+            run_analysis_CD32autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_lable, chosen_y1,
+                                chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+                                pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id
+                                )
+            return render(request, 'analysis/analysis_ready.html')
+        else:
+            return render(request, 'analysis/analysis_error.html', {'analysis_id':analysis_id})
 
 @login_required
 def run_analysis_autobat(request, analysis_id):

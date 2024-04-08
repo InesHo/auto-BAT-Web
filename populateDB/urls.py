@@ -38,10 +38,11 @@ urlpatterns = [
     path('add_experimentfile/update_files/add_channels/analysis_type/<analysis_id>', views.analysis_type, name='analysis_type'),
     path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_autobat/<analysis_id>', views.marker_settings_autobat, name='marker_settings_autobat'),
     path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_autograt/<analysis_id>', views.marker_settings_autograt, name='marker_settings_autograt'),
+    path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_CD32autobat/<analysis_id>', views.marker_settings_CD32autobat, name='marker_settings_CD32autobat'),
 
     path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_autobat/run_analysis_autobat/<analysis_id>', views.run_analysis_autobat, name='run_analysis_autobat'),
     path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_autograt/run_analysis_autograt/<analysis_id>', views.run_analysis_autograt, name='run_analysis_autograt'),
-
+    path('add_experimentfile/update_files/add_channels/analysis_type/marker_settings_CD32autobat/run_analysis_CD32autobat/<analysis_id>', views.run_analysis_CD32autobat, name='run_analysis_CD32autobat'),
 
     path('analysis/', views.show_analysis, name='show_analysis'),
     path('analysis/list_files/<analysis_id>', views.list_files, name='list_files'),
