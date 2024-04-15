@@ -815,3 +815,305 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
     except Exception:
         e = traceback.format_exc()
         models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)
+
+@background(queue='autoBat-queue-analysis', schedule=10)
+def run_analysis_cd32autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition,
+                        chosen_z1, chosen_z1_label, chosen_y1, chosen_y1_label, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+                        pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id):
+
+    # z1 must be CD32
+    start_time = Berlin_time()
+    models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_start_time=start_time)
+    models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="In Progress")
+
+    sample_obj = models.ExperimentFiles.objects.values_list('file_id', 'file', 'file_name','allergen', 'control').filter(analysis_id = analysis_id)
+    
+    nrFiles = len(sample_obj)
+    reports = [None]*nrFiles
+    info = [None]*nrFiles 
+    algList = [None]*nrFiles
+    files_list = []
+    usName = ''
+    posFileName = ''
+    posTwoFileName= ''
+    chosen_x = ""
+    chosen_x_label = ""
+    chosen_z2_label = "" # ?
+    quality_messages = []
+    
+    i = 0
+    try:
+        for sample in sample_obj:
+            file_id = sample[0]
+            file_path = sample[1]
+            file_name = sample[2]
+            allergen = sample[3]
+            algList[i] = allergen
+
+            control = sample[4]
+            if control == 'Primary Positive control':
+                posFileName = file_name
+            elif control == 'Secondary Positive control':
+                posTwoFileName = file_name
+
+            elif control == 'Negative control':
+                usName = file_name
+            if panel_name in ["bat-panel", "reduced-panel"]:
+                baumgrassgater = BaumgrassGating(
+                        file_path,
+                        pathToGatingFunctions,
+                        device,
+                        pathToExports,
+                        report_Id = i)
+                reports[i], info[i] = baumgrassgater.runbaumgrassgating()
+                files_list.append(pathToExports + file_name)
+                i += 1
+
+            else:
+                if condition:
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/')
+                else:
+                    pathToExports = (f'/home/abusr/autoBatWeb/auto-BAT-Web/media/FCS_files/{bat_name}/{donor_name}/{panel_name}/')
+                files_list.append(pathToExports + file_name)
+
+                reports[i] = Report(id = file_name.lower())
+                try:
+                    total_cells = get_object_or_404(models.MetaData.objects.filter(file_id=file_id, labels='tot').values_list('values', flat=True))
+                except:
+                    total_cells = 0
+                reports[i] = Report(id = i)
+                reports[i].setFilename(file_name)
+                reports[i].setCellTotal(total_cells)
+                reports[i].setDebrisPerc(0) 
+                reports[i].setFirstDoubPerc(0)
+                reports[i].setSecDoubPerc(0)
+                info[i]= ["For this panel no automatic pregating is done"]
+                i += 1
+            
+        autoworkflow = AutoBatWorkflow(files_list,
+                                    pathToData,
+                                    pathToExports,
+                                    pathToOutput,
+                                    outputPDFname,
+                                    pathToGatingFunctions,
+                                    device,
+                                    chosen_x,   
+                                    chosen_y1,  
+                                    chosen_z1,
+                                    chosen_z2,
+                                    chosen_x_label,
+                                    chosen_y1_label,
+                                    chosen_z1_label, 
+                                    chosen_z2_label,
+                                    str(usName),
+                                    str(posFileName),
+                                    str(posTwoFileName),
+                                    '',
+                                    rPath,
+                                    webapp="Yes")
+           
+        if manualThresholds:
+            df, SSCA, FCR, CD32, info_bg  = autoworkflow.updateCD32BatResultswithManualThresholds("SSC-A", chosen_y1, chosen_z1, xMarkerThreshhold, yMarkerThreshold) # use marker z1 for CD32
+            auto_plot_symbol = get_object_or_404(models.Analysis.objects.filter(analysis_id=analysis_id).values_list('thresholds_checks', flat=True))
+            plot_symbol = 'ok'
+        else:
+            df, SSCA, FCR, CD32, info_bg, plot_symbol = autoworkflow.runCD32Bat()
+            if plot_symbol == "red":
+                plot_symbol = "unclear"   
+            else:
+                plot_symbol = None
+            models.Analysis.objects.filter(analysis_id=analysis_id).update(thresholds_checks=plot_symbol) 
+        
+        quality_messages.append(info_bg)
+        print("\n -- This is the dataframe from first part of reporting: \n")
+        print(df)
+        
+        # check out folder set as output folder for results
+        algList.insert(0, 'NA')
+        df.insert(0, 'ID', algList, True) 
+        info_cellQ4 = []
+
+        for i in range(len(reports)): # hier ist z1 CD32 
+            reports[i].setZMarker("NA")
+            reports[i].setRed(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["redQ4"]))
+            reports[i].setBlack(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["blackQ2"]))
+            reports[i].setBlackQ3(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["blackQ3"]))
+            reports[i].setBlackQ4(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["blackQ4"]))
+            reports[i].setZmean(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["zmeanQ4"]))
+            reports[i].setZ1Min(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["Z1_min"]))
+            reports[i].setZ1max(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["Z1_max"]))
+            reports[i].setMsiY(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["msi_Y"]))
+            reports[i].cellQ3 = float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["cellQ3"])
+            reports[i].cellQ4 = float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["cellQ4"])
+            reports[i].setResult(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["result"].values[0])
+            reports[i].setResponder(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["responder"].values[0])
+            reports[i].setPlotSympol(plot_symbol)
+            
+            if reports[i].cellQ4  < 350:
+                print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
+                info_cellQ4 = ["The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."]
+        ###==========================================================================================================================###
+        # filling the quality messages column with the file specific error messages and
+        # also applying the thresholds for responder/nonresponder in the controls
+
+        if "us" in reports[i].filename.lower():               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
+            try:
+                us_info = info[0]
+            except:
+                us_info = []
+            reports[i].setQualityMessages(us_info + info_bg + info_cellQ4) 
+            reports[i].setYThreshold(FCR)  
+            reports[i].setZ1Threshold(CD32)  # z1 threshold ist jetzt cd32 threshold 
+            
+        if "aige" in reports[i].filename.lower(): 
+            try:
+                aige_info = info[2]
+            except:
+                aige_info = []
+            reports[i].setQualityMessages(aige_info + info_cellQ4) 
+            if reports[i].red >= 5.0: 
+                reports[i].setResponder("aIgE Responder") 
+            else: 
+                reports[i].setResponder("aIgE Non-Responder")
+
+        if "fmlp" in reports[i].filename.lower():
+            try:
+                fmpl_info = info[1]
+            except:
+                fmpl_info = []
+            reports[i].setQualityMessages(fmpl_info + info_cellQ4) 
+            if reports[i].red >= 5.0: 
+                reports[i].setResponder("fMLP Responder") 
+            else: 
+                reports[i].setResponder("fMLP Non-Responder")
+        
+        finalReport = Reporting(reports)
+        finalReport = finalReport.constructReport()
+
+        print("\n -- This is the final report: \n")
+        print(finalReport)
+
+        ### save report to .xls
+        if condition:
+            excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.xlsx')
+        else:
+            excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.xlsx')
+        df_excel = finalReport
+        df_excel['Version'] = analysis_type_version
+        #df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
+    
+        # Create a Pandas Excel writer using XlsxWriter as the engine.
+        writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+
+        # Convert the dataframe to an XlsxWriter Excel object.
+        df_excel.to_excel(writer, sheet_name='Sheet1')
+
+        writer.save()
+        
+        # Save Thresholds to the Database
+        thresholds_instance = models.AnalysisThresholds(
+                                        X_Threshold = float(SSCA),
+                                        Y_Threshold = float(FCR),
+                                        Z2_1_Threshold = float(CD32),
+            )
+        thresholds_instance.analysisMarker_id_id = int(analysisMarker_id)
+        thresholds_instance.save()
+
+        # Save DF to the Database
+        for index, row in finalReport.iterrows():
+            file_name = row['filename']
+            file_id = get_object_or_404(models.ExperimentFiles.objects.filter(file_name__icontains=file_name, analysis_id=analysis_id).values_list('file_id', flat=True))
+            debrisPerc = row['debrisPerc']
+            firstDoubPerc = row['firstDoubPerc']
+            secDoubPerc = row['secDoubPerc']
+            redQ4 = float(row['redQ4'])
+            result = row['result']
+            blackQ2 = row['blackQ2']
+            blackQ3 = row['blackQ3']
+            blackQ4 = row['blackQ4']
+            zmeanQ4 = row['zmeanQ4']
+            Z1_minQ4 = row['Z1_minQ4']
+            Z1_maxQ4 = row['Z1_maxQ4']
+            msi_YQ4 = row['msi_YQ4']
+            cellQ3 = row['cellQ3']
+            cellQ4 = row['cellQ4']
+            responder = row['responder']
+            cellTotal = row['cellTotal']
+            qualityMessages = row['qualityMessages']
+            plot_symbol = row['plot_symbol']
+            plot_name = f'{file_name[:-4].lower()}.pdf'
+            plot_path=os.path.join(pathToOutput, plot_name)
+            if plot_symbol == 'unclear':
+                add_symbol(plot_path, plot_path, error=True, checked = False, solved=False)
+            if manualThresholds:
+                if auto_plot_symbol == "unclear":
+                    add_symbol(plot_path, plot_path, error=True, checked = True, solved=True, viewed=False)
+                else:
+                    add_symbol(plot_path, plot_path, error=False, checked = True, solved=True, viewed=False)
+           
+            if ', []' in str(qualityMessages):
+                qualityMessages = str(qualityMessages).replace(', []','')
+
+            if qualityMessages != 'empty':
+                quality_messages.append(qualityMessages)
+
+            results_instance = models.AnalysisResults(
+                                        debrisPerc = debrisPerc,
+                                        firstDoubPerc = firstDoubPerc,
+                                        secDoubPerc = secDoubPerc,
+                                        redQ4 = redQ4,
+                                        result = result,
+                                        blackQ2 = blackQ2,
+                                        blackQ3 = blackQ3,
+                                        blackQ4 = blackQ4,
+                                        zmeanQ4 = zmeanQ4,
+                                        Z1_minQ4 = Z1_minQ4,
+                                        Z1_maxQ4 = Z1_maxQ4,
+                                        msi_YQ4 = msi_YQ4,
+                                        cellQ3 = cellQ3,
+                                        cellQ4 = cellQ4,
+                                        cellTotal = cellTotal,
+                                        qualityMessages = qualityMessages,
+                                        plot_symbol=plot_symbol,
+                                        responder = responder,
+            )
+            results_instance.file_id_id = int(file_id)
+            results_instance.analysisMarker_id_id = int(analysisMarker_id)
+            results_instance.user_id = user_id
+            results_instance.save()
+        # save the  info messages
+        quality_messages = ', '.join(str(v) for v in quality_messages)
+        models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_info_messages = quality_messages)
+        # Save plots to database
+        pdf_list = []
+        for file in sample_obj:
+            file_id = file[0]
+            plot_name = file[2].lower()
+            control = sample[4]
+            plot_name = f'{plot_name[:-4]}.pdf'
+            plot_path=os.path.join(pathToOutput, plot_name)
+            PDFresults_instance = models.FilesPlots(plot_path=plot_path)
+            PDFresults_instance.analysisMarker_id_id = int(analysisMarker_id)
+            PDFresults_instance.file_id_id = int(file_id)
+            PDFresults_instance.save()
+            #if control == "Negative control":
+                #pdf_list.insert(0, plot_path)
+            #else:
+            pdf_list.append(plot_path)
+    
+        # Save Excel File's path to the Database
+        EXCELresults_instance = models.AnalysisFiles(file_path=excel_file, file_type="Excel")
+        EXCELresults_instance.analysisMarker_id_id = int(analysisMarker_id)
+        EXCELresults_instance.save()
+
+        pdf_list.sort()
+        # Create PDF File:
+        if condition:
+            pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+        else:
+            pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+        pdf_path = os.path.join(pathToOutput, pdf)
+        save_pdf(pdf_path, pdf_list, analysisMarker_id, 'AutoBat')
+    except Exception:
+        e = traceback.format_exc()
+        models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_status="Error", analysis_error=e)
