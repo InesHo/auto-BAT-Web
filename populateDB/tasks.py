@@ -818,7 +818,7 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
 
 @background(queue='autoBat-queue-analysis', schedule=10)
 def run_analysis_cd32autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition,
-                        chosen_z1, chosen_z1_label, chosen_y1, chosen_y1_label, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+                        chosen_z1, chosen_z1_label, chosen_y1, chosen_y1_label, device, outputPDFname, pathToData, pathToExports, 
                         pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id):
 
     # z1 must be CD32
@@ -838,6 +838,7 @@ def run_analysis_cd32autobat_task(analysis_id, analysisMarker_id, bat_name, dono
     posTwoFileName= ''
     chosen_x = ""
     chosen_x_label = ""
+    chosen_z2 = ""
     chosen_z2_label = "" # ?
     quality_messages = []
     
@@ -995,9 +996,9 @@ def run_analysis_cd32autobat_task(analysis_id, analysisMarker_id, bat_name, dono
 
         ### save report to .xls
         if condition:
-            excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.xlsx')
+            excel_file = os.path.join(pathToOutput, f'CD32AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{analysis_type_version}.xlsx')
         else:
-            excel_file = os.path.join(pathToOutput, f'AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.xlsx')
+            excel_file = os.path.join(pathToOutput, f'CD32AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{analysis_type_version}.xlsx')
         df_excel = finalReport
         df_excel['Version'] = analysis_type_version
         #df_excel.drop(df[df['filename'] == '0'].index, inplace = True)
@@ -1109,9 +1110,9 @@ def run_analysis_cd32autobat_task(analysis_id, analysisMarker_id, bat_name, dono
         pdf_list.sort()
         # Create PDF File:
         if condition:
-            pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+            pdf = f"CD32AutoBat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{analysis_type_version}.pdf"
         else:
-            pdf = f"AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+            pdf = f"CD32AutoBat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{analysis_type_version}.pdf"
         pdf_path = os.path.join(pathToOutput, pdf)
         save_pdf(pdf_path, pdf_list, analysisMarker_id, 'AutoBat')
     except Exception:

@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(config.AUTOBAT_PATH, 'autoBat'))
 from django.conf import settings
 from Data import Data
 from .functions import change_FCS_data, create_path, image_grid, pdf_grid, add_symbol
-from .tasks import run_analysis_autobat_task, run_analysis_autograt_task, proccess_files, save_pdf
+from .tasks import run_analysis_cd32autobat_task, run_analysis_autobat_task, run_analysis_autograt_task, proccess_files, save_pdf
 from djqscsv import render_to_csv_response
 from .serializers import ResultsSerializers
 from .pagination import StandardResultsSetPagination
@@ -34,6 +34,8 @@ bat_version='1.0.4'
 #'1.0.2'
 grat_version='1.0.4'
 #'1.0.1'
+cd32bat_version='1.0.0'
+
 
 @login_required
 def home(request):
@@ -521,22 +523,21 @@ def run_analysis_CD32autobat(request, analysis_id):
         else:
             manualThresholds = False
 
-        chosen_z1 = request.POST.get('z1')
-        chosen_z1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z1).values_list('pns', flat=True))
+        chosen_z1 = request.POST.get('z2')
+        chosen_z1_label = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_z1).values_list('pns', flat=True))
         chosen_y1 = request.POST.get('y1')
-        chosen_y1_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_y1).values_list('pns', flat=True))
-        chosen_z2 = request.POST.get('z2')
+        chosen_y1_label = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_y1).values_list('pns', flat=True))
+    
         analysis_date = str(date.today())
         analysis_status = "Waiting"
         analysis_type = "CD32AutoBat"
-        analysis_type_version = bat_version
+        analysis_type_version = cd32bat_version
         user_id = request.user.id
 
         # Checking if the experiment has already been analyzed with those markers
-        analysismarkers_data = models.AnalysisMarkers.objects.values_list('chosen_z1','chosen_y1','chosen_z2').filter(
+        analysismarkers_data = models.AnalysisMarkers.objects.values_list('chosen_z1','chosen_y1', 'chosen_z2').filter(
                                                 chosen_z1 = chosen_z1,
-                                                chosen_y1=chosen_y1,
-                                                chosen_z2=chosen_z2,
+                                                chosen_y1 = chosen_y1,
                                                 analysis_type=analysis_type,
                                                 analysis_type_version = analysis_type_version,
                                                 analysis_id = analysis_id)
@@ -544,7 +545,7 @@ def run_analysis_CD32autobat(request, analysis_id):
 
             analysismarkers_instance = models.AnalysisMarkers(chosen_z1=chosen_z1,
                                                         chosen_y1=chosen_y1,
-                                                        chosen_z2=chosen_z2,
+                                                        #chosen_z2=chosen_z2,
                                                         analysis_date=analysis_date,
                                                         analysis_status=analysis_status,
                                                         analysis_type=analysis_type,
@@ -562,21 +563,21 @@ def run_analysis_CD32autobat(request, analysis_id):
             device = get_object_or_404(models.Devices.objects.filter(device_id=device_id).values_list('device_label', flat=True))
             
             if condition:
-                outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                outputPDFname = f"CD32Autobat_{bat_name}_{donor_name}_{panel_name}_{condition}_{chosen_z1}_{chosen_y1}_{analysis_type_version}.pdf"
                 pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/{condition}/") 
-                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/AutoBat/")       
-                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/autobat/{analysis_type_version}/")
+                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/{condition}/CD32AutoBat/")       
+                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/{condition}/cd32autobat/{analysis_type_version}/")
             else:
-                outputPDFname = f"Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{chosen_z2}_{analysis_type_version}.pdf"
+                outputPDFname = f"CD32Autobat_{bat_name}_{donor_name}_{panel_name}_{chosen_z1}_{chosen_y1}_{analysis_type_version}.pdf"
                 pathToData = os.path.join(settings.MEDIA_ROOT, f"FCS_files/{bat_name}/{donor_name}/{panel_name}/") 
-                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/AutoBat/")       
-                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/autobat/{analysis_type_version}/")           
+                pathToExports = os.path.join(settings.MEDIA_ROOT, f"gated_files/{bat_name}/{donor_name}/{panel_name}/CD32AutoBat/")       
+                pathToOutput = os.path.join(settings.MEDIA_ROOT, f"output/{bat_name}/{donor_name}/{panel_name}/cd32autobat/{analysis_type_version}/")           
             create_path(pathToExports)
             create_path(pathToOutput)
             pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
             rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
-            run_analysis_CD32autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_lable, chosen_y1,
-                                chosen_y1_lable, chosen_z2, device, outputPDFname, pathToData, pathToExports, 
+            run_analysis_cd32autobat_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_z1, chosen_z1_label, chosen_y1,
+                                chosen_y1_label, device, outputPDFname, pathToData, pathToExports, 
                                 pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id
                                 )
             return render(request, 'analysis/analysis_ready.html')
@@ -1716,6 +1717,13 @@ def getBat_names(request):
         return JsonResponse({
             "bat_name": bat_name, 
         }, status = 200)
+
+def getAnalysis_type(request):
+    # get results for specific analysis type from the database
+    if request.method == "GET" and request.is_ajax():
+        analysis_type = models.AnalysisMarkers.objects.all().values_list('analysis_type').order_by('analysisMarker_id')
+        analysis_type = [c[0] for c in list(analysis_type)]
+        return JsonResponse({'analysis_type': analysis_type,}, status = 200)
 
 def getPanel_names(request):
     # get Results from the database

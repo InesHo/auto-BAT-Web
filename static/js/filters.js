@@ -905,6 +905,7 @@ function getAnalysis_type() {
         success: function (result) {
                 analysis_type_options = ["<option value='all' selected>Analysis Type</option>",
                                         "<option value='AutoBat'>AutoBat</option>",
+			                "<option value='CD32AutoBat'>CD32AutoBat</option>",
                                         "<option value='AutoGrat'>AutoGrat</option>"];
 
                 $("#analysis_type").html(analysis_type_options)

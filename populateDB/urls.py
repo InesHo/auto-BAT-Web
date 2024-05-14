@@ -72,6 +72,7 @@ urlpatterns = [
     path('ajax/bat_names', views.getBat_names, name = "getBat_names"),
     path('ajax/file_controls', views.getFile_controls, name = "getFile_controls"),
     path('ajax/panel_names', views.getPanel_names, name = "getPanel_names"),
+    path('ajax/analysis_type', views.getAnalysis_type, name = "getAnalysis_type"),
     path('ajax/clinical_classes', views.getClinical_classes, name = "getClinical_classes"),
     path('ajax/responders', views.getResponders, name = "getResponders"),
     path('ajax/allergens', views.get_allergens, name = "get_allergens"),

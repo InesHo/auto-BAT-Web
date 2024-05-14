@@ -108,6 +108,7 @@ class AnalysisMarkers(models.Model):
     ANALYSIS_TYPES = (
         (u"AutoBat", u'AutoBat'),
         (u"AutoGrat", u'AutoGrat'),
+        (u"CD32AutoBat", u'CD32AutoBat'),
     )
     STATUS_TYPES = (
         (u"Waiting", u'Waiting'),
