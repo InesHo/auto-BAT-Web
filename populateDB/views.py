@@ -1232,7 +1232,8 @@ def analysis_report(request):
                                                                 Analysis_Version=F('analysisMarker_id__analysis_type_version')
                                                             ).filter(Analysis_Version=Case(
                                                                                             When(Analysis_Type='AutoBat', then=Value(bat_version)),
-                                                                                            When(Analysis_Type='AutoGrat', then=Value(grat_version))
+                                                                                            When(Analysis_Type='AutoGrat', then=Value(grat_version)),
+                                                                                            When(Analysis_Type='CD32AutoBat', then=Value(cd32bat_version))
                                                                                             )
                                                             )
 
@@ -1475,7 +1476,8 @@ def research_results(request):
     
     queryList = queryList.filter(Analysis_Version=Case(
                                                         When(Analysis_Type='AutoBat', then=Value(bat_version)),
-                                                        When(Analysis_Type='AutoGrat', then=Value(grat_version))
+                                                        When(Analysis_Type='AutoGrat', then=Value(grat_version)),
+                                                        When(Analysis_Type='CD32AutoBat', then=Value(cd32bat_version))
     #bat_version
     #grat_version
                                                     )
