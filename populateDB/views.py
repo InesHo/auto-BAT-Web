@@ -801,7 +801,9 @@ def results_to_CSV(request):
                                                             'file_id__file_name', 
                                                             "analysisMarker_id__analysis_info_messages",
                                                             'zMarker', 'redQ4', 'result','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
-                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal')
+                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal',
+                                                            'plot_symbol', 
+                                                            'analysisMarker_id__analysis_id__thresholds_checks')
     return render_to_csv_response(analysisResults)
 
 @login_required
