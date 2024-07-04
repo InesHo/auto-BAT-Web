@@ -90,6 +90,7 @@
 	<th>Z2_1_Threshold</th>
 	<th>Z2_2_Threshold</th>
         <th>cellTotal</th>
+	<th>binTotal</th>
      </thead>
      <tbody>
       {% for r in analysis_results %}
@@ -146,6 +147,7 @@
 	<td >{{ r.Z2_1_Threshold }}</td>
 	<td >{{ r.Z2_2_Threshold }}</td>
 	<td >{{ r.cellTotal }}</td>
+	<td >{{ r.binTotal }}</td>
       {% empty %}
       <tr>
         <td colspan="7" class="text-center bg-warning">No Data</td>

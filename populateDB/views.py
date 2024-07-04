@@ -801,7 +801,7 @@ def results_to_CSV(request):
                                                             'file_id__file_name', 
                                                             "analysisMarker_id__analysis_info_messages",
                                                             'zMarker', 'redQ4', 'result','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
-                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal',
+                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal', 'binTotal', 
                                                             'plot_symbol', 
                                                             'analysisMarker_id__analysis_id__thresholds_checks')
     return render_to_csv_response(analysisResults)
@@ -1339,7 +1339,7 @@ def research_results(request):
                                                             'analysisMarker_id__analysis_id__donor_id__donortestofc_exercise__gram_limit_ofc_exercise',
 
                                                             'zMarker', 'redQ4', 'result','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
-                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal',
+                                                            'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal', 'binTotal',
                                                             
                                                             'analysisMarker_id__analysisthresholds__X_Threshold',
                                                             'analysisMarker_id__analysisthresholds__Y_Threshold',
@@ -1650,7 +1650,7 @@ def research_results(request):
                                                     'IgE_Tri_a_14', 'IgE_Tryptase', 'SPT_Histamine', 'SPT_NaCl', 'SPT_wheat_flour', 'SPT_wheat_gluten', 'SPT_birch',
                                                     'SPT_mugworth', 'SPT_timothy', 'SPT_house_dust_mite', 'SPT_cat', 'result','zMarker', 'redQ4','blackQ2',
                                                     'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ3', 'cellQ4', 
-                                                    'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold', 'responder', 'cellTotal',
+                                                    'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold', 'responder', 'cellTotal', 'binTotal',
                                                     'File_id', 'analysisMarker_id', 'Analysis_id'
                                                     ))
         row = 0
@@ -1684,7 +1684,7 @@ def research_results(request):
                                                     'SPT_mugworth', 'SPT_timothy', 'SPT_house_dust_mite', 'SPT_cat', 'result','zMarker', 'redQ4','blackQ2',
                                                     'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ3', 'cellQ4',
                                                     'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold',
-                                                    'responder', 'cellTotal'], startrow=row , startcol=0)
+                                                    'responder', 'cellTotal', 'binTotal'], startrow=row , startcol=0)
                 row = row + 1
             elif not first_row:
                 new_df.to_excel(writer,sheet_name='Sheet1',columns=['BAT_ID', 'Donor', 'Panel', 'Condition', 'Date', 'Analysis_Type', 'Analysis_Version', 'File_Name', 'Allergen', 'Control',
@@ -1694,7 +1694,7 @@ def research_results(request):
                                                     'SPT_mugworth', 'SPT_timothy', 'SPT_house_dust_mite', 'SPT_cat', 'result','zMarker', 'redQ4','blackQ2',
                                                     'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4', 'msi_YQ4', 'cellQ3', 'cellQ4', 
                                                     'X_Threshold', 'Y_Threshold', 'Z2_1_Threshold', 'Z2_2_Threshold',
-                                                    'responder', 'cellTotal'], startrow=row , startcol=0, header=False)
+                                                    'responder', 'cellTotal', 'binTotal'], startrow=row , startcol=0, header=False)
 
 
             row = row + len(new_df.index) + 2

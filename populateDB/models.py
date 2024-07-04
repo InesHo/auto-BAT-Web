@@ -205,6 +205,7 @@ class AnalysisResults(models.Model):
     cellQ4 = models.FloatField(blank = True, null = True)
     responder = models.CharField(choices=RESPONDER_TYPES,max_length=120, blank = True, null=True)
     cellTotal = models.FloatField(blank = True, null = True)
+    binTotal = models.FloatField(blank = True, null = True)
     qualityMessages = models.TextField(max_length=250, blank=True, validators=[MaxLengthValidator(250)])
     plot_symbol = models.CharField(max_length=12, blank = True, null=True)
     analysisMarker_id = models.ForeignKey(AnalysisMarkers, to_field=('analysisMarker_id'), blank = True, null=True,  on_delete = models.CASCADE)
@@ -266,6 +267,7 @@ class DonorTestOFC(models.Model):
     OFC_TYPES = (
         (u"positive", u'positive'),
         (u"negative", u'negative'),
+        (u"no OFC", u'no OFC'),
         )
     ofc_id = models.AutoField(primary_key=True)
     donor_ofc = models.CharField(choices=OFC_TYPES,max_length=120, blank = True, null=True)
@@ -277,6 +279,7 @@ class DonorTestOFC_exercise(models.Model):
     OFC_TYPES = (
         (u"positive", u'positive'),
         (u"negative", u'negative'),
+        (u"no OFC", u'no OFC'),
         )
     ofc_exercise_id = models.AutoField(primary_key=True)
     donor_ofc_exercise = models.CharField(choices=OFC_TYPES,max_length=120, blank = True, null=True)

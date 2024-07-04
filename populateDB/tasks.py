@@ -225,6 +225,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             reports[i].setMsiY(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["msi_Y"]))
             reports[i].cellQ3 = float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["cellQ3"])
             reports[i].cellQ4 = float(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["cellQ4"])
+            reports[i].setBinTotal(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex = False)]["bincount"]))
             reports[i].setResult(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["result"].values[0])
             reports[i].setResponder(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["responder"].values[0])
             reports[i].setPlotSympol(plot_symbol)
@@ -318,6 +319,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             cellQ4 = row['cellQ4']
             responder = row['responder']
             cellTotal = row['cellTotal']
+            binTotal = float(row['binTotal'])
             qualityMessages = row['qualityMessages']
             plot_symbol = row['plot_symbol']
             plot_name = f'{file_name[:-4].lower()}.pdf'
@@ -352,6 +354,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                                         cellQ3 = cellQ3,
                                         cellQ4 = cellQ4,
                                         cellTotal = cellTotal,
+                                        binTotal = binTotal,
                                         qualityMessages = qualityMessages,
                                         plot_symbol=plot_symbol,
                                         responder = responder,
