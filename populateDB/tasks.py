@@ -212,6 +212,9 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
         df.insert(0, 'ID', algList, True) # I somehow needed this row
 
         info_cellQ4 = []
+        info_cells = []
+        info_bins = []
+        info_cd63 = []
 
         for i in range(len(reports)):
             reports[i].setZMarker("NA")
@@ -228,11 +231,26 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
             reports[i].setBinTotal(float(df[df['filename'].str.contains(reports[i].filename.lower(), regex = False)]["bincount"]))
             reports[i].setResult(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["result"].values[0])
             reports[i].setResponder(df[df['filename'].str.contains(reports[i].filename.lower(), regex=False)]["responder"].values[0])
-            reports[i].setPlotSympol(plot_symbol)
             
             if reports[i].cellQ4  < 350:
                 print("\n The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care. \n")
                 info_cellQ4 = ["The number of events in Q4 (basophils) is smaller than 350. This might result in problems with the analysis and the results must be handled with care."]
+                plot_symbol = "unclear"
+            if int(reports[i].cellTotal) < 100000:
+                plot_symbol = "unclear"
+                info_cells = ["The total cellnumber is below 100000."]
+                print("\n The total cellnumber is beloe 100000. \n")
+            if reports[i].binTotal < 31:
+                plot_symbol = "unclear"
+                info_bins = ["The total binnumber is very low."]
+                print("\n The binnumber is very low.\n")
+            if CD63 > 10.5 or CD63 < 4.0:
+                plot_symbol = "unclear"
+                info_cd63 = ["The CD63-Threshold is either too low or too high."]
+                print("\n The CD63-Threshold is either too low or too high. \n")
+
+            reports[i].setPlotSympol(plot_symbol)
+
         ###==========================================================================================================================###
         # filling the quality messages column with the file specific error messages and
         # also applying the thresholds for responder/nonresponder in the controls
@@ -242,7 +260,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
                 us_info = info[0]
             except:
                 us_info = []
-            reports[i].setQualityMessages(us_info + info_bg + info_cellQ4) 
+            reports[i].setQualityMessages(us_info + info_bg + info_cellQ4 + info_cells + info_bins + info_cd63) 
             reports[i].setYThreshold(FCR)  
             reports[i].setZ1Threshold(CD63)  
             
@@ -405,7 +423,7 @@ def run_analysis_autobat_task(analysis_id, analysisMarker_id, bat_name, donor_na
 @background(queue='autograt-queue-analysis', schedule=10)
 def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition,
                         chosen_x, chosen_x_label, chosen_y1, chosen_y1_lable, chosen_z1, chosen_z1_lable, chosen_z2, chosen_z2_lable, device, outputPDFname, pathToData, pathToExports, 
-                        pathToOutput, pathToGatingFunctions, rPath, analysis_type_version, user_id
+                        pathToOutput, pathToGatingFunctions, rPath, manualThresholds, xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id
                     ):
     start_time = Berlin_time()
     models.AnalysisMarkers.objects.filter(analysisMarker_id=analysisMarker_id).update(analysis_start_time=start_time)
@@ -563,8 +581,15 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
                                     rPath,
                                     webapp="Yes")
 
-        #results = autoworkflow.runAutoGRAT()
-        df, Siglec, CD66, threshold_df = autoworkflow.runAutoGRAT()
+        
+        if manualThresholds:
+            df, Siglec, CD66, threshold_df, info = autoworkflow.updateGRatResultswithManualThresholds(chosen_x, chosen_y1, chosen_z2, xMarkerThreshhold, yMarkerThreshold)
+        else:
+            df, Siglec, CD66, threshold_df = autoworkflow.runAutoGRAT()
+        
+        print(info)
+
+        quality_messages.append(info)
         #df = results[0]
         ###################################################################
         # check out folder set as output folder for results
@@ -607,16 +632,29 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
 
             #if reports[i].getId() == "us":               # bei der negativen Kontrolle kann ich auch die Thresholding Infos anfügen
                 #reports[i].setQualityMessages(info[0])
+
+            #print("info:")
+            #print(info)
+
+            #print("info_cellQ4")
+            #print(info_cellQ4)
+
+            info_cellQ4 = ''.join(info_cellQ4)
+
             if "us" in reports[j].filename.lower():
                 try:
                     us_info = info[0]
+                    us_info = ''.join(us_info)
                 except:
                     us_info = []
+                
+                #info_cellQ4 = ''.join(info_cellQ4)
                 reports[j].setQualityMessages(us_info + info_cellQ4)
                 
             if "aige" in reports[j].filename.lower():
                 try:
                     aige_info = info[2]
+                    aige_info = ''.join(aige_info)
                 except:
                     aige_info = []
                 reports[j].setQualityMessages(aige_info + info_cellQ4)
@@ -628,8 +666,11 @@ def run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_n
             if "fmlp" in reports[j].filename.lower():
                 try:
                     fmlp_info = info[1]
+                    fmlp_info = ''.join(fmlp_info)
                 except:
                     fmlp_info = []
+
+                    
                 reports[j].setQualityMessages(fmlp_info + info_cellQ4)
                 if reports[j].red >= 5.0: 
                     reports[j].setResponder("fMLP Responder") 

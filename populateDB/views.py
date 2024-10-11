@@ -686,6 +686,15 @@ def run_analysis_autograt(request, analysis_id):
         donor_name = get_object_or_404(models.Donor.objects.filter(donor_id=donor_id).values_list('donor_abbr', flat=True))
         panel_name = get_object_or_404(models.Panels.objects.filter(panel_id=panel_id).values_list('panel_name', flat=True))
 
+        # for Manual Thresholds:
+        xMarkerThreshhold = request.POST.get('xMarkerThreshold')
+        yMarkerThreshold = request.POST.get('yMarkerThreshold')
+        manualThresholds = request.POST.get('manualThresholds')
+        if manualThresholds == 'Yes':
+            manualThresholds = True
+        else:
+            manualThresholds = False
+
         chosen_x = request.POST.get('X')
         chosen_x_lable = get_object_or_404(models.Channels.objects.filter(analysis_id=analysis_id, pnn=chosen_x).values_list('pns', flat=True))
         chosen_y1 = request.POST.get('Y')
@@ -757,6 +766,7 @@ def run_analysis_autograt(request, analysis_id):
                                                         analysis_status=analysis_status,
                                                         analysis_type=analysis_type,
                                                         analysis_type_version = analysis_type_version,
+                                                        analysis_manualThresholds=manualThresholds,
                                                         )
                 analysismarkers_instance.analysis_id_id = int(analysis_id)
                 analysismarkers_instance.user_id = user_id
@@ -783,7 +793,8 @@ def run_analysis_autograt(request, analysis_id):
                 pathToGatingFunctions = os.path.join(config.AUTOBAT_PATH, "functions/preGatingFunc.R")
                 rPath = os.path.join(config.AUTOBAT_PATH, "functions/YH_binplot_functions.R")
                 run_analysis_autograt_task(analysis_id, analysisMarker_id, bat_name, donor_name, panel_name, condition, chosen_x, chosen_x_lable, chosen_y1, chosen_y1_lable, chosen_z1, chosen_z1_lable,
-                                chosen_z2, chosen_z2_lable, device, outputPDFname, pathToData, pathToExports, pathToOutput, pathToGatingFunctions, rPath, analysis_type_version, user_id
+                                chosen_z2, chosen_z2_lable, device, outputPDFname, pathToData, pathToExports, pathToOutput, pathToGatingFunctions, rPath, manualThresholds, 
+                                xMarkerThreshhold, yMarkerThreshold, analysis_type_version, user_id
                                 )
                 return render(request, 'analysis/analysis_ready.html')
             else:
@@ -798,7 +809,8 @@ def results_to_CSV(request):
                                                             'analysisMarker_id__analysis_type',
                                                             'analysisMarker_id__analysis_id__condition',
                                                             'analysisMarker_id__analysis_type_version',
-                                                            'file_id__file_name', 
+                                                            'file_id__file_name',
+                                                            'file_id__allergen',
                                                             "analysisMarker_id__analysis_info_messages",
                                                             'zMarker', 'redQ4', 'result','blackQ2', 'blackQ3', 'blackQ4', 'zmeanQ4', 'Z1_minQ4', 'Z1_maxQ4',
                                                             'msi_YQ4', 'cellQ3', 'cellQ4', 'responder', 'cellTotal', 'binTotal', 

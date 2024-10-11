@@ -69,17 +69,50 @@
 			    {% include "analysis/channels.html" %}
                         </select>
                       </div>
-		    <div class="row">
+		      <div class="row">
 
-                    </div>
+		      </div>
+		   
+		<br>
+		
+		<div class="modal-footer"></div>
+
+		<br>
+		
+			<label class="form-check-label" for="manualThresholds"><h4>Manual Thresholds: </h4></label>
+			<div class="col-md-6 radio-inline">
+				<input class="form-check-input" type="checkbox" value="Yes" name="manualThresholds">
+			</div>	
+		
+		<br>
+		
+		<h6 class="text">Please don't forget to select all markers in the menu above.</h6>
+
+		<br>
+		<br>
+		<div class="row">
+			<div class="col-sm">
+				<label for="floatingInput">xMarkerThreshhold: </label>
+				<input class="form-control" name="xMarkerThreshold" type="float">
+			</div>
+			<div class="col-sm">
+				<label for="floatingInput">yMarkerThreshold: </label>
+				<input class="form-control" name="yMarkerThreshold" type="float">
+			</div>
+		</div>
+		</br>
+
                 <br>
+		<br>
+		<br>
                 <div class="modal-footer"></div>
                 <h4 class="text-danger">Be carefull when selecting Marker Settings:</h4>
-                <h5 class="text-danger">X : Should be Siglec-8</h5>
-                <h5 class="text-danger">Y : Should be CD66b</h5>
-                <h5 class="text-danger">Z2_1 : Should be CD62L</h5>
-                <h5 class="text-danger">Z2_2 : Should be CD69</h5>
-		<h5 class="text-danger">Z2_3 : Should be CD62P</h5>
+                <h5 class="text-danger">X: Should be Siglec-8</h5>
+                <h5 class="text-danger">Y: Should be CD66b</h5>
+                <h5 class="text-danger">Z2_1: Should be CD62L</h5>
+                <h5 class="text-danger">Z2_2: Should be CD69</h5>
+		<h5 class="text-danger">Z2_3: Should be CD62P</h5>
+		<h5 class="text-danger">Z2_4: Should be CD11b</h5>
 		<div class="modal-footer"></div>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </form>              
